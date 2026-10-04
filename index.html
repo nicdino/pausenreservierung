@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pausenreservierung Saalbau</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: Kassen-Werkzeug. Oben Reiter (Tischplan / Packliste / Kasse), Tischplan als Saal-Skizze, Bestellung als Seitenleiste bzw. Sheet am Handy */
+:root{
+  --bg:#f3f1f0; --surface:#ffffff; --sunk:#ebe7e6; --ink:#1f1a1b; --muted:#6e6566; --line:#ddd6d5;
+  --accent:#c0202d; --accent-soft:#f8e3e4; --on-accent:#ffffff;
+  --ok:#1d7f48; --ok-soft:#dff1e6; --paper:#fbfaf9;
+  --f-ui:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141112; --surface:#1f1a1b; --sunk:#181415; --ink:#f2eded; --muted:#a69c9d; --line:#352d2e;
+  --accent:#e2474f; --accent-soft:#3a1d20; --on-accent:#ffffff; --ok:#43c27a; --ok-soft:#173225; --paper:#1a1617; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141112; --surface:#1f1a1b; --sunk:#181415; --ink:#f2eded; --muted:#a69c9d; --line:#352d2e;
+  --accent:#e2474f; --accent-soft:#3a1d20; --on-accent:#ffffff; --ok:#43c27a; --ok-soft:#173225; --paper:#1a1617; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;margin:0;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:12px 40px}
+header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:6px 12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:34px;height:38px;flex:none}
+.brand h1{font-family:var(--f-ui);font-weight:700;font-size:20px;margin:0;letter-spacing:.01em;line-height:1.1}
+.brand small{display:block;font-family:var(--f-ui);font-weight:500;color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.sync{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--ok)}
+nav.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:var(--r);padding:4px;margin-bottom:14px}
+nav.tabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:7px;font-family:var(--f-ui);font-weight:600;font-size:15px;color:var(--muted)}
+nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:12px;line-height:18px}
+
+.summary{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;margin-bottom:12px;font-family:var(--f-ui)}
+.summary .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block}
+.summary .v{font-size:22px;font-weight:700}
+.floorbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 14px;font-family:var(--f-ui);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.ghost{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-family:var(--f-ui);font-weight:600}
+.ghost.danger{color:var(--accent)}
+.spacer{flex:1}
+
+.main{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:920px){.main.has-panel{grid-template-columns:minmax(0,1fr) 400px}}
+.plan{position:relative;width:100%;aspect-ratio:16/10;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;touch-action:manipulation}
+.plan.editing{background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;touch-action:none}
+.stage-label{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;font-family:var(--f-ui);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.bar{position:absolute;border:1.5px dashed var(--muted);border-radius:6px;display:grid;place-items:center;font-family:var(--f-ui);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tbl{position:absolute;transform:translate(-50%,-50%);width:clamp(34px,7%,56px);aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;line-height:1;user-select:none;-webkit-user-select:none}
+.tbl.rect{border-radius:6px;width:clamp(44px,10%,84px);aspect-ratio:1.6}
+.tbl.sq{border-radius:6px}
+.tbl .n{font-family:var(--f-ui);font-weight:700;font-size:clamp(13px,1.9vw,18px)}
+.tbl .s{font-family:var(--f-ui);font-size:clamp(9px,1.1vw,12px);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.tbl.res{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tbl.paid{background:var(--ok);border-color:var(--ok);color:#fff}
+.tbl.sel{box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--ink)}
+.editing .tbl{cursor:grab;border-style:dashed}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:2px solid var(--ink);background:var(--surface)}
+.legend i.r{background:var(--accent);border-color:var(--accent)}
+.legend i.p{background:var(--ok);border-color:var(--ok)}
+.editbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.editbar input{width:70px;padding:7px 8px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
+.hint{font-size:13px;color:var(--muted)}
+
+/* Bestell-Panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;max-height:calc(100vh - 40px);position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:919px){
+  .panel{position:fixed;inset:0;z-index:20;border-radius:0;border:0;max-height:none;padding-top:env(safe-area-inset-top,0px)}
+}
+.p-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.p-head h2{margin:0;font-family:var(--f-ui);font-size:24px;font-weight:700}
+.p-head .status{font-family:var(--f-ui);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:var(--sunk);color:var(--muted)}
+.p-head .status.res{background:var(--accent-soft);color:var(--accent)}
+.p-head .status.paid{background:var(--ok-soft);color:var(--ok)}
+.p-head .x{margin-left:auto;border:0;background:var(--sunk);width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1}
+.p-body{overflow:auto;flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-family:var(--f-ui);font-weight:600}
+.field input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.lines{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.line{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .nm{min-width:0;font-size:14px}
+.line .nm small{color:var(--muted);display:block;font-size:12px}
+.line .sum{font-family:var(--f-ui);font-weight:600;font-variant-numeric:tabular-nums}
+.stepper{display:flex;align-items:center;gap:2px}
+.stepper button{width:32px;height:32px;border:1px solid var(--line);background:var(--bg);border-radius:7px;font-size:18px;line-height:1}
+.stepper span{min-width:24px;text-align:center;font-family:var(--f-ui);font-weight:700;font-variant-numeric:tabular-nums}
+.empty-lines{padding:14px;color:var(--muted);font-size:14px;text-align:center;border:1px dashed var(--line);border-radius:8px}
+.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.cats button{flex:none;border:1px solid var(--line);background:var(--bg);border-radius:20px;padding:6px 12px;font-family:var(--f-ui);font-weight:600;font-size:14px;white-space:nowrap}
+.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
+.prod{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 9px;text-align:left;display:flex;flex-direction:column;gap:3px;min-height:58px;position:relative}
+.prod:active{transform:scale(.98)}
+.prod .pn{font-size:14px;font-weight:500;line-height:1.2}
+.prod .pp{font-family:var(--f-ui);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.prod .q{position:absolute;top:6px;right:6px;background:var(--accent);color:var(--on-accent);font-family:var(--f-ui);font-weight:700;font-size:12px;border-radius:10px;min-width:20px;padding:0 5px;line-height:18px;text-align:center}
+.p-foot{border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.total{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-ui)}
+.total span{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.total b{font-size:30px;font-variant-numeric:tabular-nums}
+.payrow{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.payrow button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px;font-family:var(--f-ui);font-weight:600;font-size:16px}
+.payrow button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.paybtn{border:0;border-radius:8px;padding:13px;font-family:var(--f-ui);font-weight:700;font-size:17px;background:var(--accent);color:var(--on-accent)}
+.paybtn.done{background:var(--ok-soft);color:var(--ok)}
+.paybtn:disabled{opacity:.45;cursor:not-allowed}
+.clearrow{display:flex;gap:8px;align-items:center;justify-content:center;font-size:13px}
+.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;padding:4px}
+.linkbtn.danger{color:var(--accent)}
+
+/* Packliste & Kasse */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.sheet h3{font-family:var(--f-ui);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px}
+.sheet h3:first-child{margin-top:0}
+.cols{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:760px){.cols{grid-template-columns:1fr 1fr}}
+table.list{width:100%;border-collapse:collapse}
+table.list td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.list td.qty{width:56px;font-family:var(--f-ui);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+table.list td.r{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.tcard{border-bottom:1px solid var(--line);padding:9px 0;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px}
+.tcard .tn{font-family:var(--f-ui);font-weight:700;font-size:22px}
+.tcard .items{font-size:14px;line-height:1.45}
+.tcard .who{color:var(--muted);font-size:13px}
+.tcard .amt{text-align:right;font-family:var(--f-ui);font-weight:600;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-family:var(--f-ui);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:10px;margin-top:3px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.open{background:var(--accent-soft);color:var(--accent)}
+.empty{padding:28px 10px;text-align:center;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:6px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-ui);font-weight:600}
+.kpi b{font-family:var(--f-ui);font-size:24px;font-variant-numeric:tabular-nums}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px;border:1px solid var(--accent);border-radius:8px;background:var(--accent-soft);margin-top:10px}
+.confirm p{margin:0;flex:1 1 220px;font-size:14px}
+.btn-solid{border:0;border-radius:8px;padding:8px 14px;font-family:var(--f-ui);font-weight:700;background:var(--accent);color:var(--on-accent)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:50;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.tbl{transition:background .15s,border-color .15s}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 34 38" aria-hidden="true"><path d="M17 1 33 13V37H1V13Z" fill="var(--accent)"/><text x="17" y="24" text-anchor="middle" font-family="Barlow Semi Condensed,Arial" font-weight="600" font-size="10" fill="#fff">CA</text><text x="17" y="34" text-anchor="middle" font-family="Barlow Semi Condensed,Arial" font-weight="600" font-size="10" fill="#fff">SA</text></svg>
+      <div><h1>Pausenreservierung</h1><small>Catering Saalbau Witten</small></div>
+    </div>
+    <div class="sync" id="sync"><span class="dot" id="syncdot"></span><span id="synctxt">Lädt…</span></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-plan" aria-selected="true" data-tab="plan">Tischplan</button>
+    <button role="tab" id="tab-pack" aria-selected="false" data-tab="pack">Packliste</button>
+    <button role="tab" id="tab-kasse" aria-selected="false" data-tab="kasse">Kasse</button>
+  </nav>
+
+  <section id="view-plan">
+    <div class="main" id="main">
+      <div style="min-width:0">
+        <div class="summary">
+          <div><span class="k">Reserviert</span><span class="v num" id="s-count">0</span></div>
+          <div><span class="k">Bezahlt</span><span class="v num" id="s-paid">0</span></div>
+          <div><span class="k">Umsatz</span><span class="v num" id="s-sum">0,00 €</span></div>
+        </div>
+        <div class="floorbar">
+          <div class="seg" role="group" aria-label="Etage">
+            <button id="fl-unten" data-floor="unten" aria-pressed="true">Unten</button>
+            <button id="fl-oben" data-floor="oben" aria-pressed="false">Oben</button>
+          </div>
+          <span class="spacer"></span>
+          <button class="ghost" id="editbtn">Plan anpassen</button>
+        </div>
+        <div class="plan" id="plan"></div>
+        <div class="legend" id="legend"><span><i></i>frei</span><span><i class="r"></i>reserviert, offen</span><span><i class="p"></i>bezahlt</span></div>
+        <div class="editbar" id="editbar" hidden>
+          <span class="hint">Tische verschieben: antippen und ziehen.</span>
+          <span class="spacer"></span>
+          <input id="newnum" inputmode="numeric" placeholder="Nr." aria-label="Tischnummer">
+          <button class="ghost" id="addtbl">Tisch hinzufügen</button>
+          <button class="ghost danger" id="deltbl" disabled>Markierten entfernen</button>
+          <button class="ghost" id="resetlayout">Standardplan</button>
+          <button class="btn-solid" id="editdone">Fertig</button>
+        </div>
+      </div>
+      <aside class="panel" id="panel" hidden></aside>
+    </div>
+  </section>
+
+  <section id="view-pack" hidden>
+    <div class="sheet" id="pack"></div>
+  </section>
+
+  <section id="view-kasse" hidden>
+    <div class="sheet" id="kasse"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const CATS=[
+ {id:"af",name:"Alkoholfrei",items:[
+  ["sprudel","Gerolsteiner Sprudel","0,25 l",2.5],["naturell","Gerolsteiner Naturell","0,25 l",2.5],
+  ["schorle","Apfelschorle","0,25 l",3],["cola","Coca-Cola","0,2 l",3],["colazero","Coca-Cola Zero","0,2 l",3],
+  ["fanta","Fanta","0,2 l",3],["sprite","Sprite","0,2 l",3],["bitter","Bitter Lemon","0,2 l",3],
+  ["apfel","Apfelsaft","0,2 l",3],["orange","Orangensaft","0,2 l",3]]},
+ {id:"bier",name:"Bier",items:[
+  ["pils","Bitburger Pils","0,33 l",4],["radler","Bitburger Radler","0,33 l",4],
+  ["pils0","Pils alkoholfrei","0,33 l",4],["radler0","Radler alkoholfrei","0,33 l",4],
+  ["weizen","Benediktiner Weißbier","0,33 l",4],["weizen0","Weißbier alkoholfrei","0,33 l",4]]},
+ {id:"wein",name:"Sekt & Wein",items:[
+  ["weiss","Weißwein Chardonnay","0,2 l",6],["rot","Rotwein Merlot","0,2 l",6],
+  ["sekt","Sekt Selection No.1","0,1 l",5],["sekt0","Sekt alkoholfrei","0,1 l",5]]},
+ {id:"fl",name:"Flaschen 0,75 l",items:[
+  ["sektfl","Sekt Selection No.1","Flasche 0,75 l",32.5],["rotfl","Rotwein Merlot","Flasche 0,75 l",19.5],["weissfl","Weißwein Chardonnay","Flasche 0,75 l",19.5]]},
+ {id:"aper",name:"Aperitifs",items:[
+  ["aperol","Aperol Spritz","0,2 l",8],["lillet","Lillet Wildberry","0,2 l",8],["wildberry0","Wildberry Spritz alkoholfrei","0,2 l",7]]},
+ {id:"heiss",name:"Heißgetränke",items:[
+  ["kaffee","Tasse Kaffee","",3],["cappu","Cappuccino","",3.5],["espresso","Espresso","",3],
+  ["latte","Latte Macchiato","",4],["schoko","Heiße Schokolade","",3.5],["tee","Glas Tee","",3]]},
+ {id:"snack",name:"Snacks & Kinder",items:[
+  ["brezel","Brezel","",3],["pringles","Pringles","",2.5],["tictac","Tic Tac","",2.5],
+  ["riegel","Schokoriegel","",1.5],["durst","Durstlöscher","",2.5],["capri","Capri-Sonne","",1.5]]}
+];
+const P={};CATS.forEach(c=>c.items.forEach(([id,name,size,price])=>P[id]={id,name,size,price,cat:c.id}));
+const ORDER=[];CATS.forEach(c=>c.items.forEach(i=>ORDER.push(i[0])));
+
+const DEFAULT_LAYOUT={tables:[
+ {n:1,f:"unten",x:17,y:88},{n:2,f:"unten",x:6.5,y:73},{n:3,f:"unten",x:24,y:75},{n:4,f:"unten",x:7.5,y:56},
+ {n:5,f:"unten",x:15.5,y:27},{n:6,f:"unten",x:10,y:12},{n:7,f:"unten",x:26.5,y:13.5},{n:8,f:"unten",x:36.3,y:13.5},
+ {n:9,f:"unten",x:45.9,y:13.5},{n:10,f:"unten",x:54.1,y:13.5},
+ {n:11,f:"unten",x:22.5,y:49},{n:12,f:"unten",x:31.5,y:49},{n:13,f:"unten",x:40.4,y:49},{n:14,f:"unten",x:50,y:49},
+ {n:15,f:"unten",x:61,y:49},{n:16,f:"unten",x:70.6,y:49},{n:17,f:"unten",x:80.3,y:49},
+ {n:18,f:"unten",x:93,y:33},{n:19,f:"unten",x:88.5,y:20.5},{n:20,f:"unten",x:85.8,y:9},
+ {n:29,f:"oben",x:10.7,y:17.7,s:"sq"},{n:28,f:"oben",x:21.7,y:17.7,s:"sq"},{n:27,f:"oben",x:32.7,y:17.7,s:"sq"},
+ {n:26,f:"oben",x:42.1,y:17.7,s:"sq"},{n:25,f:"oben",x:51.5,y:17.7,s:"sq"},
+ {n:24,f:"oben",x:82,y:50.8,s:"rect"},{n:23,f:"oben",x:82,y:62,s:"rect"},{n:22,f:"oben",x:82,y:73.5,s:"rect"},{n:21,f:"oben",x:82,y:85,s:"rect"}
+]};
+
+const S={layout:clone(DEFAULT_LAYOUT),res:{},floor:"unten",sel:null,tab:"plan",cat:"af",editing:false,editSel:null,confirmClear:false,confirmReset:false};
+let db=null, mode="local";
+const timers={}, chains={}, dirty=new Set();
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+const eur=v=>v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const tid=n=>"t"+n;
+function resOf(n){return S.res[tid(n)]}
+function total(r){if(!r||!r.items)return 0;let s=0;for(const k in r.items){if(P[k])s+=P[k].price*r.items[k]}return Math.round(s*100)/100}
+function count(r){if(!r||!r.items)return 0;let c=0;for(const k in r.items)c+=r.items[k];return c}
+function isEmpty(r){return !r||(count(r)===0&&!(r.name||"").trim())}
+
+function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
+
+/* ---------- Speichern ---------- */
+function lsSave(){try{localStorage.setItem("pausenres_v1",JSON.stringify({res:S.res,layout:S.layout}))}catch(e){}}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables)S.layout=d.layout}}catch(e){}}
+function saveRes(id){
+  if(mode!=="db"){lsSave();return}
+  dirty.add(id);clearTimeout(timers[id]);
+  timers[id]=setTimeout(()=>{timers[id]=null;
+    chains[id]=(chains[id]||Promise.resolve()).then(async()=>{
+      const r=S.res[id];
+      try{ if(isEmpty(r)) await db.doc("res/"+id).delete(); else await db.doc("res/"+id).set(clone(r)); }
+      catch(e){toast("Speichern hat nicht geklappt. Bitte Verbindung prüfen.")}
+      finally{ if(!timers[id]) dirty.delete(id) }
+    });
+  },300);
+}
+async function saveLayout(){
+  if(mode!=="db"){lsSave();return}
+  try{await db.doc("config/layout").set(clone(S.layout))}catch(e){toast("Plan konnte nicht gespeichert werden.")}
+}
+
+/* ---------- Tischplan ---------- */
+function renderPlan(){
+  const plan=$("plan");plan.classList.toggle("editing",S.editing);
+  let h="";
+  if(S.floor==="oben") h+='<div class="bar" style="left:63%;top:12%;width:27%;height:20%">Theke</div>';
+  else h+='<div class="stage-label">Saal</div>';
+  S.layout.tables.filter(t=>t.f===S.floor).sort((a,b)=>a.n-b.n).forEach(t=>{
+    const r=resOf(t.n);const has=!isEmpty(r);
+    const cls=["tbl",t.s||"",has?(r.paid?"paid":"res"):"",(S.editing?S.editSel===t.n:S.sel===t.n)?"sel":""].join(" ");
+    const lbl=has?(r.paid?"bezahlt":eur(total(r)).replace(",00","")):"";
+    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", "+(r.paid?"bezahlt":"offen")+", "+eur(total(r)):""}"><span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.paid?"✓":esc(lbl)}</span>`:""}</button>`;
+  });
+  plan.innerHTML=h;
+  $("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
+  $("editbar").hidden=!S.editing;$("legend").hidden=S.editing;
+  $("editbtn").hidden=S.editing;
+  $("deltbl").disabled=S.editSel==null;
+}
+function renderSummary(){
+  let c=0,p=0,s=0;
+  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;c++;if(r.paid)p++;s+=total(r)}
+  $("s-count").textContent=c;$("s-paid").textContent=p+" / "+c;$("s-sum").textContent=eur(s);
+  const tb=$("tab-pack");tb.innerHTML="Packliste"+(c?`<span class="badge num">${c}</span>`:"");
+}
+
+/* ---------- Bestellung ---------- */
+function renderPanel(){
+  const panel=$("panel");const main=$("main");
+  if(S.sel==null||S.editing||S.tab!=="plan"){panel.hidden=true;main.classList.remove("has-panel");return}
+  panel.hidden=false;main.classList.add("has-panel");
+  const id=tid(S.sel);const r=S.res[id]||{items:{},name:"",pay:null,paid:false};
+  const has=!isEmpty(r);const sum=total(r);
+  const nameFocused=document.activeElement&&document.activeElement.id==="gname";
+  const keepName=nameFocused?document.activeElement.value:null;
+  const lines=ORDER.filter(k=>r.items&&r.items[k]>0).map(k=>{const p=P[k];return `
+    <div class="line"><div class="stepper"><button data-dec="${k}" aria-label="${esc(p.name)} weniger">−</button><span>${r.items[k]}</span><button data-inc="${k}" aria-label="${esc(p.name)} mehr">+</button></div>
+    <div class="nm">${esc(p.name)}${p.size?`<small>${esc(p.size)} · je ${eur(p.price)}</small>`:`<small>je ${eur(p.price)}</small>`}</div>
+    <div class="sum">${eur(p.price*r.items[k])}</div></div>`}).join("");
+  const cat=CATS.find(c=>c.id===S.cat);
+  panel.innerHTML=`
+   <div class="p-head"><h2>Tisch ${S.sel}</h2><span class="status ${has?(r.paid?"paid":"res"):""}">${has?(r.paid?"bezahlt":"offen"):"frei"}</span>
+     <button class="x" id="pclose" aria-label="Schließen">×</button></div>
+   <div class="p-body">
+     <div class="field"><label for="gname">Name des Gasts</label><input id="gname" autocomplete="off" placeholder="z. B. Familie Schmidt" value="${esc(r.name||"")}"></div>
+     <div>${lines?`<div class="lines">${lines}</div>`:`<div class="empty-lines">Noch nichts bestellt. Produkte unten antippen.</div>`}</div>
+     <div class="cats" role="group" aria-label="Kategorie">${CATS.map(c=>`<button data-cat="${c.id}" aria-pressed="${c.id===S.cat}">${esc(c.name)}</button>`).join("")}</div>
+     <div class="prods">${cat.items.map(([k])=>{const p=P[k];const q=r.items&&r.items[k]||0;return `<button class="prod" data-inc="${k}"><span class="pn">${esc(p.name)}</span><span class="pp">${p.size?esc(p.size)+" · ":""}${eur(p.price)}</span>${q?`<span class="q">${q}</span>`:""}</button>`}).join("")}</div>
+   </div>
+   <div class="p-foot">
+     <div class="total"><span>Zu zahlen</span><b>${eur(sum)}</b></div>
+     <div class="payrow" role="group" aria-label="Zahlart"><button data-pay="bar" aria-pressed="${r.pay==="bar"}">Bar</button><button data-pay="karte" aria-pressed="${r.pay==="karte"}">Karte</button></div>
+     <button class="paybtn ${r.paid?"done":""}" id="paybtn" ${(!count(r)||(!r.pay&&!r.paid))?"disabled":""}>${r.paid?"✓ Bezahlt (rückgängig)":(r.pay?"Als bezahlt markieren":"Zahlart wählen")}</button>
+     ${S.confirmClear?`<div class="confirm"><p>Reservierung für Tisch ${S.sel} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
+       :(has?`<div class="clearrow"><button class="linkbtn danger" id="clearask">Reservierung löschen</button></div>`:"")}
+   </div>`;
+  if(nameFocused){const g=$("gname");g.value=keepName;g.focus();g.setSelectionRange(g.value.length,g.value.length)}
+}
+function mutate(fn){
+  const id=tid(S.sel);const r=S.res[id]?clone(S.res[id]):{items:{},name:"",pay:null,paid:false};
+  r.items=r.items||{};fn(r);r.ts=Date.now();
+  S.res[id]=r;if(isEmpty(r))delete S.res[id];
+  saveRes(id);renderAll();
+}
+
+/* ---------- Packliste ---------- */
+function renderPack(){
+  const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort((a,b)=>+a.slice(1)-+b.slice(1));
+  if(!keys.length){$("pack").innerHTML='<div class="empty">Noch keine Pausenreservierungen. Im Tischplan einen Tisch antippen und die Bestellung eintragen, dann erscheint hier, was auf die Tische muss.</div>';return}
+  const tot={};keys.forEach(k=>{const it=S.res[k].items||{};for(const p in it)tot[p]=(tot[p]||0)+it[p]});
+  let left="";
+  CATS.forEach(c=>{const rows=c.items.filter(([k])=>tot[k]>0);if(!rows.length)return;
+    left+=`<h3>${esc(c.name)}</h3><table class="list"><tbody>${rows.map(([k])=>`<tr><td class="qty">${tot[k]}×</td><td>${esc(P[k].name)}${P[k].size?` <span style="color:var(--muted)">${esc(P[k].size)}</span>`:""}</td></tr>`).join("")}</tbody></table>`});
+  const allItems=Object.values(tot).reduce((a,b)=>a+b,0);
+  let right=keys.map(k=>{const r=S.res[k];const items=ORDER.filter(p=>r.items&&r.items[p]>0).map(p=>`${r.items[p]}× ${esc(P[p].name)}`).join(", ");
+    return `<div class="tcard"><div class="tn">${k.slice(1)}</div><div class="items">${items||"<span class='who'>noch nichts bestellt</span>"}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div>
+      <div class="amt">${eur(total(r))}<br><span class="pill ${r.paid?"ok":"open"}">${r.paid?(r.pay==="karte"?"Karte":"Bar"):"offen"}</span></div></div>`}).join("");
+  $("pack").innerHTML=`<div class="cols"><div><h3>Gesamt für alle Tische · ${allItems} Artikel</h3>${left}</div><div><h3>Pro Tisch eindecken</h3>${right}</div></div>`;
+}
+
+/* ---------- Kasse ---------- */
+function renderKasse(){
+  let bar=0,karte=0,open=0,n=0,openT=[];
+  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;n++;const t=total(r);
+    if(r.paid){if(r.pay==="karte")karte+=t;else bar+=t}else{open+=t;openT.push(+k.slice(1))}}
+  openT.sort((a,b)=>a-b);
+  $("kasse").innerHTML=`
+   <div class="kpis"><div class="kpi"><span>Gesamt bezahlt</span><b>${eur(bar+karte)}</b></div><div class="kpi"><span>davon Bar</span><b>${eur(bar)}</b></div>
+   <div class="kpi"><span>davon Karte</span><b>${eur(karte)}</b></div><div class="kpi"><span>Noch offen</span><b>${eur(open)}</b></div></div>
+   <p class="hint">${n} Reservierung${n===1?"":"en"}${openT.length?` · offen: Tisch ${openT.join(", ")}`:n?" · alles bezahlt":""}</p>
+   <h3>Nach der Veranstaltung</h3>
+   <p class="hint">Löscht alle Reservierungen, damit der Plan für die nächste Vorstellung leer ist. Der Tischplan bleibt.</p>
+   ${S.confirmReset?`<div class="confirm"><p>Wirklich alle ${n} Reservierungen löschen? Das lässt sich nicht rückgängig machen.</p><button class="ghost" id="resetno">Abbrechen</button><button class="btn-solid" id="resetyes">Alles löschen</button></div>`
+    :`<button class="ghost danger" id="resetask" ${n?"":"disabled"}>Alle Reservierungen löschen</button>`}`;
+}
+
+function renderAll(){
+  ["plan","pack","kasse"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
+  renderSummary();renderPlan();renderPanel();
+  if(S.tab==="pack")renderPack();if(S.tab==="kasse")renderKasse();
+}
+
+/* ---------- Events ---------- */
+document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.confirmReset=false;renderAll()});
+document.querySelector(".seg").addEventListener("click",e=>{const b=e.target.closest("[data-floor]");if(!b)return;S.floor=b.dataset.floor;S.editSel=null;renderAll()});
+$("editbtn").onclick=()=>{S.editing=true;S.sel=null;S.editSel=null;renderAll()};
+$("editdone").onclick=()=>{S.editing=false;S.editSel=null;saveLayout();renderAll()};
+$("resetlayout").onclick=()=>{S.layout=clone(DEFAULT_LAYOUT);S.editSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.")};
+$("addtbl").onclick=()=>{const v=parseInt($("newnum").value,10);
+  if(!(v>0)){toast("Bitte erst eine Tischnummer eingeben.");return}
+  if(S.layout.tables.some(t=>t.n===v)){toast("Tisch "+v+" gibt es schon.");return}
+  S.layout.tables.push({n:v,f:S.floor,x:50,y:50,s:S.floor==="oben"?"sq":undefined});S.editSel=v;$("newnum").value="";renderAll()};
+$("deltbl").onclick=()=>{if(S.editSel==null)return;const n=S.editSel;
+  if(!isEmpty(resOf(n))){toast("Tisch "+n+" hat eine Reservierung. Erst die Reservierung löschen.");return}
+  S.layout.tables=S.layout.tables.filter(t=>t.n!==n);S.editSel=null;renderAll()};
+
+let drag=null;
+$("plan").addEventListener("pointerdown",e=>{
+  const b=e.target.closest(".tbl");if(!b)return;const n=+b.dataset.n;
+  if(!S.editing)return;
+  e.preventDefault();S.editSel=n;const rect=$("plan").getBoundingClientRect();
+  drag={n,rect,el:b,moved:false};b.setPointerCapture(e.pointerId);
+  document.querySelectorAll(".tbl.sel").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");$("deltbl").disabled=false;
+});
+$("plan").addEventListener("pointermove",e=>{
+  if(!drag)return;const {rect}=drag;
+  const x=Math.min(97,Math.max(3,(e.clientX-rect.left)/rect.width*100));const y=Math.min(95,Math.max(5,(e.clientY-rect.top)/rect.height*100));
+  const t=S.layout.tables.find(t=>t.n===drag.n);t.x=Math.round(x*10)/10;t.y=Math.round(y*10)/10;
+  drag.el.style.left=t.x+"%";drag.el.style.top=t.y+"%";drag.moved=true;
+});
+const endDrag=()=>{drag=null};
+$("plan").addEventListener("pointerup",endDrag);$("plan").addEventListener("pointercancel",endDrag);
+$("plan").addEventListener("click",e=>{
+  const b=e.target.closest(".tbl");if(!b||S.editing)return;
+  const n=+b.dataset.n;S.sel=S.sel===n?null:n;S.confirmClear=false;renderAll();
+});
+
+$("panel").addEventListener("click",e=>{
+  const t=e.target;
+  if(t.closest("#pclose")){S.sel=null;S.confirmClear=false;renderAll();return}
+  const inc=t.closest("[data-inc]");if(inc){const k=inc.dataset.inc;mutate(r=>{r.items[k]=(r.items[k]||0)+1});return}
+  const dec=t.closest("[data-dec]");if(dec){const k=dec.dataset.dec;mutate(r=>{r.items[k]=(r.items[k]||0)-1;if(r.items[k]<=0)delete r.items[k]});return}
+  const c=t.closest("[data-cat]");if(c){S.cat=c.dataset.cat;renderPanel();return}
+  const p=t.closest("[data-pay]");if(p){const v=p.dataset.pay;mutate(r=>{r.pay=v});return}
+  if(t.closest("#paybtn")){mutate(r=>{r.paid=!r.paid});const r=resOf(S.sel);if(r&&r.paid)toast("Tisch "+S.sel+" bezahlt · "+eur(total(r))+" "+(r.pay==="karte"?"Karte":"Bar"));return}
+  if(t.closest("#clearask")){S.confirmClear=true;renderPanel();return}
+  if(t.closest("#clearno")){S.confirmClear=false;renderPanel();return}
+  if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung Tisch "+S.sel+" gelöscht");renderAll();return}
+});
+let nameT=null;
+$("panel").addEventListener("input",e=>{
+  if(e.target.id!=="gname")return;const v=e.target.value;const n=S.sel;
+  const id=tid(n);const r=S.res[id]?clone(S.res[id]):{items:{},name:"",pay:null,paid:false};
+  r.name=v;r.ts=Date.now();S.res[id]=r;if(isEmpty(r))delete S.res[id];
+  clearTimeout(nameT);nameT=setTimeout(()=>{saveRes(id);renderSummary();renderPlan()},400);
+});
+$("kasse").addEventListener("click",async e=>{
+  const t=e.target;
+  if(t.closest("#resetask")){S.confirmReset=true;renderKasse();return}
+  if(t.closest("#resetno")){S.confirmReset=false;renderKasse();return}
+  if(t.closest("#resetyes")){
+    const ids=Object.keys(S.res);S.res={};S.sel=null;S.confirmReset=false;renderAll();
+    if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}}else lsSave();
+    toast("Alle Reservierungen gelöscht");
+  }
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
+
+/* ---------- Start ---------- */
+function setSync(on,txt){$("syncdot").classList.toggle("on",on);$("synctxt").textContent=txt}
+lsLoad();setSync(false,"Nur auf diesem Gerät");renderAll();
+(async()=>{
+  try{
+    if(!window.claude||!window.claude.use)return;
+    const d=await window.claude.use("db");if(!d)return;
+    db=d;mode="db";setSync(true,"Gespeichert & synchron");
+    db.collection("res").onSnapshot(snap=>{
+      const next={};snap.docs.forEach(doc=>{if(doc.exists)next[doc.id]=clone(doc.data())});
+      dirty.forEach(id=>{if(S.res[id])next[id]=S.res[id];else delete next[id]});
+      S.res=next;renderAll();
+    },()=>setSync(false,"Verbindung weg, bitte neu laden"));
+    db.doc("config/layout").onSnapshot(snap=>{
+      if(S.editing)return;
+      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length){S.layout=clone(d)}}
+      renderAll();
+    },()=>{});
+  }catch(e){}
+})();
+})();
+</script>
+</body>
+</html>
