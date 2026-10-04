@@ -25,7 +25,7 @@
   --accent:#e2474f; --accent-soft:#3a1d20; --on-accent:#ffffff; --ok:#43c27a; --ok-soft:#173225; --paper:#1a1617; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;margin:0;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
@@ -39,7 +39,7 @@ header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .dot.on{background:var(--ok)}
 nav.tabs{display:flex;gap:4px;background:var(--sunk);border-radius:var(--r);padding:4px;margin-bottom:14px}
-nav.tabs button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:7px;font-family:var(--f-ui);font-weight:600;font-size:15px;color:var(--muted)}
+nav.tabs button{flex:1;border:0;background:transparent;padding:12px 6px;border-radius:7px;font-family:var(--f-ui);font-weight:600;font-size:18px;color:var(--muted)}
 nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:12px;line-height:18px}
 
@@ -48,23 +48,25 @@ nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:4p
 .summary .v{font-size:22px;font-weight:700}
 .floorbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{border:0;background:var(--surface);padding:7px 14px;font-family:var(--f-ui);font-weight:600}
+.seg button{border:0;background:var(--surface);padding:10px 18px;font-size:17px;font-family:var(--f-ui);font-weight:600}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .ghost{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-family:var(--f-ui);font-weight:600}
 .ghost.danger{color:var(--accent)}
 .spacer{flex:1}
 
 .main{display:grid;grid-template-columns:1fr;gap:16px}
-@media (min-width:920px){.main.has-panel{grid-template-columns:minmax(0,1fr) 400px}}
+@media (min-width:920px){.main.has-panel{grid-template-columns:minmax(0,1fr) 480px}}
 .plan{position:relative;width:100%;aspect-ratio:16/10;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;touch-action:manipulation}
+.planwrap{overflow-x:auto;border-radius:var(--r)}
+@media (max-width:680px){.plan{min-width:640px}}
 .plan.editing{background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;touch-action:none}
 .stage-label{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;font-family:var(--f-ui);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .bar{position:absolute;border:1.5px dashed var(--muted);border-radius:6px;display:grid;place-items:center;font-family:var(--f-ui);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.tbl{position:absolute;transform:translate(-50%,-50%);width:clamp(34px,7%,56px);aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;line-height:1;user-select:none;-webkit-user-select:none}
+.tbl{position:absolute;transform:translate(-50%,-50%);width:clamp(40px,7.6%,66px);aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;line-height:1;user-select:none;-webkit-user-select:none}
 .tbl.rect{border-radius:6px;width:clamp(44px,10%,84px);aspect-ratio:1.6}
 .tbl.sq{border-radius:6px}
-.tbl .n{font-family:var(--f-ui);font-weight:700;font-size:clamp(13px,1.9vw,18px)}
-.tbl .s{font-family:var(--f-ui);font-size:clamp(9px,1.1vw,12px);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.tbl .n{font-family:var(--f-ui);font-weight:700;font-size:clamp(15px,2.2vw,22px)}
+.tbl .s{font-family:var(--f-ui);font-size:clamp(10px,1.3vw,14px);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .tbl.res{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .tbl.paid{background:var(--ok);border-color:var(--ok);color:#fff}
 .tbl.sel{box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--ink)}
@@ -83,44 +85,46 @@ nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:4p
   .panel{position:fixed;inset:0;z-index:20;border-radius:0;border:0;max-height:none;padding-top:env(safe-area-inset-top,0px)}
 }
 .p-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
-.p-head h2{margin:0;font-family:var(--f-ui);font-size:24px;font-weight:700}
+.p-head h2{margin:0;font-family:var(--f-ui);font-size:30px;font-weight:700}
 .p-head .status{font-family:var(--f-ui);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:var(--sunk);color:var(--muted)}
 .p-head .status.res{background:var(--accent-soft);color:var(--accent)}
 .p-head .status.paid{background:var(--ok-soft);color:var(--ok)}
-.p-head .x{margin-left:auto;border:0;background:var(--sunk);width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1}
-.p-body{overflow:auto;flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:14px}
+.p-head .x{margin-left:auto;border:0;background:var(--sunk);width:46px;height:46px;border-radius:50%;font-size:26px;line-height:1}
+.p-body{overflow:auto;flex:1;padding:14px;display:flex;flex-direction:column;gap:18px}
 .field label{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-family:var(--f-ui);font-weight:600}
-.field input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.field input{width:100%;padding:12px;font-size:17px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
 .lines{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .line{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--line)}
 .line:last-child{border-bottom:0}
-.line .nm{min-width:0;font-size:14px}
-.line .nm small{color:var(--muted);display:block;font-size:12px}
-.line .sum{font-family:var(--f-ui);font-weight:600;font-variant-numeric:tabular-nums}
+.line .nm{min-width:0;font-size:17px}
+.line .nm small{color:var(--muted);display:block;font-size:13px}
+.line .sum{font-family:var(--f-ui);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
 .stepper{display:flex;align-items:center;gap:2px}
-.stepper button{width:32px;height:32px;border:1px solid var(--line);background:var(--bg);border-radius:7px;font-size:18px;line-height:1}
-.stepper span{min-width:24px;text-align:center;font-family:var(--f-ui);font-weight:700;font-variant-numeric:tabular-nums}
+.stepper button{width:44px;height:44px;border:1px solid var(--line);background:var(--bg);border-radius:9px;font-size:24px;line-height:1}
+.stepper span{min-width:30px;text-align:center;font-family:var(--f-ui);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
 .empty-lines{padding:14px;color:var(--muted);font-size:14px;text-align:center;border:1px dashed var(--line);border-radius:8px}
 .cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .cats button{flex:none;border:1px solid var(--line);background:var(--bg);border-radius:20px;padding:6px 12px;font-family:var(--f-ui);font-weight:600;font-size:14px;white-space:nowrap}
 .cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px}
-.prod{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 9px;text-align:left;display:flex;flex-direction:column;gap:3px;min-height:58px;position:relative}
+.grp h4{margin:0 0 8px;font-family:var(--f-ui);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.prod{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:80px;position:relative}
+.prod.on{border-color:var(--accent);background:var(--accent-soft)}
 .prod:active{transform:scale(.98)}
-.prod .pn{font-size:14px;font-weight:500;line-height:1.2}
-.prod .pp{font-family:var(--f-ui);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.prod .q{position:absolute;top:6px;right:6px;background:var(--accent);color:var(--on-accent);font-family:var(--f-ui);font-weight:700;font-size:12px;border-radius:10px;min-width:20px;padding:0 5px;line-height:18px;text-align:center}
+.prod .pn{font-size:18px;font-weight:600;line-height:1.2;padding-right:28px}
+.prod .pp{font-family:var(--f-ui);font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.prod .q{position:absolute;top:8px;right:8px;background:var(--accent);color:var(--on-accent);font-family:var(--f-ui);font-weight:700;font-size:16px;border-radius:14px;min-width:28px;padding:0 7px;line-height:26px;text-align:center}
 .p-foot{border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;background:var(--surface)}
 .total{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-ui)}
-.total span{font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.total b{font-size:30px;font-variant-numeric:tabular-nums}
+.total span{font-size:16px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.total b{font-size:38px;font-variant-numeric:tabular-nums}
 .payrow{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .payrow button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px;font-family:var(--f-ui);font-weight:600;font-size:16px}
 .payrow button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .paybtn{border:0;border-radius:8px;padding:13px;font-family:var(--f-ui);font-weight:700;font-size:17px;background:var(--accent);color:var(--on-accent)}
 .paybtn.done{background:var(--ok-soft);color:var(--ok)}
 .paybtn:disabled{opacity:.45;cursor:not-allowed}
-.clearrow{display:flex;gap:8px;align-items:center;justify-content:center;font-size:13px}
+.clearrow{display:flex;gap:8px;align-items:center;justify-content:center;font-size:15px}
 .linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;padding:4px}
 .linkbtn.danger{color:var(--accent)}
 
@@ -132,11 +136,11 @@ nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;margin-left:4p
 @media (min-width:760px){.cols{grid-template-columns:1fr 1fr}}
 table.list{width:100%;border-collapse:collapse}
 table.list td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
-table.list td.qty{width:56px;font-family:var(--f-ui);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+table.list td.qty{width:64px;font-family:var(--f-ui);font-weight:700;font-size:24px;font-variant-numeric:tabular-nums}
 table.list td.r{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
 .tcard{border-bottom:1px solid var(--line);padding:9px 0;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px}
 .tcard .tn{font-family:var(--f-ui);font-weight:700;font-size:22px}
-.tcard .items{font-size:14px;line-height:1.45}
+.tcard .items{font-size:16px;line-height:1.45}
 .tcard .who{color:var(--muted);font-size:13px}
 .tcard .amt{text-align:right;font-family:var(--f-ui);font-weight:600;font-variant-numeric:tabular-nums}
 .pill{display:inline-block;font-family:var(--f-ui);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:10px;margin-top:3px}
@@ -176,7 +180,7 @@ table.list td.r{text-align:right;font-variant-numeric:tabular-nums;color:var(--m
       <div style="min-width:0">
         <div class="summary">
           <div><span class="k">Reserviert</span><span class="v num" id="s-count">0</span></div>
-          <div><span class="k">Bezahlt</span><span class="v num" id="s-paid">0</span></div>
+          <div><span class="k">Artikel</span><span class="v num" id="s-paid">0</span></div>
           <div><span class="k">Umsatz</span><span class="v num" id="s-sum">0,00 €</span></div>
         </div>
         <div class="floorbar">
@@ -187,8 +191,8 @@ table.list td.r{text-align:right;font-variant-numeric:tabular-nums;color:var(--m
           <span class="spacer"></span>
           <button class="ghost" id="editbtn">Plan anpassen</button>
         </div>
-        <div class="plan" id="plan"></div>
-        <div class="legend" id="legend"><span><i></i>frei</span><span><i class="r"></i>reserviert, offen</span><span><i class="p"></i>bezahlt</span></div>
+        <div class="planwrap"><div class="plan" id="plan"></div></div>
+        <div class="legend" id="legend"><span><i></i>frei</span><span><i class="r"></i>reserviert</span></div>
         <div class="editbar" id="editbar" hidden>
           <span class="hint">Tische verschieben: antippen und ziehen.</span>
           <span class="spacer"></span>
@@ -216,28 +220,29 @@ table.list td.r{text-align:right;font-variant-numeric:tabular-nums;color:var(--m
 <script>
 (function(){
 const CATS=[
- {id:"af",name:"Alkoholfrei",items:[
-  ["sprudel","Gerolsteiner Sprudel","0,25 l",2.5],["naturell","Gerolsteiner Naturell","0,25 l",2.5],
-  ["schorle","Apfelschorle","0,25 l",3],["cola","Coca-Cola","0,2 l",3],["colazero","Coca-Cola Zero","0,2 l",3],
-  ["fanta","Fanta","0,2 l",3],["sprite","Sprite","0,2 l",3],["bitter","Bitter Lemon","0,2 l",3],
-  ["apfel","Apfelsaft","0,2 l",3],["orange","Orangensaft","0,2 l",3]]},
+ {id:"wasser",name:"Wasser",items:[
+  ["sprudel","Gerolsteiner Sprudel","0,25 l",2.5],["naturell","Gerolsteiner Naturell","0,25 l",2.5]]},
+ {id:"soft",name:"Softdrinks",items:[
+  ["cola","Coca-Cola","0,2 l",3],["colazero","Coca-Cola Zero","0,2 l",3],["fanta","Fanta","0,2 l",3],
+  ["sprite","Sprite","0,2 l",3],["bitter","Bitter Lemon","0,2 l",3],["schorle","Apfelschorle","0,25 l",3],
+  ["apfel","Apfelsaft","0,2 l",3],["orange","Orangensaft","0,2 l",3],
+  ["durst","Durstlöscher","",2.5],["capri","Capri-Sonne","",1.5]]},
  {id:"bier",name:"Bier",items:[
-  ["pils","Bitburger Pils","0,33 l",4],["radler","Bitburger Radler","0,33 l",4],
-  ["pils0","Pils alkoholfrei","0,33 l",4],["radler0","Radler alkoholfrei","0,33 l",4],
+  ["pils","Bitburger Pils","0,33 l",4],["pils0","Pils alkoholfrei","0,33 l",4],
+  ["radler","Bitburger Radler","0,33 l",4],["radler0","Radler alkoholfrei","0,33 l",4],
   ["weizen","Benediktiner Weißbier","0,33 l",4],["weizen0","Weißbier alkoholfrei","0,33 l",4]]},
- {id:"wein",name:"Sekt & Wein",items:[
+ {id:"wein",name:"Wein & Sekt",items:[
   ["weiss","Weißwein Chardonnay","0,2 l",6],["rot","Rotwein Merlot","0,2 l",6],
   ["sekt","Sekt Selection No.1","0,1 l",5],["sekt0","Sekt alkoholfrei","0,1 l",5]]},
- {id:"fl",name:"Flaschen 0,75 l",items:[
-  ["sektfl","Sekt Selection No.1","Flasche 0,75 l",32.5],["rotfl","Rotwein Merlot","Flasche 0,75 l",19.5],["weissfl","Weißwein Chardonnay","Flasche 0,75 l",19.5]]},
  {id:"aper",name:"Aperitifs",items:[
   ["aperol","Aperol Spritz","0,2 l",8],["lillet","Lillet Wildberry","0,2 l",8],["wildberry0","Wildberry Spritz alkoholfrei","0,2 l",7]]},
+ {id:"essen",name:"Essen",items:[
+  ["brezel","Brezel","",3],["pringles","Pringles","",2.5],["riegel","Schokoriegel","",1.5],["tictac","Tic Tac","",2.5]]},
  {id:"heiss",name:"Heißgetränke",items:[
   ["kaffee","Tasse Kaffee","",3],["cappu","Cappuccino","",3.5],["espresso","Espresso","",3],
   ["latte","Latte Macchiato","",4],["schoko","Heiße Schokolade","",3.5],["tee","Glas Tee","",3]]},
- {id:"snack",name:"Snacks & Kinder",items:[
-  ["brezel","Brezel","",3],["pringles","Pringles","",2.5],["tictac","Tic Tac","",2.5],
-  ["riegel","Schokoriegel","",1.5],["durst","Durstlöscher","",2.5],["capri","Capri-Sonne","",1.5]]}
+ {id:"fl",name:"Ganze Flaschen 0,75 l",items:[
+  ["sektfl","Sekt Selection No.1","Flasche",32.5],["rotfl","Rotwein Merlot","Flasche",19.5],["weissfl","Weißwein Chardonnay","Flasche",19.5]]}
 ];
 const P={};CATS.forEach(c=>c.items.forEach(([id,name,size,price])=>P[id]={id,name,size,price,cat:c.id}));
 const ORDER=[];CATS.forEach(c=>c.items.forEach(i=>ORDER.push(i[0])));
@@ -254,7 +259,7 @@ const DEFAULT_LAYOUT={tables:[
  {n:24,f:"oben",x:82,y:50.8,s:"rect"},{n:23,f:"oben",x:82,y:62,s:"rect"},{n:22,f:"oben",x:82,y:73.5,s:"rect"},{n:21,f:"oben",x:82,y:85,s:"rect"}
 ]};
 
-const S={layout:clone(DEFAULT_LAYOUT),res:{},floor:"unten",sel:null,tab:"plan",cat:"af",editing:false,editSel:null,confirmClear:false,confirmReset:false};
+const S={layout:clone(DEFAULT_LAYOUT),res:{},floor:"unten",sel:null,tab:"plan",editing:false,editSel:null,confirmClear:false,confirmReset:false};
 let db=null, mode="local";
 const timers={}, chains={}, dirty=new Set();
 
@@ -298,9 +303,9 @@ function renderPlan(){
   else h+='<div class="stage-label">Saal</div>';
   S.layout.tables.filter(t=>t.f===S.floor).sort((a,b)=>a.n-b.n).forEach(t=>{
     const r=resOf(t.n);const has=!isEmpty(r);
-    const cls=["tbl",t.s||"",has?(r.paid?"paid":"res"):"",(S.editing?S.editSel===t.n:S.sel===t.n)?"sel":""].join(" ");
-    const lbl=has?(r.paid?"bezahlt":eur(total(r)).replace(",00","")):"";
-    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", "+(r.paid?"bezahlt":"offen")+", "+eur(total(r)):""}"><span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.paid?"✓":esc(lbl)}</span>`:""}</button>`;
+    const cls=["tbl",t.s||"",has?"res":"",(S.editing?S.editSel===t.n:S.sel===t.n)?"sel":""].join(" ");
+    const lbl=has?eur(total(r)).replace(",00",""):"";
+    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}"><span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${esc(lbl)}</span>`:""}</button>`;
   });
   plan.innerHTML=h;
   $("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
@@ -309,9 +314,9 @@ function renderPlan(){
   $("deltbl").disabled=S.editSel==null;
 }
 function renderSummary(){
-  let c=0,p=0,s=0;
-  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;c++;if(r.paid)p++;s+=total(r)}
-  $("s-count").textContent=c;$("s-paid").textContent=p+" / "+c;$("s-sum").textContent=eur(s);
+  let c=0,s=0,a=0;
+  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;c++;s+=total(r);a+=count(r)}
+  $("s-count").textContent=c;$("s-paid").textContent=a;$("s-sum").textContent=eur(s);
   const tb=$("tab-pack");tb.innerHTML="Packliste"+(c?`<span class="badge num">${c}</span>`:"");
 }
 
@@ -320,7 +325,7 @@ function renderPanel(){
   const panel=$("panel");const main=$("main");
   if(S.sel==null||S.editing||S.tab!=="plan"){panel.hidden=true;main.classList.remove("has-panel");return}
   panel.hidden=false;main.classList.add("has-panel");
-  const id=tid(S.sel);const r=S.res[id]||{items:{},name:"",pay:null,paid:false};
+  const id=tid(S.sel);const r=S.res[id]||{items:{},name:""};
   const has=!isEmpty(r);const sum=total(r);
   const nameFocused=document.activeElement&&document.activeElement.id==="gname";
   const keepName=nameFocused?document.activeElement.value:null;
@@ -330,25 +335,22 @@ function renderPanel(){
     <div class="sum">${eur(p.price*r.items[k])}</div></div>`}).join("");
   const cat=CATS.find(c=>c.id===S.cat);
   panel.innerHTML=`
-   <div class="p-head"><h2>Tisch ${S.sel}</h2><span class="status ${has?(r.paid?"paid":"res"):""}">${has?(r.paid?"bezahlt":"offen"):"frei"}</span>
+   <div class="p-head"><h2>Tisch ${S.sel}</h2><span class="status ${has?"res":""}">${has?"reserviert":"frei"}</span>
      <button class="x" id="pclose" aria-label="Schließen">×</button></div>
    <div class="p-body">
      <div class="field"><label for="gname">Name des Gasts</label><input id="gname" autocomplete="off" placeholder="z. B. Familie Schmidt" value="${esc(r.name||"")}"></div>
      <div>${lines?`<div class="lines">${lines}</div>`:`<div class="empty-lines">Noch nichts bestellt. Produkte unten antippen.</div>`}</div>
-     <div class="cats" role="group" aria-label="Kategorie">${CATS.map(c=>`<button data-cat="${c.id}" aria-pressed="${c.id===S.cat}">${esc(c.name)}</button>`).join("")}</div>
-     <div class="prods">${cat.items.map(([k])=>{const p=P[k];const q=r.items&&r.items[k]||0;return `<button class="prod" data-inc="${k}"><span class="pn">${esc(p.name)}</span><span class="pp">${p.size?esc(p.size)+" · ":""}${eur(p.price)}</span>${q?`<span class="q">${q}</span>`:""}</button>`}).join("")}</div>
+     ${CATS.map(c=>`<div class="grp"><h4>${esc(c.name)}</h4><div class="prods">${c.items.map(([k])=>{const p=P[k];const q=r.items&&r.items[k]||0;return `<button class="prod${q?" on":""}" data-inc="${k}"><span class="pn">${esc(p.name)}</span><span class="pp">${p.size?esc(p.size)+" · ":""}${eur(p.price)}</span>${q?`<span class="q">${q}</span>`:""}</button>`}).join("")}</div></div>`).join("")}
    </div>
    <div class="p-foot">
-     <div class="total"><span>Zu zahlen</span><b>${eur(sum)}</b></div>
-     <div class="payrow" role="group" aria-label="Zahlart"><button data-pay="bar" aria-pressed="${r.pay==="bar"}">Bar</button><button data-pay="karte" aria-pressed="${r.pay==="karte"}">Karte</button></div>
-     <button class="paybtn ${r.paid?"done":""}" id="paybtn" ${(!count(r)||(!r.pay&&!r.paid))?"disabled":""}>${r.paid?"✓ Bezahlt (rückgängig)":(r.pay?"Als bezahlt markieren":"Zahlart wählen")}</button>
+     <div class="total"><span>Gesamt Tisch ${S.sel}</span><b>${eur(sum)}</b></div>
      ${S.confirmClear?`<div class="confirm"><p>Reservierung für Tisch ${S.sel} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
        :(has?`<div class="clearrow"><button class="linkbtn danger" id="clearask">Reservierung löschen</button></div>`:"")}
    </div>`;
   if(nameFocused){const g=$("gname");g.value=keepName;g.focus();g.setSelectionRange(g.value.length,g.value.length)}
 }
 function mutate(fn){
-  const id=tid(S.sel);const r=S.res[id]?clone(S.res[id]):{items:{},name:"",pay:null,paid:false};
+  const id=tid(S.sel);const r=S.res[id]?clone(S.res[id]):{items:{},name:""};
   r.items=r.items||{};fn(r);r.ts=Date.now();
   S.res[id]=r;if(isEmpty(r))delete S.res[id];
   saveRes(id);renderAll();
@@ -365,26 +367,24 @@ function renderPack(){
   const allItems=Object.values(tot).reduce((a,b)=>a+b,0);
   let right=keys.map(k=>{const r=S.res[k];const items=ORDER.filter(p=>r.items&&r.items[p]>0).map(p=>`${r.items[p]}× ${esc(P[p].name)}`).join(", ");
     return `<div class="tcard"><div class="tn">${k.slice(1)}</div><div class="items">${items||"<span class='who'>noch nichts bestellt</span>"}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div>
-      <div class="amt">${eur(total(r))}<br><span class="pill ${r.paid?"ok":"open"}">${r.paid?(r.pay==="karte"?"Karte":"Bar"):"offen"}</span></div></div>`}).join("");
+      <div class="amt">${eur(total(r))}</div></div>`}).join("");
   $("pack").innerHTML=`<div class="cols"><div><h3>Gesamt für alle Tische · ${allItems} Artikel</h3>${left}</div><div><h3>Pro Tisch eindecken</h3>${right}</div></div>`;
 }
 
 /* ---------- Kasse ---------- */
 function renderKasse(){
-  let bar=0,karte=0,open=0,n=0,openT=[];
-  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;n++;const t=total(r);
-    if(r.paid){if(r.pay==="karte")karte+=t;else bar+=t}else{open+=t;openT.push(+k.slice(1))}}
-  openT.sort((a,b)=>a-b);
+  let sum=0,n=0,a=0,tables=[];
+  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;n++;sum+=total(r);a+=count(r);tables.push(+k.slice(1))}
+  tables.sort((x,y)=>x-y);
   $("kasse").innerHTML=`
-   <div class="kpis"><div class="kpi"><span>Gesamt bezahlt</span><b>${eur(bar+karte)}</b></div><div class="kpi"><span>davon Bar</span><b>${eur(bar)}</b></div>
-   <div class="kpi"><span>davon Karte</span><b>${eur(karte)}</b></div><div class="kpi"><span>Noch offen</span><b>${eur(open)}</b></div></div>
-   <p class="hint">${n} Reservierung${n===1?"":"en"}${openT.length?` · offen: Tisch ${openT.join(", ")}`:n?" · alles bezahlt":""}</p>
+   <div class="kpis"><div class="kpi"><span>Umsatz Pausenreservierung</span><b>${eur(sum)}</b></div><div class="kpi"><span>Reservierte Tische</span><b>${n}</b></div>
+   <div class="kpi"><span>Artikel gesamt</span><b>${a}</b></div></div>
+   <p class="hint">${n?"Tische: "+tables.join(", "):"Noch keine Reservierungen."}</p>
    <h3>Nach der Veranstaltung</h3>
    <p class="hint">Löscht alle Reservierungen, damit der Plan für die nächste Vorstellung leer ist. Der Tischplan bleibt.</p>
    ${S.confirmReset?`<div class="confirm"><p>Wirklich alle ${n} Reservierungen löschen? Das lässt sich nicht rückgängig machen.</p><button class="ghost" id="resetno">Abbrechen</button><button class="btn-solid" id="resetyes">Alles löschen</button></div>`
     :`<button class="ghost danger" id="resetask" ${n?"":"disabled"}>Alle Reservierungen löschen</button>`}`;
 }
-
 function renderAll(){
   ["plan","pack","kasse"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
   renderSummary();renderPlan();renderPanel();
@@ -431,9 +431,6 @@ $("panel").addEventListener("click",e=>{
   if(t.closest("#pclose")){S.sel=null;S.confirmClear=false;renderAll();return}
   const inc=t.closest("[data-inc]");if(inc){const k=inc.dataset.inc;mutate(r=>{r.items[k]=(r.items[k]||0)+1});return}
   const dec=t.closest("[data-dec]");if(dec){const k=dec.dataset.dec;mutate(r=>{r.items[k]=(r.items[k]||0)-1;if(r.items[k]<=0)delete r.items[k]});return}
-  const c=t.closest("[data-cat]");if(c){S.cat=c.dataset.cat;renderPanel();return}
-  const p=t.closest("[data-pay]");if(p){const v=p.dataset.pay;mutate(r=>{r.pay=v});return}
-  if(t.closest("#paybtn")){mutate(r=>{r.paid=!r.paid});const r=resOf(S.sel);if(r&&r.paid)toast("Tisch "+S.sel+" bezahlt · "+eur(total(r))+" "+(r.pay==="karte"?"Karte":"Bar"));return}
   if(t.closest("#clearask")){S.confirmClear=true;renderPanel();return}
   if(t.closest("#clearno")){S.confirmClear=false;renderPanel();return}
   if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung Tisch "+S.sel+" gelöscht");renderAll();return}
@@ -441,7 +438,7 @@ $("panel").addEventListener("click",e=>{
 let nameT=null;
 $("panel").addEventListener("input",e=>{
   if(e.target.id!=="gname")return;const v=e.target.value;const n=S.sel;
-  const id=tid(n);const r=S.res[id]?clone(S.res[id]):{items:{},name:"",pay:null,paid:false};
+  const id=tid(n);const r=S.res[id]?clone(S.res[id]):{items:{},name:""};
   r.name=v;r.ts=Date.now();S.res[id]=r;if(isEmpty(r))delete S.res[id];
   clearTimeout(nameT);nameT=setTimeout(()=>{saveRes(id);renderSummary();renderPlan()},400);
 });
