@@ -18,11 +18,11 @@
   --r:10px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#141112; --surface:#1f1a1b; --sunk:#181415; --ink:#f2eded; --muted:#a69c9d; --line:#352d2e;
-  --accent:#e2474f; --accent-soft:#3a1d20; --on-accent:#ffffff; --hot:#f0a35a; --hot-soft:#33240f; --paper:#1a1617; color-scheme:dark}}
+  --bg:#0a0808; --surface:#151112; --sunk:#201a1b; --ink:#ffffff; --muted:#cbc1c2; --line:#4b3e40;
+  --accent:#e8202e; --accent-soft:#4a1016; --on-accent:#ffffff; --hot:#ffb066; --hot-soft:#3b2510; --paper:#110d0e; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141112; --surface:#1f1a1b; --sunk:#181415; --ink:#f2eded; --muted:#a69c9d; --line:#352d2e;
-  --accent:#e2474f; --accent-soft:#3a1d20; --on-accent:#ffffff; --hot:#f0a35a; --hot-soft:#33240f; --paper:#1a1617; color-scheme:dark}
+  --bg:#0a0808; --surface:#151112; --sunk:#201a1b; --ink:#ffffff; --muted:#cbc1c2; --line:#4b3e40;
+  --accent:#e8202e; --accent-soft:#4a1016; --on-accent:#ffffff; --hot:#ffb066; --hot-soft:#3b2510; --paper:#110d0e; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;margin:0;-webkit-tap-highlight-color:transparent}
@@ -125,7 +125,8 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .picker .for{font-family:var(--f-ui);color:var(--muted);font-size:15px}
 .cats{display:flex;flex-wrap:wrap;gap:6px}
 .cats button{border:1.5px solid var(--line);background:var(--bg);border-radius:22px;padding:9px 14px;font-family:var(--f-ui);font-weight:600;font-size:16px;white-space:nowrap}
-.cats button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cats button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.cats button[aria-pressed="true"] .c{background:var(--on-accent);color:var(--accent)}
 .cats button .c{display:inline-block;margin-left:6px;min-width:20px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-size:12px;line-height:18px;padding:0 5px;text-align:center}
 .prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .prod{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:84px;position:relative}
@@ -148,6 +149,15 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .af-list{display:grid;gap:4px;margin-top:4px}
 .af-row{display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:15px;border-bottom:1px solid var(--line);padding:4px 0}
 .af-row .sz{color:var(--muted)}
+.search{position:relative;display:flex;align-items:center}
+.search svg{position:absolute;left:12px;width:20px;height:20px;color:var(--muted);pointer-events:none}
+.search input{width:100%;padding:13px 44px 13px 42px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:17px;-webkit-appearance:none;appearance:none}
+.search input::-webkit-search-cancel-button{display:none}
+.search input:focus{border-color:var(--accent);outline:none}
+.search button{position:absolute;right:6px;width:34px;height:34px;border:0;border-radius:50%;background:var(--sunk);font-size:20px;line-height:1}
+.sres{font-family:var(--f-ui);font-size:14px;color:var(--muted)}
+.themebtn{display:inline-flex;align-items:center;gap:6px}
+.themebtn svg{width:16px;height:16px}
 .picknote{padding:12px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:15px;text-align:center}
 
 /* Packliste & Kasse */
@@ -212,6 +222,7 @@ table.list td .sz{color:var(--muted)}
     </div>
     <div class="event"><input id="evname" autocomplete="off" placeholder="Veranstaltung, z. B. Theater 04.10." aria-label="Veranstaltung"></div>
     <div class="sync"><span class="dot" id="syncdot"></span><span id="synctxt">Lädt…</span></div>
+    <button class="ghost themebtn" id="themebtn" aria-label="Hell oder dunkel umschalten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg><span id="themetxt">Dunkel</span></button>
     <button class="ghost" id="pdfbtn2">PDF speichern</button>
   </header>
 
@@ -250,7 +261,10 @@ table.list td .sz{color:var(--muted)}
         </div>
         <section class="order" id="order" hidden></section>
       </div>
-      <aside class="picker off" id="picker"><div id="pickmain" style="display:grid;gap:12px"></div><div id="addbox"></div></aside>
+      <aside class="picker off" id="picker"><div id="pickhead"></div>
+        <div class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m16.5 16.5 4.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <input id="psearch" type="search" autocomplete="off" placeholder="Produkt suchen, z. B. Cola" aria-label="Produkt suchen"><button id="psclear" aria-label="Suche leeren" hidden>×</button></div>
+        <div id="pickmain" style="display:grid;gap:12px"></div><div id="addbox"></div></aside>
     </div>
   </section>
 
@@ -300,8 +314,8 @@ const CATS=[
   ["aperol","Aperol Spritz","0,2 l",8,{when:"frisch"}],["lillet","Lillet Wildberry","0,2 l",8,{when:"frisch"}],["lillet0","Lillet alkoholfrei","0,2 l",8,{when:"frisch"}],["wildberry0","Wildberry Spritz alkoholfrei","0,2 l",7,{when:"frisch"}]]},
  {id:"durst",name:"Durstlöscher & Capri",items:[
   ["d_mango","Durstlöscher Eistee Mango","",2.5,{}],["d_pfirsich","Durstlöscher Eistee Pfirsich","",2.5,{}],
-  ["d_orange","Durstlöscher Orange","",2.5,{}],["d_banane","Durstlöscher Banane","",2.5,{}],
-  ["d_kirsch","Durstlöscher Sauerkirsch","",2.5,{}],["d_multi","Durstlöscher Multivitamin","",2.5,{}],
+  ["d_orange","Durstlöscher Orange","",2.5,{}],["d_banane_kirsch","Durstlöscher Banane-Sauerkirsch","",2.5,{}],
+  ["d_multi","Durstlöscher Multivitamin","",2.5,{}],
   ["capri","Capri-Sonne","",1.5,{}]]},
  {id:"snack",name:"Snacks",items:[
   ["brezel","Brezel","",3,{glass:"teller"}],["haribo","Haribo","",2.5,{}],["twix","Twix","",1.5,{}],["ballisto","Ballisto","",1.5,{}],["mars","Mars","",1.5,{}],["snickers","Snickers","",1.5,{}],["mms","M&Ms","",1.5,{}],["tictac","Tic Tac","",2.5,{}],
@@ -345,6 +359,7 @@ const timers={}, chains={}, dirty=new Set();
 function clone(o){return JSON.parse(JSON.stringify(o))}
 const eur=v=>v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const $=id=>document.getElementById(id);
+const norm=t=>String(t||"").toLowerCase().replace(/ä/g,"a").replace(/ö/g,"o").replace(/ü/g,"u").replace(/ß/g,"ss").replace(/[-&·,.]/g," ").replace(/\s+/g," ").trim();
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const tid=n=>"t"+n;
 const numOf=k=>+k.slice(1);
@@ -453,17 +468,26 @@ function renderOrder(full){
 
 /* ---------- Produktauswahl ---------- */
 function renderPicker(){
-  const pk=$("picker");const box=$("pickmain");const selR=S.sel!=null?S.res[tid(S.sel)]:null;const locked=!!(selR&&selR.done);const on=S.sel!=null&&!S.editing&&!locked;pk.classList.toggle("off",!on);
+  const pk=$("picker");const box=$("pickmain");const q0=norm(S.q||"");const selR=S.sel!=null?S.res[tid(S.sel)]:null;const locked=!!(selR&&selR.done);const on=S.sel!=null&&!S.editing&&!locked;pk.classList.toggle("off",!on);
   const r=on?(S.res[tid(S.sel)]||{items:{}}):{items:{}};
   const cat=CATS.find(c=>c.id===S.cat);
   const catCount=c=>IDS[c.id].reduce((a,k)=>a+((r.items&&r.items[k])||0),0);
-  box.innerHTML=`
-    <div><h3>Produkte</h3><div class="for">${on?`für Tisch ${S.sel}`:locked?`Tisch ${S.sel} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:"Erst einen Tisch im Plan antippen"}</div></div>
-    <div class="cats" role="group" aria-label="Kategorie">${CATS.map(c=>{const n=catCount(c);return `<button data-cat="${c.id}" aria-pressed="${c.id===S.cat}">${esc(c.name)}${n?`<span class="c">${n}</span>`:""}</button>`}).join("")}</div>
-    <div class="prods">${IDS[cat.id].map(k=>{const p=P[k];const q=(r.items&&r.items[k])||0;
+  $("pickhead").innerHTML=`<h3>Produkte</h3><div class="for">${on?`für Tisch ${S.sel}`:locked?`Tisch ${S.sel} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:"Erst einen Tisch im Plan antippen"}</div>`;
+  $("psclear").hidden=!S.q;
+  const tile=k=>{const p=P[k];const q=(r.items&&r.items[k])||0;
       const label=p.name.replace(/^Durstlöscher /,"").replace(/^Pringles /,"");
       const pre=p.name.startsWith("Durstlöscher ")?"Durstlöscher · ":p.name.startsWith("Pringles ")?"Pringles · ":"";
-      return `<button class="prod${q?" on":""}" data-inc="${k}"><span class="pn">${esc(label)}</span><span class="pp">${esc(pre)}${p.size?esc(p.size)+" · ":""}${eur(p.price)}</span>${q?`<span class="q">${q}</span>`:""}</button>`}).join("")}</div>`;
+      return `<button class="prod${q?" on":""}" data-inc="${k}"><span class="pn">${esc(label)}</span><span class="pp">${esc(pre)}${p.size?esc(p.size)+" · ":""}${eur(p.price)}</span>${q?`<span class="q">${q}</span>`:""}</button>`};
+  if(q0){
+    const words=q0.split(/\s+/).filter(Boolean);
+    const hits=ORDER.filter(k=>{const p=P[k];const hay=norm(p.name+" "+p.size+" "+((CATS.find(c=>c.id===p.cat)||{}).name||""));return words.every(w=>hay.includes(w))});
+    box.innerHTML=hits.length?`<div class="sres">${hits.length} Treffer für „${esc(S.q.trim())}“</div><div class="prods">${hits.map(tile).join("")}</div>`
+      :`<div class="picknote">Nichts gefunden für „${esc(S.q.trim())}“. Unten kannst du es als eigenes Produkt anlegen.</div>`;
+    renderAddToggle();return;
+  }
+  box.innerHTML=`
+    <div class="cats" role="group" aria-label="Kategorie">${CATS.map(c=>{const n=catCount(c);return `<button data-cat="${c.id}" aria-pressed="${c.id===S.cat}">${esc(c.name)}${n?`<span class="c">${n}</span>`:""}</button>`}).join("")}</div>
+    <div class="prods">${IDS[cat.id].map(tile).join("")}</div>`;
   renderAddToggle();
 }
 /* ---------- Eigene Produkte ---------- */
@@ -673,6 +697,15 @@ $("kasse").addEventListener("click",async e=>{
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
 
+/* ---------- Suche ---------- */
+$("psearch").addEventListener("input",e=>{S.q=e.target.value;renderPicker()});
+$("psearch").addEventListener("keydown",e=>{if(e.key==="Escape"){e.stopPropagation();S.q="";e.target.value="";renderPicker()}});
+$("psclear").onclick=()=>{S.q="";$("psearch").value="";renderPicker();$("psearch").focus()};
+/* ---------- Hell / Dunkel ---------- */
+function isDark(){const t=document.documentElement.getAttribute("data-theme");if(t)return t==="dark";return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches}
+function setThemeLabel(){$("themetxt").textContent=isDark()?"Hell":"Dunkel"}
+(function(){let t=null;try{t=localStorage.getItem("pausenres_theme")}catch(e){}if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);setThemeLabel()})();
+$("themebtn").onclick=()=>{const t=isDark()?"light":"dark";document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("pausenres_theme",t)}catch(e){}setThemeLabel()};
 /* ---------- Start ---------- */
 function setSync(on,txt){$("syncdot").classList.toggle("on",on);$("synctxt").textContent=txt}
 lsLoad();setSync(false,"Gespeichert auf diesem Gerät");renderAll();
