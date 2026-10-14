@@ -201,13 +201,6 @@ table.list td .sz{color:var(--muted)}
 .kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .kpi span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-ui);font-weight:600}
 .kpi b{font-family:var(--f-ui);font-size:26px;font-variant-numeric:tabular-nums}
-.modal{position:fixed;inset:0;z-index:60;background:rgba(10,8,8,.55);display:grid;place-items:center;padding:16px}
-.modal-box{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;max-width:460px;width:100%;padding:20px;display:grid;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-.modal-box h2{margin:0;font-family:var(--f-ui);font-size:24px}
-.modal-box p{margin:0;line-height:1.45}
-.modal-box input{padding:12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:18px;letter-spacing:.08em}
-.modal-box input:focus{border-color:var(--accent);outline:none}
-.rm-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:15px;z-index:50;max-width:calc(100% - 32px)}
 #printout{display:none}
 @media (prefers-reduced-motion:no-preference){.tbl{transition:background .15s,border-color .15s}}
@@ -216,7 +209,7 @@ table.list td .sz{color:var(--muted)}
 @media print{
   @page{size:A4;margin:10mm}
   body{background:#fff;color:#000;font-size:11pt}
-  .wrap,.toast,.modal{display:none!important}
+  .wrap,.toast{display:none!important}
   #printout{display:block}
   #printout h1{font-family:var(--f-ui);font-size:20pt;margin:0}
   #printout .meta{color:#555;margin:2px 0 10px}
@@ -266,7 +259,6 @@ table.list td .sz{color:var(--muted)}
     <div class="event"><input id="evname" autocomplete="off" placeholder="Veranstaltung, z. B. Theater 04.10." aria-label="Veranstaltung"></div>
     <div class="sync"><span class="dot" id="syncdot"></span><span id="synctxt">Lädt…</span></div>
     <button class="ghost themebtn" id="themebtn" aria-label="Hell oder dunkel umschalten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg><span id="themetxt">Dunkel</span></button>
-    <button class="ghost danger" id="newevent">Neue Veranstaltung</button>
     <button class="ghost" id="cardsbtn2">Tischkarten</button>
     <button class="ghost" id="pdfbtn2">PDF speichern</button>
   </header>
@@ -335,7 +327,6 @@ table.list td .sz{color:var(--muted)}
   </section>
 </div>
 <div id="printout"></div>
-<div class="modal" id="resetmodal" hidden role="dialog" aria-modal="true" aria-labelledby="rm-title"><div class="modal-box" id="rmbox"></div></div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -718,8 +709,9 @@ function renderKasse(){
    <div class="kpis"><div class="kpi"><span>Umsatz gesamt</span><b>${eur(sum)}</b></div><div class="kpi"><span>davon unten</span><b>${eur(per.unten)}</b></div>
    <div class="kpi"><span>davon oben</span><b>${eur(per.oben)}</b></div><div class="kpi"><span>Tische / Artikel</span><b>${n} / ${a}</b></div></div>
    <div class="block"><h3>Nach der Veranstaltung</h3>
-   <p class="hint" style="margin-bottom:10px">Löscht alle Reservierungen und den Veranstaltungsnamen, damit der Plan für die nächste Vorstellung leer ist. Tischplan und eigene Produkte bleiben.</p>
-   <button class="ghost danger" id="resetask">Neue Veranstaltung starten</button></div>`;
+   <p class="hint" style="margin-bottom:10px">Löscht alle Reservierungen, damit der Plan für die nächste Vorstellung leer ist. Tischplan und Veranstaltungsname bleiben.</p>
+   ${S.confirmReset?`<div class="confirm"><p>Wirklich alle ${n} Reservierungen löschen? Das lässt sich nicht rückgängig machen.</p><button class="ghost" id="resetno">Abbrechen</button><button class="btn-solid" id="resetyes">Alles löschen</button></div>`
+    :`<button class="ghost danger" id="resetask" ${n?"":"disabled"}>Alle Reservierungen löschen</button>`}</div>`;
 }
 
 function renderAll(){
@@ -820,45 +812,14 @@ let evT=null;
 $("evname").addEventListener("input",e=>{S.event={name:e.target.value};clearTimeout(evT);evT=setTimeout(()=>saveDoc("config/event",S.event),500)});
 $("kasse").addEventListener("click",async e=>{
   const t=e.target;
-  if(t.closest("#resetask"))openReset();
-});
-/* ---------- Neue Veranstaltung (doppelte Bestätigung) ---------- */
-let rmStep=0;
-function resCount(){return Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).length}
-function openReset(){rmStep=1;renderReset();$("resetmodal").hidden=false;setTimeout(()=>{const b=$("rm-cancel");if(b)b.focus()},30)}
-function closeReset(){rmStep=0;$("resetmodal").hidden=true}
-function renderReset(){
-  const n=resCount();let sum=0;for(const k in S.res)if(!isEmpty(S.res[k]))sum+=total(S.res[k]);
-  const canPdf=!(window.claude&&window.claude.use);
-  if(rmStep===1){
-    $("rmbox").innerHTML=`<h2 id="rm-title">Neue Veranstaltung starten?</h2>
-      <p>${n?`Es sind noch <b>${n} Reservierung${n===1?"":"en"}</b> (${eur(sum)}) von ${S.event.name?"„"+esc(S.event.name)+"“":"der letzten Veranstaltung"} drin.`:"Es sind gerade keine Reservierungen drin."} Die werden komplett gelöscht, genauso der Veranstaltungsname. Tischplan und eigene Produkte bleiben.</p>
-      ${canPdf&&n?`<p class="hint">Tipp: Speicher vorher eine PDF, falls du die Zahlen noch brauchst.</p>`:""}
-      <div class="rm-btns">${canPdf&&n?`<button class="ghost" id="rm-pdf">Erst PDF speichern</button>`:""}<span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-next">Weiter</button></div>`;
-  }else{
-    $("rmbox").innerHTML=`<h2 id="rm-title">Wirklich alles löschen?</h2>
-      <p>Das lässt sich <b>nicht rückgängig machen</b>. Tippe zur Bestätigung <b>LÖSCHEN</b> ein.</p>
-      <input id="rm-input" autocomplete="off" autocapitalize="characters" placeholder="LÖSCHEN" aria-label="Zur Bestätigung LÖSCHEN eintippen">
-      <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go" disabled>Alles löschen</button></div>`;
-    setTimeout(()=>$("rm-input").focus(),30);
+  if(t.closest("#resetask")){S.confirmReset=true;renderKasse();return}
+  if(t.closest("#resetno")){S.confirmReset=false;renderKasse();return}
+  if(t.closest("#resetyes")){
+    const ids=Object.keys(S.res);S.res={};S.sel=null;S.confirmReset=false;renderAll();
+    if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}}else lsSave();
+    toast("Alle Reservierungen gelöscht");
   }
-}
-async function doReset(){
-  const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
-  closeReset();renderAll();
-  if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
-  toast("Alles gelöscht. Die neue Veranstaltung kann losgehen.");
-}
-$("newevent").onclick=openReset;
-$("resetmodal").addEventListener("click",e=>{
-  const t=e.target;
-  if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}
-  if(t.closest("#rm-pdf")){S.printMode="liste";buildPrint();setTimeout(()=>window.print(),50);return}
-  if(t.closest("#rm-next")){rmStep=2;renderReset();return}
-  if(t.closest("#rm-go")&&$("rm-input").value.trim().toUpperCase()==="LÖSCHEN")doReset();
 });
-$("resetmodal").addEventListener("input",e=>{if(e.target.id==="rm-input")$("rm-go").disabled=e.target.value.trim().toUpperCase()!=="LÖSCHEN"});
-$("resetmodal").addEventListener("keydown",e=>{if(e.key==="Escape"){e.stopPropagation();closeReset()}if(e.key==="Enter"&&e.target.id==="rm-input"&&!$("rm-go").disabled)doReset()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
 
 /* ---------- Suche ---------- */
