@@ -177,6 +177,10 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .cols{display:grid;grid-template-columns:1fr;gap:20px}
 @media (min-width:760px){.cols{grid-template-columns:1fr 1fr}}
 table.list{width:100%;border-collapse:collapse}
+.tchips{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{min-width:40px;padding:6px 10px;border-radius:8px;background:var(--accent);color:var(--on-accent);font-family:var(--f-ui);font-weight:700;font-size:18px;text-align:center}
+.overview{margin-bottom:20px}
+table.tot td.tabs{color:var(--muted);font-size:15px;padding-left:12px}
 .tscroll{overflow-x:auto}
 table.tot{width:100%;border-collapse:collapse;font-size:17px}
 table.tot th{font-family:var(--f-ui);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:6px 8px 6px 0;border-bottom:2px solid var(--line)}
@@ -223,8 +227,10 @@ table.list td .sz{color:var(--muted)}
   #printout td.t{width:40px;font-weight:700;font-size:13pt}
   #printout .callout{font-weight:700}
   #printout tr{break-inside:avoid}
+  #printout .ovw{font-size:11pt;margin:0 0 6px;padding:4px 8px;background:#f3f1f0;border-radius:4px}
+  #printout .totpage h2{margin-top:22px}
   #printout *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  #printout .cardpage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);width:190mm;height:276mm;break-after:page;font-family:var(--f-body)}
+  #printout .cardpage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);width:210mm;height:296mm;padding:10mm;break-after:page;font-family:var(--f-body)}
   #printout .cardpage:last-child{break-after:auto}
   #printout .card{border:0.3mm dashed #9a9a9a;margin:-0.15mm;padding:4mm 5mm 3mm;overflow:hidden;display:flex;flex-direction:column;gap:1.6mm;color:#111}
   #printout .c-top{display:flex;align-items:center;gap:3mm}
@@ -613,8 +619,10 @@ function listRows(keys,tot){return `<table class="list"><tbody>${keys.map(k=>`<t
 function totalsData(){
   const u=packData("unten").tot,o=packData("oben").tot;
   const ids=ORDER.filter(k=>(u[k]||0)+(o[k]||0)>0);
-  return {u,o,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate)};
+  const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort((a,b)=>numOf(a)-numOf(b)).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(numOf(k))});
+  return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate)};
 }
+function otherRows(d){return d.other.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n g">${(d.u[k]||0)+(d.o[k]||0)}</td><td class="tabs">${(d.tabs[k]||[]).join(", ")}</td></tr>`).join("")}
 function totalsRows(ids,u,o){return ids.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n">${u[k]||""}</td><td class="n">${o[k]||""}</td><td class="n g">${(u[k]||0)+(o[k]||0)}</td></tr>`).join("")}
 function renderTotals(){
   const d=totalsData();
@@ -624,8 +632,8 @@ function renderTotals(){
   $("pack").innerHTML=`
     ${d.crate.length?`<div class="block"><h3>Aus dem Kühlhaus</h3><p class="sub">Unten und oben zusammengerechnet, so kannst du es 1:1 in die Liste übertragen</p>
       <div class="tscroll"><table class="tot">${head}<tbody>${totalsRows(d.crate,d.u,d.o)}</tbody><tfoot><tr><td>Summe Flaschen</td><td></td><td></td><td class="n g">${sum(d.crate)}</td></tr></tfoot></table></div></div>`:""}
-    ${d.other.length?`<div class="block"><h3>Weitere Artikel</h3><p class="sub">Wein, Sekt, Aperitifs, Heißgetränke und Snacks</p>
-      <div class="tscroll"><table class="tot">${head}<tbody>${totalsRows(d.other,d.u,d.o)}</tbody></table></div></div>`:""}`;
+    ${d.other.length?`<div class="block"><h3>Weitere Artikel</h3><p class="sub">Wein, Sekt, Aperitifs, Heißgetränke und Snacks, oben und unten zusammen</p>
+      <div class="tscroll"><table class="tot"><thead><tr><th>Produkt</th><th class="n">Anzahl</th><th>Tische</th></tr></thead><tbody>${otherRows(d)}</tbody></table></div></div>`:""}`;
 }
 function renderPack(){
   const f=S.pfloor;
@@ -642,9 +650,11 @@ function renderPack(){
   const later=d.later.map(k=>{const r=S.res[k];const hot=itemsText(r,p=>p.when==="heiss");const fresh=itemsText(r,p=>p.when==="frisch");
     return `<div class="tcard"><div class="tn">${numOf(k)}</div><div class="items">${hot.length?esc(hot.join(", ")):""}${hot.length&&fresh.length?"<br>":""}${fresh.length?`<span class="gl">frisch an der Theke: ${esc(fresh.join(", "))}</span>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
   $("pack").innerHTML=`
+    <div class="block overview"><h3>Diese Tische werden gedeckt</h3><p class="sub">${d.keys.length} Tisch${d.keys.length===1?"":"e"} ${fl}</p>
+      <div class="tchips">${d.keys.map(k=>`<span class="tchip">${numOf(k)}</span>`).join("")}</div></div>
     <div class="cols">
       <div class="block"><h3>Kühlhaus-Kiste</h3><p class="sub">Alles, was in Flaschen serviert wird</p>${d.crate.length?listRows(d.crate,d.tot):'<p class="hint">Keine Flaschen bestellt.</p>'}
-        ${d.other.length?`<div class="block"><h3>Weitere Artikel</h3><p class="sub">Wein, Sekt, Snacks und Durstlöscher</p>${listRows(d.other,d.tot)}</div>`:""}</div>
+        ${d.other.length?`<p class="hint" style="margin-top:10px">Wein, Sekt, Snacks usw. stehen gesammelt für oben und unten unter „Gesamt“.</p>`:""}</div>
       <div class="block"><h3>Gläser &amp; Teller</h3><p class="sub">Vorher auf die Tische stellen</p>${glassRows?`<table class="list"><tbody>${glassRows}</tbody></table>`:'<p class="hint">Keine Gläser nötig.</p>'}
         ${d.bottleNotes.length?`<p class="hint" style="margin-top:8px">${esc(d.bottleNotes.join(" · "))}</p>`:""}</div>
     </div>
@@ -671,8 +681,10 @@ function buildCards(){
   let h="";for(let i=0;i<keys.length;i+=8){h+=`<section class="cardpage">${keys.slice(i,i+8).map(card).join("")}</section>`}
   $("printout").innerHTML=h;
 }
+function setPageMargin(m){let st=document.getElementById("pagestyle");if(!st){st=document.createElement("style");st.id="pagestyle";document.head.appendChild(st)}st.textContent="@page{size:A4;margin:"+m+"}"}
 function buildPrint(){
-  if(S.printMode==="karten"){buildCards();return}
+  if(S.printMode==="karten"){setPageMargin("0");buildCards();return}
+  setPageMargin("10mm");
   const ev=S.event.name?esc(S.event.name):"Pausenreservierung";
   const date=new Date().toLocaleDateString("de-DE");
   const time=new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
@@ -681,9 +693,8 @@ function buildPrint(){
   if(!cnt)h+=`<p>Noch keine Reservierungen.</p>`;
   ["unten","oben"].forEach(f=>{const d=packData(f);if(!d.keys.length)return;
     let sum=0;d.keys.forEach(k=>sum+=total(S.res[k]));
-    h+=`<section class="floorpage"><h2>${f==="oben"?"Oben":"Unten"} · ${d.keys.length} Tische · ${eur(sum)}</h2>`;
+    h+=`<section class="floorpage"><h2>${f==="oben"?"Oben":"Unten"}: ${d.keys.length} Tische, ${eur(sum)}</h2><div class="ovw"><b>Zu decken:</b> Tisch ${d.keys.map(numOf).join(", ")}</div>`;
     if(d.crate.length)h+=`<h3>Kühlhaus-Kiste</h3><table>${d.crate.map(k=>`<tr><td class="q">${d.tot[k]}×</td><td>${esc(P[k].name)} ${esc(P[k].size)}</td></tr>`).join("")}</table>`;
-    if(d.other.length)h+=`<h3>Weitere Artikel</h3><table>${d.other.map(k=>`<tr><td class="q">${d.tot[k]}×</td><td>${esc(P[k].name)} ${esc(P[k].size)}</td></tr>`).join("")}</table>`;
     const g=GLASS_ORDER.filter(t=>d.glass[t]);
     if(g.length||d.bottleNotes.length)h+=`<h3>Gläser &amp; Teller</h3><table>${g.map(t=>`<tr><td class="q">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("")}${d.bottleNotes.map(n=>`<tr><td></td><td>${esc(n)}</td></tr>`).join("")}</table>`;
     h+=`<h3>Pro Tisch eindecken (ca. 15 Min. vorher)</h3><table>${d.keys.map(k=>{const r=S.res[k];const cold=itemsText(r,p=>p.when==="kalt");const gl=glassText(r);
@@ -696,7 +707,7 @@ function buildPrint(){
   if(td.crate.length||td.other.length){
     const row=ids=>ids.map(k=>`<tr><td>${esc(P[k].name)} ${esc(P[k].size)}</td><td class="q">${td.u[k]||""}</td><td class="q">${td.o[k]||""}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td></tr>`).join("");
     const hd='<tr><td><b>Produkt</b></td><td class="q">Unten</td><td class="q">Oben</td><td class="q">Gesamt</td></tr>';
-    h+=`<section class="floorpage"><h2>Gesamt unten + oben</h2>${td.crate.length?`<h3>Aus dem Kühlhaus</h3><table>${hd}${row(td.crate)}</table>`:""}${td.other.length?`<h3>Weitere Artikel</h3><table>${hd}${row(td.other)}</table>`:""}</section>`;
+    h+=`<section class="totpage"><h2>Gesamt unten + oben</h2>${td.crate.length?`<h3>Aus dem Kühlhaus</h3><table>${hd}${row(td.crate)}</table>`:""}${td.other.length?`<h3>Weitere Artikel</h3><table><tr><td><b>Produkt</b></td><td class="q">Anzahl</td><td><b>Tische</b></td></tr>${td.other.map(k=>`<tr><td>${esc(P[k].name)} ${esc(P[k].size)}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("")}</table>`:""}</section>`;
   }
   $("printout").innerHTML=h;
 }
