@@ -64,12 +64,45 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .planwrap{overflow-x:auto;border-radius:var(--r)}
 .plan{position:relative;width:100%;aspect-ratio:16/10;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;touch-action:manipulation}
 @media (max-width:680px){.plan{min-width:640px}}
-.plan.editing{background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;touch-action:none}
+.plan.editing{background-image:radial-gradient(var(--line) 1px,transparent 1px);background-size:20px 20px;touch-action:pan-y pinch-zoom}
+.editing .tbl,.editing .lm{touch-action:none}
+@media (max-width:680px){
+  .plan.editing{min-width:0}
+  .editing .tbl{width:clamp(24px,7.6%,66px)}
+  .editing .tbl.sq{width:clamp(22px,5.8%,52px)}
+  .editing .tbl.rect{width:clamp(30px,10%,88px)}
+  .editing .tbl .n{font-size:12px}
+  .editing .lm{font-size:8px;letter-spacing:.04em}
+  .editing .lm .rs{width:22px;height:22px;right:-9px;bottom:-9px}
+}
 .stage-label{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;font-family:var(--f-ui);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .bar{position:absolute;border:1.5px dashed var(--muted);border-radius:6px;display:grid;place-items:center;font-family:var(--f-ui);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.editing .lm{pointer-events:auto;cursor:grab;outline:1px dashed var(--muted);outline-offset:1px}
+.lm.lsel{outline:2px solid var(--accent)}
+.lm .rs{position:absolute;right:-6px;bottom:-6px;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--surface);cursor:nwse-resize}
+.editbar{flex-direction:column;align-items:stretch}
+.eb-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.eb-sel{padding-bottom:8px;border-bottom:1px solid var(--line)}
+.editbar select{padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
+.editbar #lmtext{width:160px}
+.lm{position:absolute;display:grid;place-items:center;pointer-events:none;font-family:var(--f-ui);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.1;overflow:hidden}
+.lm-theke{background:var(--ink);color:var(--bg);border-radius:6px;font-weight:700;font-size:13px}
+.lm-bench{background:#e9cf3a;opacity:.85;border-radius:3px;color:#5b4b00;font-size:9px}
+.lm-yellow{background:#f3dc4a;opacity:.28;border-radius:4px}
+.lm-stairs{background:repeating-linear-gradient(0deg,var(--line) 0 2px,transparent 2px 7px);border:1px solid var(--line);border-radius:3px}
+.lm-stairs span,.lm-sitz span{background:var(--paper);padding:1px 4px;border-radius:3px}
+.lm-sitz{background:repeating-linear-gradient(90deg,#f3dc4a 0 6px,#e2c62e 6px 12px);opacity:.75;border-radius:3px;color:#4a3d00;writing-mode:vertical-rl}
+.lm-sitz span{background:transparent}
+.lm-pillar{background:var(--muted);border-radius:50%;opacity:.6}
+.lm-wall{background:var(--line);border-radius:2px;font-size:9px}
+.lm-rail{background:var(--muted);opacity:.7;border-radius:2px}
+.lm-void{background:repeating-linear-gradient(45deg,transparent 0 8px,var(--line) 8px 9px);border-radius:4px}
+.lm-label{font-size:10px}
+.tbl .ch{position:absolute;width:34%;height:14%;background:var(--muted);border-radius:3px;opacity:.75}
+.tbl .ch1{top:-22%;left:33%}.tbl .ch2{bottom:-22%;left:33%}.tbl .ch3{left:-22%;top:43%;width:14%;height:34%;transform:translateY(-25%)}.tbl .ch4{right:-22%;top:43%;width:14%;height:34%;transform:translateY(-25%)}
 .tbl{position:absolute;transform:translate(-50%,-50%);width:clamp(40px,7.6%,66px);aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;line-height:1;user-select:none;-webkit-user-select:none}
 .tbl.rect{border-radius:6px;width:clamp(48px,10%,88px);aspect-ratio:1.6}
-.tbl.sq{border-radius:6px}
+.tbl.sq{border-radius:6px;width:clamp(34px,5.8%,52px)}
 .tbl .n{font-family:var(--f-ui);font-weight:700;font-size:clamp(15px,2.2vw,22px)}
 .tbl .s{white-space:nowrap;font-family:var(--f-ui);font-size:clamp(10px,1.3vw,14px);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
 .tbl.res{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
@@ -84,6 +117,7 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:2px solid var(--ink);background:var(--surface)}
 .legend i.r{background:var(--accent);border-color:var(--accent)}
+.legend i.s{border-style:dashed;border-radius:3px}
 .legend i.d{background:var(--ink);border-color:var(--ink)}
 .donepill{font-family:var(--f-ui);font-size:14px;font-weight:700;padding:3px 10px;border-radius:14px;background:var(--ink);color:var(--bg)}
 .bigbtn{padding:14px 26px;font-size:19px;min-width:140px}
@@ -205,6 +239,11 @@ table.list td .sz{color:var(--muted)}
 .kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .kpi span{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-ui);font-weight:600}
 .kpi b{font-family:var(--f-ui);font-size:26px;font-variant-numeric:tabular-nums}
+.modal{position:fixed;inset:0;z-index:60;background:rgba(10,8,8,.55);display:grid;place-items:center;padding:16px}
+.modal-box{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;max-width:460px;width:100%;padding:20px;display:grid;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.modal-box h2{margin:0;font-family:var(--f-ui);font-size:24px}
+.modal-box p{margin:0;line-height:1.45}
+.rm-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:15px;z-index:50;max-width:calc(100% - 32px)}
 #printout{display:none}
 @media (prefers-reduced-motion:no-preference){.tbl{transition:background .15s,border-color .15s}}
@@ -213,7 +252,7 @@ table.list td .sz{color:var(--muted)}
 @media print{
   @page{size:A4;margin:10mm}
   body{background:#fff;color:#000;font-size:11pt}
-  .wrap,.toast{display:none!important}
+  .wrap,.toast,.modal{display:none!important}
   #printout{display:block}
   #printout h1{font-family:var(--f-ui);font-size:20pt;margin:0}
   #printout .meta{color:#555;margin:2px 0 10px}
@@ -265,6 +304,7 @@ table.list td .sz{color:var(--muted)}
     <div class="event"><input id="evname" autocomplete="off" placeholder="Veranstaltung, z. B. Theater 04.10." aria-label="Veranstaltung"></div>
     <div class="sync"><span class="dot" id="syncdot"></span><span id="synctxt">Lädt…</span></div>
     <button class="ghost themebtn" id="themebtn" aria-label="Hell oder dunkel umschalten"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg><span id="themetxt">Dunkel</span></button>
+    <button class="ghost danger" id="newevent">Neue Veranstaltung</button>
     <button class="ghost" id="cardsbtn2">Tischkarten</button>
     <button class="ghost" id="pdfbtn2">PDF speichern</button>
   </header>
@@ -293,16 +333,8 @@ table.list td .sz{color:var(--muted)}
         </div>
         <div class="assignbar" id="assignbar" hidden></div>
         <div class="planwrap"><div class="plan" id="plan"></div></div>
-        <div class="legend" id="legend"><span><i></i>frei</span><span><i class="r"></i>reserviert, in Arbeit</span><span><i class="d"></i>fertig</span></div>
-        <div class="editbar" id="editbar" hidden>
-          <span class="hint">Tische verschieben: antippen und ziehen.</span>
-          <span class="spacer"></span>
-          <input id="newnum" inputmode="numeric" placeholder="Nr." aria-label="Tischnummer">
-          <button class="ghost" id="addtbl">Tisch hinzufügen</button>
-          <button class="ghost danger" id="deltbl" disabled>Markierten entfernen</button>
-          <button class="ghost" id="resetlayout">Standardplan</button>
-          <button class="btn-solid" id="editdone">Fertig</button>
-        </div>
+        <div class="legend" id="legend"><span><i></i>frei</span><span><i class="r"></i>reserviert, in Arbeit</span><span><i class="d"></i>fertig</span><span><i class="s"></i>mit Stühlen = Sitzplatz</span></div>
+        <div class="editbar" id="editbar" hidden></div>
         <section class="order" id="order" hidden></section>
       </div>
       <aside class="picker off" id="picker"><div id="pickhead"></div>
@@ -333,6 +365,7 @@ table.list td .sz{color:var(--muted)}
   </section>
 </div>
 <div id="printout"></div>
+<div class="modal" id="resetmodal" hidden role="dialog" aria-modal="true" aria-labelledby="rm-title"><div class="modal-box" id="rmbox"></div></div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -386,17 +419,8 @@ function buildProducts(custom){
 }
 buildProducts([]);
 
-const DEFAULT_LAYOUT={tables:[
- {n:1,f:"unten",x:16.4,y:87.4},{n:2,f:"unten",x:6,y:72.4},{n:3,f:"unten",x:23.5,y:74.6},{n:4,f:"unten",x:7.1,y:55.5},
- {n:5,f:"unten",x:14.8,y:38.9},{n:7,f:"unten",x:29.6,y:7},{n:8,f:"unten",x:34.6,y:15.4},
- {n:9,f:"unten",x:70.8,y:11.3},{n:10,f:"unten",x:63,y:18.8},{n:33,f:"unten",x:56.1,y:12.7},{n:34,f:"unten",x:62.9,y:6},
- {n:11,f:"unten",x:23.7,y:38.6},{n:12,f:"unten",x:32,y:39},{n:14,f:"unten",x:40.7,y:39.4},{n:15,f:"unten",x:49.5,y:34.5},
- {n:16,f:"unten",x:57,y:44},{n:17,f:"unten",x:68.5,y:44.2},
- {n:18,f:"unten",x:91.4,y:31.2},{n:19,f:"unten",x:84.7,y:20.7},{n:20,f:"unten",x:90.6,y:10.1},
- {n:29,f:"oben",x:10.9,y:18.5,s:"sq"},{n:28,f:"oben",x:21.8,y:18.5,s:"sq"},{n:27,f:"oben",x:32.9,y:18.5,s:"sq"},
- {n:26,f:"oben",x:42.3,y:18.5,s:"sq"},{n:25,f:"oben",x:51.5,y:18.5,s:"sq"},
- {n:23,f:"oben",x:81.5,y:61,s:"rect"},{n:22,f:"oben",x:81.5,y:72,s:"rect"},{n:21,f:"oben",x:81.5,y:83,s:"rect"}
-]};
+const LANDMARKS={"oben":[{"h":3,"l":"Fensterfront","t":"wall","w":96,"x":2,"y":3},{"h":18,"l":"Theke","t":"theke","w":14,"x":61.2,"y":22.2},{"h":57.7,"l":"Luftraum, Blick ins Foyer","t":"void","w":79.5,"x":0.6,"y":41.7},{"h":28.2,"l":"Treppe","t":"stairs","w":11.8,"x":68.9,"y":41.8},{"h":26.9,"l":"Treppe","t":"stairs","w":10.5,"x":1.6,"y":42.7},{"h":12.1,"l":"Treppe","t":"stairs","w":12,"x":68.3,"y":87.2}],"unten":[{"h":13,"l":"Theke","t":"theke","w":26,"x":39.8,"y":82},{"h":21.7,"l":"Treppe","t":"stairs","w":8.9,"x":10.3,"y":0},{"h":36,"l":"Sitztreppe","t":"sitz","w":6,"x":94,"y":19.9},{"h":5,"t":"pillar","w":2.9,"x":8.1,"y":56.7},{"h":3,"t":"pillar","w":2,"x":33,"y":24},{"h":3,"t":"pillar","w":2,"x":45,"y":50.3},{"h":14.7,"l":"Treppe","t":"stairs","w":6.3,"x":93.7,"y":56.7},{"h":10.1,"l":"Treppe hoch","t":"stairs","w":14.8,"x":77.4,"y":0}]};
+const DEFAULT_LAYOUT={"v":5,"lm":{"oben":[{"h":3,"l":"Fensterfront","t":"wall","w":96,"x":2,"y":3},{"h":18,"l":"Theke","t":"theke","w":14,"x":61.2,"y":22.2},{"h":57.7,"l":"Luftraum, Blick ins Foyer","t":"void","w":79.5,"x":0.6,"y":41.7},{"h":28.2,"l":"Treppe","t":"stairs","w":11.8,"x":68.9,"y":41.8},{"h":26.9,"l":"Treppe","t":"stairs","w":10.5,"x":1.6,"y":42.7},{"h":12.1,"l":"Treppe","t":"stairs","w":12,"x":68.3,"y":87.2}],"unten":[{"h":13,"l":"Theke","t":"theke","w":26,"x":39.8,"y":82},{"h":21.7,"l":"Treppe","t":"stairs","w":8.9,"x":10.3,"y":0},{"h":36,"l":"Sitztreppe","t":"sitz","w":6,"x":94,"y":19.9},{"h":5,"t":"pillar","w":2.9,"x":8.1,"y":56.7},{"h":3,"t":"pillar","w":2,"x":33,"y":24},{"h":3,"t":"pillar","w":2,"x":45,"y":50.3},{"h":14.7,"l":"Treppe","t":"stairs","w":6.3,"x":93.7,"y":56.7},{"h":10.1,"l":"Treppe hoch","t":"stairs","w":14.8,"x":77.4,"y":0}]},"tables":[{"c":1,"f":"unten","n":1,"x":24.6,"y":87.3},{"c":1,"f":"unten","n":2,"x":15.7,"y":81.1},{"c":1,"f":"unten","n":3,"x":25.2,"y":72.3},{"c":1,"f":"unten","n":4,"x":16.6,"y":65.8},{"c":1,"f":"unten","n":5,"x":29.6,"y":15.2},{"c":1,"f":"unten","n":6,"x":34.7,"y":24.1},{"c":1,"f":"unten","n":7,"x":39.6,"y":14},{"c":1,"f":"unten","n":8,"x":72.1,"y":5.3},{"c":1,"f":"unten","n":9,"x":68.5,"y":16.9},{"c":1,"f":"unten","n":10,"x":73,"y":28},{"c":1,"f":"unten","n":11,"x":79,"y":73.6},{"c":1,"f":"unten","n":12,"x":84.2,"y":87.4},{"f":"unten","n":13,"x":23.4,"y":48.6},{"f":"unten","n":14,"x":31.7,"y":49.7},{"f":"unten","n":15,"x":40,"y":49.7},{"f":"unten","n":16,"x":51.8,"y":48.3},{"f":"unten","n":17,"x":58.8,"y":43.2},{"f":"unten","n":18,"x":66.2,"y":46.2},{"f":"unten","n":19,"x":72.8,"y":48.7},{"f":"unten","n":20,"x":81.7,"y":55.2},{"f":"unten","n":21,"x":88.5,"y":43.2},{"f":"unten","n":22,"x":86.4,"y":29.9},{"f":"unten","n":23,"x":82.5,"y":16.9},{"f":"oben","n":34,"s":"sq","x":53.5,"y":35.5},{"f":"oben","n":35,"s":"sq","x":44.3,"y":35.5},{"f":"oben","n":36,"s":"sq","x":35.1,"y":35.5},{"f":"oben","n":37,"s":"sq","x":25.9,"y":35.5},{"f":"oben","n":38,"s":"sq","x":16.7,"y":35.5},{"f":"oben","n":31,"s":"sq","x":84.7,"y":82.0},{"f":"oben","n":32,"s":"sq","x":84.7,"y":65.6},{"f":"oben","n":33,"s":"sq","x":84.7,"y":49.2}]};
 
 const S={layout:clone(DEFAULT_LAYOUT),res:{},event:{name:""},floor:"unten",pfloor:"unten",sel:null,tab:"plan",cat:"wasser",editing:false,editSel:null,confirmClear:false,confirmReset:false,custom:[],addOpen:false,draft:null,printMode:"liste"};
 let db=null, mode="local";
@@ -435,7 +459,7 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 
 /* ---------- Speichern ---------- */
 function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom}))}catch(e){}}
-function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables)S.layout=d.layout;if(d.event)S.event=d.event;if(Array.isArray(d.custom))S.custom=d.custom}}catch(e){}buildProducts(S.custom)}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=d.layout;if(d.event)S.event=d.event;if(Array.isArray(d.custom))S.custom=d.custom}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
   if(mode!=="db"){lsSave();return}
   dirty.add(id);clearTimeout(timers[id]);
@@ -462,18 +486,17 @@ function renderPlan(){
   else if(assigning){ab.hidden=false;ab.className="assignbar go";ab.innerHTML=`<span><b>Jetzt Tisch antippen</b> für die neue Bestellung (${eur(total(S.draft))})</span>`}
   else{ab.hidden=false;ab.className="assignbar";ab.innerHTML=`<span>Offene Bestellung ohne Tisch (${eur(total(S.draft))})</span><button class="btn-solid" id="draftresume">Fortsetzen</button>`}
   let h="";
-  if(S.floor==="oben") h+='<div class="bar" style="left:63%;top:12%;width:27%;height:20%">Theke</div>';
-  else h+='<div class="stage-label">Saal</div>';
+  h+=lmList().map((l,i)=>`<div class="lm lm-${l.t}${S.editing&&S.lmSel===i?" lsel":""}" data-i="${i}" style="left:${l.x}%;top:${l.y}%;width:${l.w}%;height:${l.h}%">${l.l?`<span>${esc(l.l)}</span>`:""}${S.editing&&S.lmSel===i?'<b class="rs" data-rs="1"></b>':""}</div>`).join("");
   S.layout.tables.filter(t=>t.f===S.floor).sort((a,b)=>a.n-b.n).forEach(t=>{
     const r=resOf(t.n);const has=!isEmpty(r);
     const cls=["tbl",t.s||"",has?(r.done?"done":"res"):"free",(S.editing?S.editSel===t.n:S.sel===t.n)?"sel":""].join(" ");
     const lbl=has?eur(total(r)).replace(",00",""):"";
-    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}"><span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done?"✓":esc(lbl)}</span>`:""}</button>`;
+    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}">${t.c?'<i class="ch ch1"></i><i class="ch ch2"></i><i class="ch ch3"></i><i class="ch ch4"></i>':""}<span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done?"✓":esc(lbl)}</span>`:""}</button>`;
   });
   plan.innerHTML=h;
   $("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
   $("editbar").hidden=!S.editing;$("legend").hidden=S.editing;$("editbtn").hidden=S.editing;
-  $("deltbl").disabled=S.editSel==null;
+  renderEditbar();
 }
 function renderSummary(){
   let c=0,s=0,a=0;
@@ -742,26 +765,60 @@ $("cardsbtn").onclick=$("cardsbtn2").onclick=()=>{
 if(window.claude&&window.claude.use){$("pdfbtn2").hidden=true;$("cardsbtn2").hidden=true}
 window.addEventListener("beforeprint",buildPrint);
 window.addEventListener("afterprint",()=>{S.printMode="liste"});
-$("editbtn").onclick=()=>{S.editing=true;S.sel=null;S.editSel=null;renderAll()};
-$("editdone").onclick=()=>{S.editing=false;S.editSel=null;saveDoc("config/layout",S.layout);renderAll()};
-$("resetlayout").onclick=()=>{S.layout=clone(DEFAULT_LAYOUT);S.editSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.")};
-$("addtbl").onclick=()=>{const v=parseInt($("newnum").value,10);
-  if(!(v>0)){toast("Bitte erst eine Tischnummer eingeben.");return}
-  if(S.layout.tables.some(t=>t.n===v)){toast("Tisch "+v+" gibt es schon.");return}
-  const t={n:v,f:S.floor,x:50,y:50};if(S.floor==="oben")t.s="sq";
-  S.layout.tables.push(t);S.editSel=v;$("newnum").value="";renderAll()};
-$("deltbl").onclick=()=>{if(S.editSel==null)return;const n=S.editSel;
-  if(!isEmpty(resOf(n))){toast("Tisch "+n+" hat eine Reservierung. Erst die Reservierung löschen.");return}
-  S.layout.tables=S.layout.tables.filter(t=>t.n!==n);S.editSel=null;renderAll()};
+$("editbtn").onclick=()=>{S.editing=true;S.sel=null;S.editSel=null;S.lmSel=null;renderAll()};
+function lmList(){const L=S.layout.lm||(S.layout.lm=clone(LANDMARKS));return L[S.floor]||(L[S.floor]=[])}
+const LM_TYPES=[["theke","Theke","Theke",26,12],["stairs","Treppe","Treppe",8,24],["sitz","Sitztreppe","Sitztreppe",6,30],["bench","Bank","Bank",24,4],["pillar","Säule","",2,3],["yellow","Gelbe Fläche","",18,18],["wall","Wand / Fenster","",30,3],["rail","Geländer","",30,2],["void","Luftraum","Luftraum",30,30],["label","Beschriftung","Text",14,6]];
+function renderEditbar(){
+  const eb=$("editbar");if(!S.editing){eb.innerHTML="";return}
+  const t=S.editSel!=null?S.layout.tables.find(x=>x.n===S.editSel):null;const l=S.lmSel!=null?lmList()[S.lmSel]:null;
+  let sel="";
+  if(t)sel=`<div class="eb-row eb-sel"><b>Tisch ${t.n}</b><button class="ghost" data-ea="chairs">${t.c?"Stühle weg":"Stühle dran"}</button><button class="ghost" data-ea="shape">${t.s?"Rund machen":"Eckig machen"}</button><button class="ghost danger" data-ea="deltbl">Tisch entfernen</button></div>`;
+  else if(l)sel=`<div class="eb-row eb-sel"><b>${esc((LM_TYPES.find(x=>x[0]===l.t)||[0,"Element"])[1])}</b><input id="lmtext" value="${esc(l.l||"")}" placeholder="Beschriftung" aria-label="Beschriftung"><span class="hint">Roten Punkt unten rechts ziehen = Größe ändern</span><button class="ghost danger" data-ea="dellm">Entfernen</button></div>`;
+  else sel=`<div class="eb-row eb-sel"><span class="hint">Tisch oder Element (Theke, Treppe usw.) antippen und ziehen. Was du antippst, kannst du hier bearbeiten.</span></div>`;
+  eb.innerHTML=`${sel}
+   <div class="eb-row"><input id="newnum" inputmode="numeric" placeholder="Nr." aria-label="Tischnummer">
+     <select id="newkind" aria-label="Tischart"><option value="hoch">Stehtisch rund</option><option value="sitz">Sitzplatz mit Stühlen</option><option value="eckig">Stehtisch eckig</option></select>
+     <button class="ghost" data-ea="addtbl">Tisch hinzufügen</button></div>
+   <div class="eb-row"><select id="newlm" aria-label="Element">${LM_TYPES.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join("")}</select>
+     <button class="ghost" data-ea="addlm">Element hinzufügen</button></div>
+   <div class="eb-row"><button class="ghost" data-ea="copy">Plan kopieren</button><button class="ghost" data-ea="reset">Standardplan</button><span class="spacer"></span><button class="btn-solid" data-ea="done">Fertig</button></div>`;
+}
+$("editbar").addEventListener("click",e=>{
+  const b=e.target.closest("[data-ea]");if(!b)return;const a=b.dataset.ea;
+  const t=S.editSel!=null?S.layout.tables.find(x=>x.n===S.editSel):null;
+  if(a==="chairs"&&t){if(t.c)delete t.c;else{t.c=1;delete t.s}renderPlan();return}
+  if(a==="shape"&&t){if(t.s)delete t.s;else{t.s="sq";delete t.c}renderPlan();return}
+  if(a==="deltbl"&&t){if(!isEmpty(resOf(t.n))){toast("Tisch "+t.n+" hat eine Reservierung. Erst die Reservierung löschen.");return}S.layout.tables=S.layout.tables.filter(x=>x!==t);S.editSel=null;renderPlan();return}
+  if(a==="dellm"&&S.lmSel!=null){lmList().splice(S.lmSel,1);S.lmSel=null;renderPlan();return}
+  if(a==="addtbl"){const v=parseInt($("newnum").value,10);if(!(v>0)){toast("Bitte erst eine Tischnummer eingeben.");return}
+    if(S.layout.tables.some(x=>x.n===v)){toast("Tisch "+v+" gibt es schon.");return}
+    const k=$("newkind").value;const nt={n:v,f:S.floor,x:50,y:50};if(k==="sitz")nt.c=1;if(k==="eckig")nt.s="sq";
+    S.layout.tables.push(nt);S.editSel=v;S.lmSel=null;renderPlan();return}
+  if(a==="addlm"){const d=LM_TYPES.find(x=>x[0]===$("newlm").value);const L=lmList();L.push({t:d[0],x:50-d[3]/2,y:50-d[4]/2,w:d[3],h:d[4],l:d[2]});S.lmSel=L.length-1;S.editSel=null;renderPlan();return}
+  if(a==="copy"){const txt=JSON.stringify(S.layout);const ok=()=>toast("Plan kopiert. Einfach im Chat einfügen.");
+    try{navigator.clipboard.writeText(txt).then(ok,()=>showCopy(txt))}catch(err){showCopy(txt)}return}
+  if(a==="reset"){S.layout=clone(DEFAULT_LAYOUT);S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
+  if(a==="done"){S.editing=false;S.editSel=null;S.lmSel=null;saveDoc("config/layout",S.layout);renderAll();toast("Plan gespeichert");return}
+});
+$("editbar").addEventListener("input",e=>{if(e.target.id==="lmtext"&&S.lmSel!=null){lmList()[S.lmSel].l=e.target.value;const el=document.querySelector(`.lm[data-i="${S.lmSel}"] span`);if(el)el.textContent=e.target.value;else renderPlan()}});
+function showCopy(txt){const eb=$("editbar");let ta=$("copyta");if(!ta){ta=document.createElement("textarea");ta.id="copyta";ta.rows=3;ta.style.width="100%";eb.appendChild(ta)}ta.value=txt;ta.focus();ta.select();toast("Text markiert. Bitte kopieren und im Chat einfügen.")}
+
 
 let drag=null;
 $("plan").addEventListener("pointerdown",e=>{
-  const b=e.target.closest(".tbl");if(!b||!S.editing)return;const n=+b.dataset.n;
-  e.preventDefault();S.editSel=n;drag={n,rect:$("plan").getBoundingClientRect(),el:b};b.setPointerCapture(e.pointerId);
-  document.querySelectorAll(".tbl.sel").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");$("deltbl").disabled=false;
+  if(!S.editing)return;const rect=$("plan").getBoundingClientRect();
+  const rs=e.target.closest("[data-rs]");const lm=e.target.closest(".lm");const b=e.target.closest(".tbl");
+  if(b){const n=+b.dataset.n;e.preventDefault();S.editSel=n;S.lmSel=null;renderPlan();const el=document.querySelector(`.tbl[data-n="${n}"]`);drag={n,rect,el};$("plan").setPointerCapture(e.pointerId);return}
+  if(lm){const i=+lm.dataset.i;const l=lmList()[i];e.preventDefault();S.lmSel=i;S.editSel=null;renderPlan();
+    drag={lm:i,rs:!!rs,rect,sx:e.clientX,sy:e.clientY,ox:l.x,oy:l.y,ow:l.w,oh:l.h};$("plan").setPointerCapture(e.pointerId);return}
+  S.editSel=null;S.lmSel=null;renderPlan();
 });
 $("plan").addEventListener("pointermove",e=>{
   if(!drag)return;const {rect}=drag;
+  if(drag.lm!=null){const l=lmList()[drag.lm];const dx=(e.clientX-drag.sx)/rect.width*100,dy=(e.clientY-drag.sy)/rect.height*100;
+    if(drag.rs){l.w=Math.max(1.5,Math.round((drag.ow+dx)*10)/10);l.h=Math.max(1.5,Math.round((drag.oh+dy)*10)/10)}
+    else{l.x=Math.round(Math.min(100-l.w,Math.max(0,drag.ox+dx))*10)/10;l.y=Math.round(Math.min(100-l.h,Math.max(0,drag.oy+dy))*10)/10}
+    const el=document.querySelector(`.lm[data-i="${drag.lm}"]`);if(el){el.style.left=l.x+"%";el.style.top=l.y+"%";el.style.width=l.w+"%";el.style.height=l.h+"%"}return}
   const x=Math.min(97,Math.max(3,(e.clientX-rect.left)/rect.width*100));const y=Math.min(95,Math.max(5,(e.clientY-rect.top)/rect.height*100));
   const t=S.layout.tables.find(t=>t.n===drag.n);t.x=Math.round(x*10)/10;t.y=Math.round(y*10)/10;
   drag.el.style.left=t.x+"%";drag.el.style.top=t.y+"%";
@@ -823,7 +880,7 @@ let evT=null;
 $("evname").addEventListener("input",e=>{S.event={name:e.target.value};clearTimeout(evT);evT=setTimeout(()=>saveDoc("config/event",S.event),500)});
 $("kasse").addEventListener("click",async e=>{
   const t=e.target;
-  if(t.closest("#resetask")){S.confirmReset=true;renderKasse();return}
+  if(t.closest("#resetask")){openReset();return}
   if(t.closest("#resetno")){S.confirmReset=false;renderKasse();return}
   if(t.closest("#resetyes")){
     const ids=Object.keys(S.res);S.res={};S.sel=null;S.confirmReset=false;renderAll();
@@ -831,7 +888,24 @@ $("kasse").addEventListener("click",async e=>{
     toast("Alle Reservierungen gelöscht");
   }
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("resetmodal").hidden){closeReset();return}if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
+/* ---------- Neue Veranstaltung ---------- */
+function openReset(){
+  const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k]));let sum=0;keys.forEach(k=>sum+=total(S.res[k]));
+  $("rmbox").innerHTML=`<h2 id="rm-title">Neue Veranstaltung starten?</h2>
+    <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Das lässt sich nicht rückgängig machen. Der Tischplan bleibt.</p>
+    <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go">Ja, alles entfernen</button></div>`;
+  $("resetmodal").hidden=false;setTimeout(()=>$("rm-cancel").focus(),30);
+}
+function closeReset(){$("resetmodal").hidden=true}
+async function doReset(){
+  const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
+  closeReset();renderAll();
+  if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
+  toast("Alle Reservierungen entfernt");
+}
+$("newevent").onclick=openReset;
+$("resetmodal").addEventListener("click",e=>{const t=e.target;if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}if(t.closest("#rm-go"))doReset()});
 
 /* ---------- Suche ---------- */
 $("psearch").addEventListener("input",e=>{S.q=e.target.value;renderPicker()});
@@ -857,7 +931,7 @@ lsLoad();loadDraft();setSync(false,"Gespeichert auf diesem Gerät");renderAll();
     },()=>setSync(false,"Verbindung weg, bitte neu laden"));
     db.doc("config/layout").onSnapshot(snap=>{
       if(S.editing)return;
-      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length)S.layout=clone(d)}
+      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=clone(d)}
       renderAll();
     },()=>{});
     db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
