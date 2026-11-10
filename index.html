@@ -85,6 +85,9 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .eb-sel{padding-bottom:8px;border-bottom:1px solid var(--line)}
 .editbar select{padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
 .editbar #lmtext{width:160px}
+.tnum{display:inline-flex;align-items:center;gap:8px}
+.editbar #tblnum{width:74px;font-family:var(--f-ui);font-weight:700;font-size:20px;text-align:center;padding:6px 8px;border:2px solid var(--accent);border-radius:7px;background:var(--bg);color:var(--ink)}
+.ltag{display:inline-block;font-family:var(--f-ui);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 7px;margin-right:4px;vertical-align:2px;background:var(--hot-soft);color:var(--hot)}
 .lm{position:absolute;display:grid;place-items:center;pointer-events:none;font-family:var(--f-ui);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.1;overflow:hidden}
 .lm-theke{background:var(--ink);color:var(--bg);border-radius:6px;font-weight:700;font-size:13px}
 .lm-bench{background:#e9cf3a;opacity:.85;border-radius:3px;color:#5b4b00;font-size:9px}
@@ -262,8 +265,13 @@ table.list td .sz{color:var(--muted)}
   #printout h1{font-family:var(--f-ui);font-size:20pt;margin:0}
   #printout .meta{color:#555;margin:2px 0 10px}
   #printout h2{font-family:var(--f-ui);font-size:16pt;border-bottom:2px solid #000;margin:16px 0 6px;padding-bottom:2px}
-  #printout .floorpage{break-before:page}
-  #printout .floorpage:first-of-type{break-before:auto}
+  #printout .psec{break-before:page}
+  #printout .psec:first-child{break-before:auto}
+  #printout .phead{display:flex;align-items:center;gap:12px;border-bottom:1px solid #999;padding-bottom:6px;margin-bottom:4px}
+  #printout .phead .meta{margin:0}
+  #printout .pfl{font-family:var(--f-ui);font-weight:700;font-size:22pt;text-transform:uppercase;letter-spacing:.04em;background:#000;color:#fff;padding:2px 12px;border-radius:4px}
+  #printout .pend{margin-top:14px;font-size:9pt;color:#777;text-align:center}
+  #printout .ltag{display:inline-block;font-size:8pt;font-weight:700;border:1px solid #000;border-radius:3px;padding:0 4px;letter-spacing:.05em;min-width:13mm;text-align:center;background:none;color:#000}
   #printout h3{font-family:var(--f-ui);font-size:13pt;margin:12px 0 4px}
   #printout table{width:100%;border-collapse:collapse}
   #printout td{border-bottom:1px solid #ccc;padding:3px 4px;vertical-align:top}
@@ -272,7 +280,6 @@ table.list td .sz{color:var(--muted)}
   #printout .callout{font-weight:700}
   #printout tr{break-inside:avoid}
   #printout .ovw{font-size:11pt;margin:0 0 6px;padding:4px 8px;background:#f3f1f0;border-radius:4px}
-  #printout .totpage h2{margin-top:22px}
   #printout *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   #printout .cardpage{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);width:210mm;height:296mm;padding:10mm;break-after:page;font-family:var(--f-body)}
   #printout .cardpage:last-child{break-after:auto}
@@ -377,7 +384,7 @@ table.list td .sz{color:var(--muted)}
 (function(){
 /* ---------- Produkte ----------
    crate: kommt in die Kühlhaus-Kiste (wird in Flaschen serviert)
-   glass: was pro Stück auf den Tisch muss (wasser | bier | wein | sekt | teller)
+   glass: was pro Stück auf den Tisch muss (wasser | bier | weizen | hell | wein | sekt | teller)
    when:  "kalt" = 15 Min. vorher eindecken, "frisch" = Aperitif an der Theke, "heiss" = erst kurz vor der Pause */
 const ICONS={"weiss01":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 8h26c1 14-2 26-13 28C19 34 16 22 17 8Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M17.6 16h24.8c0 10-3 17-12.4 18.4C21 33 17.6 26 17.6 16Z\" fill=\"#f1e6a6\"/> <path d=\"M30 36v30\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","rot01":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 8h26c1 14-2 26-13 28C19 34 16 22 17 8Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M17.6 16h24.8c0 10-3 17-12.4 18.4C21 33 17.6 26 17.6 16Z\" fill=\"#8e1b2c\"/> <path d=\"M30 36v30\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","sprudel":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#cfe7f3\" opacity=\"0.6\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#1f5fa8\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","naturell":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#e3f1f7\" opacity=\"0.5\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#5aa0d8\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","cola":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#2b160b\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#d1262c\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","colazero":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#2b160b\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#1b1b1b\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","fanta":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#f68b1f\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#2a62b8\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","sprite":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#dff3d8\" opacity=\"0.7\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#2e9e48\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","bitter":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#f3ef9f\" opacity=\"0.8\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#d6c600\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","schorle":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#e8c46a\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#7cb342\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","apfel":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#e5b33c\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#6aa84f\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","orange":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26 8h8v10c0 4 8 8 8 16v38a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V34c0-8 8-12 8-16Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M19.5 40h21v32a3.5 3.5 0 0 1-3.5 3.5H23a3.5 3.5 0 0 1-3.5-3.5Z\" fill=\"#f7a11a\" opacity=\"0.9\"/> <rect x=\"18.8\" y=\"46\" width=\"22.4\" height=\"14\" fill=\"#f57c00\"/> <rect x=\"25\" y=\"3\" width=\"10\" height=\"6\" rx=\"1.5\" fill=\"#c9ced1\"/></svg>","pils":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 8h7v18c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#7a4a12\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#ffffff\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"4\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","pils0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 8h7v18c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#7a4a12\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#2a7de1\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"4\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","radler":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 8h7v18c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#3f7d3a\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#f4d03f\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"4\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","radler0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 8h7v18c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#3f7d3a\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#7fd36b\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"4\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","weizen":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 6h7v20c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#7a4a12\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#f0c24b\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"2\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","weizen0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 6h7v20c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#7a4a12\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#57b6e6\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"2\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","hell0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 8h7v18c0 4 9 6 9 14v34a4 4 0 0 1-4 4h-17a4 4 0 0 1-4-4V40c0-8 9-10 9-14Z\" fill=\"#7a4a12\" stroke=\"#3b250a\" stroke-width=\"1.4\"/> <rect x=\"17.8\" y=\"46\" width=\"24.4\" height=\"16\" fill=\"#a7d8f0\"/> <rect x=\"17.8\" y=\"44\" width=\"24.4\" height=\"2\" fill=\"#ffffff\" opacity=\".5\"/> <rect x=\"25.5\" y=\"4\" width=\"9\" height=\"5\" rx=\"1.2\" fill=\"#b8bec2\"/> <path d=\"M21 50v24\" stroke=\"#fff\" stroke-width=\"1.6\" opacity=\".25\"/></svg>","weiss":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 8h26c1 14-2 26-13 28C19 34 16 22 17 8Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M17.6 16h24.8c0 10-3 17-12.4 18.4C21 33 17.6 26 17.6 16Z\" fill=\"#f1e6a6\"/> <path d=\"M30 36v30\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","rot":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 8h26c1 14-2 26-13 28C19 34 16 22 17 8Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M17.6 16h24.8c0 10-3 17-12.4 18.4C21 33 17.6 26 17.6 16Z\" fill=\"#8e1b2c\"/> <path d=\"M30 36v30\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","weinschorle":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 8h26c1 14-2 26-13 28C19 34 16 22 17 8Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M17.6 16h24.8c0 10-3 17-12.4 18.4C21 33 17.6 26 17.6 16Z\" fill=\"#f3eaa8\"/> <path d=\"M30 36v30\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/><circle cx=\"26\" cy=\"24\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"33\" cy=\"20\" r=\"1.1\" fill=\"#fff\"/><circle cx=\"30\" cy=\"28\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"35\" cy=\"27\" r=\".9\" fill=\"#fff\"/></svg>","sekt":"<svg viewBox=\"0 0 60 80\"> <path d=\"M23 4h14c1 18-1 32-7 34-6-2-8-16-7-34Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M23.4 12h13.2c.6 14-1.3 23-6.6 25-5.3-2-7.2-11-6.6-25Z\" fill=\"#f3e3a2\"/> <circle cx=\"28\" cy=\"24\" r=\".9\" fill=\"#fff\"/><circle cx=\"31\" cy=\"18\" r=\".8\" fill=\"#fff\"/><circle cx=\"30\" cy=\"30\" r=\".8\" fill=\"#fff\"/> <path d=\"M30 38v28\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"10\" ry=\"3\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","sekt0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M23 4h14c1 18-1 32-7 34-6-2-8-16-7-34Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M23.4 12h13.2c.6 14-1.3 23-6.6 25-5.3-2-7.2-11-6.6-25Z\" fill=\"#f7efc9\"/> <circle cx=\"28\" cy=\"24\" r=\".9\" fill=\"#fff\"/><circle cx=\"31\" cy=\"18\" r=\".8\" fill=\"#fff\"/><circle cx=\"30\" cy=\"30\" r=\".8\" fill=\"#fff\"/> <path d=\"M30 38v28\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"10\" ry=\"3\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","aperol":"<svg viewBox=\"0 0 60 80\"> <path d=\"M13 10h34c2 18-3 30-17 31C16 40 11 28 13 10Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M13.6 17h32.8c.8 13-4 22-16.4 23C17.6 39 13 30 13.6 17Z\" fill=\"#f26b1d\"/> <rect x=\"20\" y=\"20\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".6\"/><rect x=\"30\" y=\"24\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".55\"/> <circle cx=\"42\" cy=\"13\" r=\"6\" fill=\"#f7a11a\" stroke=\"#fff\" stroke-width=\"1.2\"/><path d=\"M42 7v12M36 13h12\" stroke=\"#fff\" stroke-width=\".8\"/> <path d=\"M30 41v25\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","lillet":"<svg viewBox=\"0 0 60 80\"> <path d=\"M13 10h34c2 18-3 30-17 31C16 40 11 28 13 10Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M13.6 17h32.8c.8 13-4 22-16.4 23C17.6 39 13 30 13.6 17Z\" fill=\"#e66a8d\"/> <rect x=\"20\" y=\"20\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".6\"/><rect x=\"30\" y=\"24\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".55\"/> <circle cx=\"42\" cy=\"13\" r=\"6\" fill=\"#7b2d5b\" stroke=\"#fff\" stroke-width=\"1.2\"/><path d=\"M42 7v12M36 13h12\" stroke=\"#fff\" stroke-width=\".8\"/> <path d=\"M30 41v25\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","wildberry0":"<svg viewBox=\"0 0 60 80\"> <path d=\"M13 10h34c2 18-3 30-17 31C16 40 11 28 13 10Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M13.6 17h32.8c.8 13-4 22-16.4 23C17.6 39 13 30 13.6 17Z\" fill=\"#f19ab5\"/> <rect x=\"20\" y=\"20\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".6\"/><rect x=\"30\" y=\"24\" width=\"7\" height=\"7\" rx=\"1.5\" fill=\"#fff\" opacity=\".55\"/> <circle cx=\"42\" cy=\"13\" r=\"6\" fill=\"#b03a6a\" stroke=\"#fff\" stroke-width=\"1.2\"/><path d=\"M42 7v12M36 13h12\" stroke=\"#fff\" stroke-width=\".8\"/> <path d=\"M30 41v25\" stroke=\"#5b6b72\" stroke-width=\"2\"/> <ellipse cx=\"30\" cy=\"70\" rx=\"12\" ry=\"3.2\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/></svg>","d_mango":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 18l5-8h16l5 8v56a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#f9b233\" stroke=\"#333\" stroke-width=\"1.3\"/> <path d=\"M17 18h26\" stroke=\"#333\" stroke-width=\"1.3\"/> <circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"#f57c00\"/><circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/> <rect x=\"21\" y=\"62\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#fff\" opacity=\".7\"/> <path d=\"M36 10l4-7\" stroke=\"#e8e8e8\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","d_pfirsich":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 18l5-8h16l5 8v56a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#f7b7a3\" stroke=\"#333\" stroke-width=\"1.3\"/> <path d=\"M17 18h26\" stroke=\"#333\" stroke-width=\"1.3\"/> <circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"#e5735c\"/><circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/> <rect x=\"21\" y=\"62\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#fff\" opacity=\".7\"/> <path d=\"M36 10l4-7\" stroke=\"#e8e8e8\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","d_orange":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 18l5-8h16l5 8v56a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#f68b1f\" stroke=\"#333\" stroke-width=\"1.3\"/> <path d=\"M17 18h26\" stroke=\"#333\" stroke-width=\"1.3\"/> <circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"#f9c33a\"/><circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/> <rect x=\"21\" y=\"62\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#fff\" opacity=\".7\"/> <path d=\"M36 10l4-7\" stroke=\"#e8e8e8\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","d_banane_kirsch":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 18l5-8h16l5 8v56a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#f4d03f\" stroke=\"#333\" stroke-width=\"1.3\"/> <path d=\"M17 18h26\" stroke=\"#333\" stroke-width=\"1.3\"/> <circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"#a3172f\"/><circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/> <rect x=\"21\" y=\"62\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#fff\" opacity=\".7\"/> <path d=\"M36 10l4-7\" stroke=\"#e8e8e8\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","d_multi":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 18l5-8h16l5 8v56a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#f9a03f\" stroke=\"#333\" stroke-width=\"1.3\"/> <path d=\"M17 18h26\" stroke=\"#333\" stroke-width=\"1.3\"/> <circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"#e04e39\"/><circle cx=\"30\" cy=\"46\" r=\"9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/> <rect x=\"21\" y=\"62\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#fff\" opacity=\".7\"/> <path d=\"M36 10l4-7\" stroke=\"#e8e8e8\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","capri":"<svg viewBox=\"0 0 60 80\"> <path d=\"M16 14h28l-1 60a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3Z\" fill=\"#d4d9dd\" stroke=\"#6c757a\" stroke-width=\"1.3\"/> <path d=\"M16 14h28v6H16Z\" fill=\"#b9c0c5\"/> <circle cx=\"30\" cy=\"48\" r=\"10\" fill=\"#f2a33a\"/><circle cx=\"27\" cy=\"45\" r=\"3\" fill=\"#fff\" opacity=\".5\"/> <path d=\"M38 14l5-12\" stroke=\"#ffd34d\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></svg>","brezel":"<svg viewBox=\"0 0 60 80\"> <path d=\"M30 60C14 60 8 48 12 38s16-10 20 2c3 9-5 16-12 10M30 60c16 0 22-12 18-22s-16-10-20 2c-3 9 5 16 12 10M24 44l12 0\" fill=\"none\" stroke=\"#8a4a14\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/> <path d=\"M30 60C14 60 8 48 12 38s16-10 20 2c3 9-5 16-12 10M30 60c16 0 22-12 18-22s-16-10-20 2c-3 9 5 16 12 10\" fill=\"none\" stroke=\"#b5682a\" stroke-width=\"4\" stroke-linecap=\"round\"/> <circle cx=\"15\" cy=\"44\" r=\"1\" fill=\"#fff\"/><circle cx=\"44\" cy=\"40\" r=\"1\" fill=\"#fff\"/><circle cx=\"28\" cy=\"57\" r=\"1\" fill=\"#fff\"/><circle cx=\"38\" cy=\"54\" r=\"1\" fill=\"#fff\"/></svg>","haribo":"<svg viewBox=\"0 0 60 80\"><path d=\"M12 14h36l-3 60H15Z\" fill=\"#fff7e0\" stroke=\"#c9a227\" stroke-width=\"1.4\"/><path d=\"M12 14l3-6h30l3 6\" fill=\"#f4cf3c\" stroke=\"#c9a227\" stroke-width=\"1.4\"/><g fill=\"#e2392f\" opacity=\".95\"><circle cx=\"22\" cy=\"30\" r=\"4\"/><circle cx=\"19\" cy=\"26.5\" r=\"1.6\"/><circle cx=\"25\" cy=\"26.5\" r=\"1.6\"/><ellipse cx=\"22\" cy=\"37\" rx=\"5\" ry=\"5.5\"/><circle cx=\"17.5\" cy=\"42\" r=\"2\"/><circle cx=\"26.5\" cy=\"42\" r=\"2\"/></g><g fill=\"#f2b705\" opacity=\".95\"><circle cx=\"37\" cy=\"34\" r=\"4\"/><circle cx=\"34\" cy=\"30.5\" r=\"1.6\"/><circle cx=\"40\" cy=\"30.5\" r=\"1.6\"/><ellipse cx=\"37\" cy=\"41\" rx=\"5\" ry=\"5.5\"/><circle cx=\"32.5\" cy=\"46\" r=\"2\"/><circle cx=\"41.5\" cy=\"46\" r=\"2\"/></g><g fill=\"#2e9e48\" opacity=\".95\"><circle cx=\"27\" cy=\"52\" r=\"4\"/><circle cx=\"24\" cy=\"48.5\" r=\"1.6\"/><circle cx=\"30\" cy=\"48.5\" r=\"1.6\"/><ellipse cx=\"27\" cy=\"59\" rx=\"5\" ry=\"5.5\"/><circle cx=\"22.5\" cy=\"64\" r=\"2\"/><circle cx=\"31.5\" cy=\"64\" r=\"2\"/></g><g fill=\"#f07c1b\" opacity=\".95\"><circle cx=\"40\" cy=\"56\" r=\"4\"/><circle cx=\"37\" cy=\"52.5\" r=\"1.6\"/><circle cx=\"43\" cy=\"52.5\" r=\"1.6\"/><ellipse cx=\"40\" cy=\"63\" rx=\"5\" ry=\"5.5\"/><circle cx=\"35.5\" cy=\"68\" r=\"2\"/><circle cx=\"44.5\" cy=\"68\" r=\"2\"/></g></svg>","twix":"<svg viewBox=\"0 0 60 80\"> <g transform=\"rotate(-18 30 40)\"><rect x=\"6\" y=\"30\" width=\"48\" height=\"18\" rx=\"3\" fill=\"#c79a3b\" stroke=\"#222\" stroke-width=\"1.2\"/> <path d=\"M6 33l-3 3 3 3-3 3 3 3M54 33l3 3-3 3 3 3-3 3\" fill=\"none\" stroke=\"#222\" stroke-width=\"1.2\"/> <rect x=\"16\" y=\"35\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#7a4b1c\"/></g></svg>","ballisto":"<svg viewBox=\"0 0 60 80\"> <g transform=\"rotate(-18 30 40)\"><rect x=\"6\" y=\"30\" width=\"48\" height=\"18\" rx=\"3\" fill=\"#6e9b3a\" stroke=\"#222\" stroke-width=\"1.2\"/> <path d=\"M6 33l-3 3 3 3-3 3 3 3M54 33l3 3-3 3 3 3-3 3\" fill=\"none\" stroke=\"#222\" stroke-width=\"1.2\"/> <rect x=\"16\" y=\"35\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#f3e7c3\"/></g></svg>","mars":"<svg viewBox=\"0 0 60 80\"> <g transform=\"rotate(-18 30 40)\"><rect x=\"6\" y=\"30\" width=\"48\" height=\"18\" rx=\"3\" fill=\"#2d2d2d\" stroke=\"#222\" stroke-width=\"1.2\"/> <path d=\"M6 33l-3 3 3 3-3 3 3 3M54 33l3 3-3 3 3 3-3 3\" fill=\"none\" stroke=\"#222\" stroke-width=\"1.2\"/> <rect x=\"16\" y=\"35\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#b62a2a\"/></g></svg>","snickers":"<svg viewBox=\"0 0 60 80\"> <g transform=\"rotate(-18 30 40)\"><rect x=\"6\" y=\"30\" width=\"48\" height=\"18\" rx=\"3\" fill=\"#6b3a1e\" stroke=\"#222\" stroke-width=\"1.2\"/> <path d=\"M6 33l-3 3 3 3-3 3 3 3M54 33l3 3-3 3 3 3-3 3\" fill=\"none\" stroke=\"#222\" stroke-width=\"1.2\"/> <rect x=\"16\" y=\"35\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#2a5ab8\"/></g></svg>","mms":"<svg viewBox=\"0 0 60 80\"><path d=\"M12 18h36l-2 56H14Z\" fill=\"#6b3a1e\" stroke=\"#3a1f0f\" stroke-width=\"1.3\"/><path d=\"M12 18l2-6h32l2 6\" fill=\"#8a4a2a\" stroke=\"#3a1f0f\" stroke-width=\"1.3\"/><rect x=\"15\" y=\"30\" width=\"30\" height=\"30\" rx=\"6\" fill=\"#fff\" opacity=\".9\"/><circle cx=\"20\" cy=\"40\" r=\"4.2\" fill=\"#e2392f\" stroke=\"#00000022\"/><circle cx=\"30\" cy=\"36\" r=\"4.2\" fill=\"#f2b705\" stroke=\"#00000022\"/><circle cx=\"40\" cy=\"41\" r=\"4.2\" fill=\"#2f6fd1\" stroke=\"#00000022\"/><circle cx=\"24\" cy=\"50\" r=\"4.2\" fill=\"#2e9e48\" stroke=\"#00000022\"/><circle cx=\"35\" cy=\"51\" r=\"4.2\" fill=\"#8a4a14\" stroke=\"#00000022\"/><circle cx=\"44\" cy=\"54\" r=\"4.2\" fill=\"#f07c1b\" stroke=\"#00000022\"/></svg>","tictac":"<svg viewBox=\"0 0 60 80\"> <rect x=\"22\" y=\"10\" width=\"16\" height=\"62\" rx=\"4\" fill=\"#e8f4ef\" stroke=\"#5b6b72\" stroke-width=\"1.4\"/> <rect x=\"22\" y=\"10\" width=\"16\" height=\"10\" rx=\"3\" fill=\"#2e9e74\"/> <ellipse cx=\"30\" cy=\"32\" rx=\"4.5\" ry=\"3\" fill=\"#fff\" stroke=\"#bbb\"/><ellipse cx=\"30\" cy=\"42\" rx=\"4.5\" ry=\"3\" fill=\"#fff\" stroke=\"#bbb\"/><ellipse cx=\"30\" cy=\"52\" rx=\"4.5\" ry=\"3\" fill=\"#fff\" stroke=\"#bbb\"/><ellipse cx=\"30\" cy=\"62\" rx=\"4.5\" ry=\"3\" fill=\"#fff\" stroke=\"#bbb\"/></svg>","p_original":"<svg viewBox=\"0 0 60 80\"> <rect x=\"18\" y=\"10\" width=\"24\" height=\"64\" rx=\"3\" fill=\"#c62828\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"17\" y=\"7\" width=\"26\" height=\"6\" rx=\"2.5\" fill=\"#d9d9d9\" stroke=\"#222\" stroke-width=\"1.1\"/> <ellipse cx=\"30\" cy=\"44\" rx=\"8\" ry=\"5\" fill=\"#f6c76a\" stroke=\"#c4902b\"/> <rect x=\"18\" y=\"62\" width=\"24\" height=\"5\" fill=\"#fff\" opacity=\".35\"/></svg>","p_paprika":"<svg viewBox=\"0 0 60 80\"> <rect x=\"18\" y=\"10\" width=\"24\" height=\"64\" rx=\"3\" fill=\"#e8742c\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"17\" y=\"7\" width=\"26\" height=\"6\" rx=\"2.5\" fill=\"#d9d9d9\" stroke=\"#222\" stroke-width=\"1.1\"/> <ellipse cx=\"30\" cy=\"44\" rx=\"8\" ry=\"5\" fill=\"#f6c76a\" stroke=\"#c4902b\"/> <rect x=\"18\" y=\"62\" width=\"24\" height=\"5\" fill=\"#fff\" opacity=\".35\"/></svg>","p_hot":"<svg viewBox=\"0 0 60 80\"> <rect x=\"18\" y=\"10\" width=\"24\" height=\"64\" rx=\"3\" fill=\"#8e1b1b\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"17\" y=\"7\" width=\"26\" height=\"6\" rx=\"2.5\" fill=\"#d9d9d9\" stroke=\"#222\" stroke-width=\"1.1\"/> <ellipse cx=\"30\" cy=\"44\" rx=\"8\" ry=\"5\" fill=\"#f6c76a\" stroke=\"#c4902b\"/> <rect x=\"18\" y=\"62\" width=\"24\" height=\"5\" fill=\"#fff\" opacity=\".35\"/></svg>","p_bbq":"<svg viewBox=\"0 0 60 80\"> <rect x=\"18\" y=\"10\" width=\"24\" height=\"64\" rx=\"3\" fill=\"#5d3a2a\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"17\" y=\"7\" width=\"26\" height=\"6\" rx=\"2.5\" fill=\"#d9d9d9\" stroke=\"#222\" stroke-width=\"1.1\"/> <ellipse cx=\"30\" cy=\"44\" rx=\"8\" ry=\"5\" fill=\"#f6c76a\" stroke=\"#c4902b\"/> <rect x=\"18\" y=\"62\" width=\"24\" height=\"5\" fill=\"#fff\" opacity=\".35\"/></svg>","p_sco":"<svg viewBox=\"0 0 60 80\"> <rect x=\"18\" y=\"10\" width=\"24\" height=\"64\" rx=\"3\" fill=\"#2e8b57\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"17\" y=\"7\" width=\"26\" height=\"6\" rx=\"2.5\" fill=\"#d9d9d9\" stroke=\"#222\" stroke-width=\"1.1\"/> <ellipse cx=\"30\" cy=\"44\" rx=\"8\" ry=\"5\" fill=\"#f6c76a\" stroke=\"#c4902b\"/> <rect x=\"18\" y=\"62\" width=\"24\" height=\"5\" fill=\"#fff\" opacity=\".35\"/></svg>","pott2":"<svg viewBox=\"0 0 60 80\"> <path d=\"M27 20h6v8c0 3 6 4 6 9v33a3 3 0 0 1-3 3H24a3 3 0 0 1-3-3V37c0-5 6-6 6-9Z\" fill=\"#f1e2bd\" stroke=\"#6b5323\" stroke-width=\"1.4\"/> <rect x=\"26.5\" y=\"15\" width=\"7\" height=\"6\" rx=\"1\" fill=\"#2b2b2b\"/> <rect x=\"21.8\" y=\"46\" width=\"16.4\" height=\"14\" fill=\"#1c3f6e\"/></svg>","pott05":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 6h7v14c0 4 9 5 9 12v40a3 3 0 0 1-3 3h-19a3 3 0 0 1-3-3V32c0-7 9-8 9-12Z\" fill=\"#f1e2bd\" stroke=\"#6b5323\" stroke-width=\"1.4\"/> <rect x=\"26\" y=\"2\" width=\"8\" height=\"7\" rx=\"1.2\" fill=\"#2b2b2b\"/> <rect x=\"17.8\" y=\"42\" width=\"24.4\" height=\"20\" fill=\"#1c3f6e\"/><path d=\"M22 48h16M22 54h12\" stroke=\"#ffffff66\" stroke-width=\"1.5\"/></svg>","kaffee":"<svg viewBox=\"0 0 60 80\"><path d=\"M24 18c-3-4 3-6 0-10M32 18c-3-4 3-6 0-10\" fill=\"none\" stroke=\"#9aa3a8\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><g transform=\"translate(0 0) scale(1)\"> <path d=\"M12 32h32l-3 24a8 8 0 0 1-8 7H23a8 8 0 0 1-8-7Z\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.6\"/> <path d=\"M44 38c8 0 8 12 0 12\" fill=\"none\" stroke=\"#444\" stroke-width=\"2.4\"/> <ellipse cx=\"28\" cy=\"33\" rx=\"16\" ry=\"4.5\" fill=\"#4a2a14\" stroke=\"#444\" stroke-width=\"1.2\"/> <ellipse cx=\"28\" cy=\"66\" rx=\"22\" ry=\"4\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.4\"/></g></svg>","cappu":"<svg viewBox=\"0 0 60 80\"><path d=\"M24 18c-3-4 3-6 0-10M32 18c-3-4 3-6 0-10\" fill=\"none\" stroke=\"#9aa3a8\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><g transform=\"translate(0 0) scale(1)\"> <path d=\"M12 32h32l-3 24a8 8 0 0 1-8 7H23a8 8 0 0 1-8-7Z\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.6\"/> <path d=\"M44 38c8 0 8 12 0 12\" fill=\"none\" stroke=\"#444\" stroke-width=\"2.4\"/> <ellipse cx=\"28\" cy=\"33\" rx=\"16\" ry=\"4.5\" fill=\"#4a2a14\" stroke=\"#444\" stroke-width=\"1.2\"/><ellipse cx=\"28\" cy=\"34\" rx=\"15\" ry=\"4\" fill=\"#f4e9d6\"/> <ellipse cx=\"28\" cy=\"66\" rx=\"22\" ry=\"4\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.4\"/></g></svg>","espresso":"<svg viewBox=\"0 0 60 80\"><path d=\"M30 26c-3-4 3-6 0-10\" fill=\"none\" stroke=\"#9aa3a8\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><g transform=\"translate(7.5 17.5) scale(0.75)\"> <path d=\"M12 32h32l-3 24a8 8 0 0 1-8 7H23a8 8 0 0 1-8-7Z\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.6\"/> <path d=\"M44 38c8 0 8 12 0 12\" fill=\"none\" stroke=\"#444\" stroke-width=\"2.4\"/> <ellipse cx=\"28\" cy=\"33\" rx=\"16\" ry=\"4.5\" fill=\"#2b160b\" stroke=\"#444\" stroke-width=\"1.2\"/> <ellipse cx=\"28\" cy=\"66\" rx=\"22\" ry=\"4\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.4\"/></g></svg>","espresso2":"<svg viewBox=\"0 0 60 80\"><path d=\"M30 26c-3-4 3-6 0-10\" fill=\"none\" stroke=\"#9aa3a8\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><g transform=\"translate(7.5 17.5) scale(0.75)\"> <path d=\"M12 32h32l-3 24a8 8 0 0 1-8 7H23a8 8 0 0 1-8-7Z\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.6\"/> <path d=\"M44 38c8 0 8 12 0 12\" fill=\"none\" stroke=\"#444\" stroke-width=\"2.4\"/> <ellipse cx=\"28\" cy=\"33\" rx=\"16\" ry=\"4.5\" fill=\"#2b160b\" stroke=\"#444\" stroke-width=\"1.2\"/> <ellipse cx=\"28\" cy=\"66\" rx=\"22\" ry=\"4\" fill=\"#fff\" stroke=\"#444\" stroke-width=\"1.4\"/></g><text x=\"50\" y=\"22\" font-size=\"11\" font-weight=\"700\" fill=\"#c0202d\" font-family=\"Barlow Semi Condensed\">2×</text></svg>","latte":"<svg viewBox=\"0 0 60 80\"> <path d=\"M19 10h22l-2 62a4 4 0 0 1-4 4H25a4 4 0 0 1-4-4Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M20.6 50h18.8l-.7 22a3 3 0 0 1-3 3h-11.4a3 3 0 0 1-3-3Z\" fill=\"#f3ead8\"/> <path d=\"M20.2 34h19.6l-.4 16H20.6Z\" fill=\"#9b6a3c\"/> <path d=\"M19.8 18h20.4l-.4 16H20.2Z\" fill=\"#fbf6ee\"/> <path d=\"M38 4l-6 30\" stroke=\"#c0202d\" stroke-width=\"1.6\"/></svg>","schoko":"<svg viewBox=\"0 0 60 80\"> <path d=\"M14 26h30v34a8 8 0 0 1-8 8H22a8 8 0 0 1-8-8Z\" fill=\"#c0202d\" stroke=\"#5a0f15\" stroke-width=\"1.5\"/> <path d=\"M44 34c9 0 9 16 0 16\" fill=\"none\" stroke=\"#5a0f15\" stroke-width=\"3\"/> <ellipse cx=\"29\" cy=\"26\" rx=\"15\" ry=\"4\" fill=\"#5b3216\" stroke=\"#5a0f15\" stroke-width=\"1.2\"/> <circle cx=\"24\" cy=\"23\" r=\"3\" fill=\"#fff\"/><circle cx=\"31\" cy=\"22\" r=\"3.4\" fill=\"#fff\"/><circle cx=\"36\" cy=\"24\" r=\"2.6\" fill=\"#fff\"/> <path d=\"M24 16c-3-4 3-6 0-10M33 16c-3-4 3-6 0-10\" fill=\"none\" stroke=\"#9aa3a8\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg>","tee":"<svg viewBox=\"0 0 60 80\"> <path d=\"M17 22h26l-3 48a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4Z\" fill=\"#eef4f6\" stroke=\"#5b6b72\" stroke-width=\"1.6\"/> <path d=\"M18 30h24l-2.5 40a3 3 0 0 1-3 3H23.5a3 3 0 0 1-3-3Z\" fill=\"#c9852f\" opacity=\".8\"/> <path d=\"M36 30V14\" stroke=\"#777\" stroke-width=\"1\"/><rect x=\"33\" y=\"8\" width=\"7\" height=\"7\" fill=\"#e6c96a\" stroke=\"#999\"/> <ellipse cx=\"30\" cy=\"77\" rx=\"15\" ry=\"2.5\" fill=\"#fff\" stroke=\"#888\"/></svg>","sektfl":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 4h7v16c0 5 8 6 8 14v40a3 3 0 0 1-3 3h-17a3 3 0 0 1-3-3V34c0-8 8-9 8-14Z\" fill=\"#2f4a2a\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"26.2\" y=\"3\" width=\"7.6\" height=\"13\" rx=\"1\" fill=\"#d6b04c\"/> <rect x=\"18.5\" y=\"46\" width=\"23\" height=\"18\" rx=\"1.5\" fill=\"#f3e3a2\"/> <path d=\"M22 50h16M22 55h12\" stroke=\"#00000033\" stroke-width=\"1.5\"/></svg>","rotfl":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 4h7v16c0 5 8 6 8 14v40a3 3 0 0 1-3 3h-17a3 3 0 0 1-3-3V34c0-8 8-9 8-14Z\" fill=\"#3a0d16\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"26.2\" y=\"3\" width=\"7.6\" height=\"13\" rx=\"1\" fill=\"#8e1b2c\"/> <rect x=\"18.5\" y=\"46\" width=\"23\" height=\"18\" rx=\"1.5\" fill=\"#f4efe6\"/> <path d=\"M22 50h16M22 55h12\" stroke=\"#00000033\" stroke-width=\"1.5\"/></svg>","weissfl":"<svg viewBox=\"0 0 60 80\"> <path d=\"M26.5 4h7v16c0 5 8 6 8 14v40a3 3 0 0 1-3 3h-17a3 3 0 0 1-3-3V34c0-8 8-9 8-14Z\" fill=\"#9fb36b\" stroke=\"#222\" stroke-width=\"1.3\"/> <rect x=\"26.2\" y=\"3\" width=\"7.6\" height=\"13\" rx=\"1\" fill=\"#d6c87a\"/> <rect x=\"18.5\" y=\"46\" width=\"23\" height=\"18\" rx=\"1.5\" fill=\"#f4efe6\"/> <path d=\"M22 50h16M22 55h12\" stroke=\"#00000033\" stroke-width=\"1.5\"/></svg>"};
 const CATS=[
@@ -391,7 +398,7 @@ const CATS=[
  {id:"bier",name:"Bier",items:[
   ["pils","Bitburger Pils","0,33 l",4,{crate:1,glass:"bier"}],["pils0","Pils alkoholfrei","0,33 l",4,{crate:1,glass:"bier"}],
   ["radler","Bitburger Radler","0,33 l",4,{crate:1,glass:"bier"}],["radler0","Radler alkoholfrei","0,33 l",4,{crate:1,glass:"bier"}],
-  ["weizen","Benediktiner Weißbier","0,33 l",4,{crate:1,glass:"bier"}],["weizen0","Weißbier alkoholfrei","0,33 l",4,{crate:1,glass:"bier"}],["hell0","Benediktiner Hell alkoholfrei","0,33 l",4,{crate:1,glass:"bier"}]]},
+  ["weizen","Benediktiner Weißbier","0,33 l",4,{crate:1,glass:"weizen"}],["weizen0","Weißbier alkoholfrei","0,33 l",4,{crate:1,glass:"weizen"}],["hell0","Benediktiner Hell alkoholfrei","0,33 l",4,{crate:1,glass:"hell"}]]},
  {id:"wein",name:"Wein & Sekt",items:[
   ["weiss","Weißwein Chardonnay","0,2 l",7,{glass:"wein"}],["rot","Rotwein Merlot","0,2 l",7,{glass:"wein"}],["weinschorle","Weinschorle","0,2 l",7,{glass:"wein"}],
   ["sekt","Sekt Selection No.1","0,1 l",5,{glass:"sekt"}],["sekt0","Sekt alkoholfrei","0,1 l",5,{glass:"sekt"}],
@@ -415,8 +422,8 @@ const CATS=[
  {id:"fl",name:"Ganze Flaschen",items:[
   ["sektfl","Sekt Selection No.1","Flasche 0,75 l",32.5,{crate:1,glass:"sekt",perBottle:1}],["rotfl","Rotwein Merlot","Flasche 0,75 l",23,{crate:1,glass:"wein",perBottle:1}],["weissfl","Weißwein Chardonnay","Flasche 0,75 l",23,{crate:1,glass:"wein",perBottle:1}]]}
 ];
-const GLASS={wasser:["Wasserglas","Wassergläser"],bier:["Bierglas","Biergläser"],wein:["Weinglas","Weingläser"],sekt:["Sektglas","Sektgläser"],teller:["Teller mit Serviette","Teller mit Serviette"],schnaps:["Schnapsglas","Schnapsgläser"]};
-const GLASS_ORDER=["wasser","bier","wein","sekt","schnaps","teller"];
+const GLASS={wasser:["Wasserglas","Wassergläser"],bier:["Bierglas","Biergläser"],weizen:["Weizenglas","Weizengläser"],hell:["Benediktiner-Hell-Glas","Benediktiner-Hell-Gläser"],wein:["Weinglas","Weingläser"],sekt:["Sektglas","Sektgläser"],teller:["Teller mit Serviette","Teller mit Serviette"],schnaps:["Schnapsglas","Schnapsgläser"]};
+const GLASS_ORDER=["wasser","bier","weizen","hell","wein","sekt","schnaps","teller"];
 let P={},ORDER=[],IDS={};
 function buildProducts(custom){
   P={};ORDER=[];IDS={};
@@ -429,11 +436,13 @@ buildProducts([]);
 const LANDMARKS={"oben":[{"h":3,"l":"Fensterfront","t":"wall","w":96,"x":2,"y":3},{"h":18,"l":"Theke","t":"theke","w":14,"x":61.2,"y":22.2},{"h":57.7,"l":"Luftraum, Blick ins Foyer","t":"void","w":79.5,"x":0.6,"y":41.7},{"h":28.2,"l":"Treppe","t":"stairs","w":11.8,"x":68.9,"y":41.8},{"h":26.9,"l":"Treppe","t":"stairs","w":10.5,"x":1.6,"y":42.7},{"h":12.1,"l":"Treppe","t":"stairs","w":12,"x":68.3,"y":87.2}],"unten":[{"h":13,"l":"Theke","t":"theke","w":26,"x":39.8,"y":82},{"h":21.7,"l":"Treppe","t":"stairs","w":8.9,"x":10.3,"y":0},{"h":36,"l":"Sitztreppe","t":"sitz","w":6,"x":94,"y":19.9},{"h":5,"t":"pillar","w":2.9,"x":8.1,"y":56.7},{"h":3,"t":"pillar","w":2,"x":33,"y":24},{"h":3,"t":"pillar","w":2,"x":45,"y":50.3},{"h":14.7,"l":"Treppe","t":"stairs","w":6.3,"x":93.7,"y":56.7},{"h":10.1,"l":"Treppe hoch","t":"stairs","w":14.8,"x":77.4,"y":0}]};
 const DEFAULT_LAYOUT={"v":5,"lm":{"oben":[{"h":3,"l":"Fensterfront","t":"wall","w":96,"x":2,"y":3},{"h":18,"l":"Theke","t":"theke","w":14,"x":61.2,"y":22.2},{"h":57.7,"l":"Luftraum, Blick ins Foyer","t":"void","w":79.5,"x":0.6,"y":41.7},{"h":28.2,"l":"Treppe","t":"stairs","w":11.8,"x":68.9,"y":41.8},{"h":26.9,"l":"Treppe","t":"stairs","w":10.5,"x":1.6,"y":42.7},{"h":12.1,"l":"Treppe","t":"stairs","w":12,"x":68.3,"y":87.2}],"unten":[{"h":13,"l":"Theke","t":"theke","w":26,"x":39.8,"y":82},{"h":21.7,"l":"Treppe","t":"stairs","w":8.9,"x":10.3,"y":0},{"h":36,"l":"Sitztreppe","t":"sitz","w":6,"x":94,"y":19.9},{"h":5,"t":"pillar","w":2.9,"x":8.1,"y":56.7},{"h":3,"t":"pillar","w":2,"x":33,"y":24},{"h":3,"t":"pillar","w":2,"x":45,"y":50.3},{"h":14.7,"l":"Treppe","t":"stairs","w":6.3,"x":93.7,"y":56.7},{"h":10.1,"l":"Treppe hoch","t":"stairs","w":14.8,"x":77.4,"y":0}]},"tables":[{"c":1,"f":"unten","n":1,"x":24.6,"y":87.3},{"c":1,"f":"unten","n":2,"x":15.7,"y":81.1},{"c":1,"f":"unten","n":3,"x":25.2,"y":72.3},{"c":1,"f":"unten","n":4,"x":16.6,"y":65.8},{"c":1,"f":"unten","n":5,"x":29.6,"y":15.2},{"c":1,"f":"unten","n":6,"x":34.7,"y":24.1},{"c":1,"f":"unten","n":7,"x":39.6,"y":14},{"c":1,"f":"unten","n":8,"x":72.1,"y":5.3},{"c":1,"f":"unten","n":9,"x":68.5,"y":16.9},{"c":1,"f":"unten","n":10,"x":73,"y":28},{"c":1,"f":"unten","n":11,"x":79,"y":73.6},{"c":1,"f":"unten","n":12,"x":84.2,"y":87.4},{"f":"unten","n":13,"x":23.4,"y":48.6},{"f":"unten","n":14,"x":31.7,"y":49.7},{"f":"unten","n":15,"x":40,"y":49.7},{"f":"unten","n":16,"x":51.8,"y":48.3},{"f":"unten","n":17,"x":58.8,"y":43.2},{"f":"unten","n":18,"x":66.2,"y":46.2},{"f":"unten","n":19,"x":72.8,"y":48.7},{"f":"unten","n":20,"x":81.7,"y":55.2},{"f":"unten","n":21,"x":88.5,"y":43.2},{"f":"unten","n":22,"x":86.4,"y":29.9},{"f":"unten","n":23,"x":82.5,"y":16.9},{"f":"oben","n":34,"s":"sq","x":53.5,"y":35.5},{"f":"oben","n":35,"s":"sq","x":44.3,"y":35.5},{"f":"oben","n":36,"s":"sq","x":35.1,"y":35.5},{"f":"oben","n":37,"s":"sq","x":25.9,"y":35.5},{"f":"oben","n":38,"s":"sq","x":16.7,"y":35.5},{"f":"oben","n":31,"s":"sq","x":84.7,"y":82.0},{"f":"oben","n":32,"s":"sq","x":84.7,"y":65.6},{"f":"oben","n":33,"s":"sq","x":84.7,"y":49.2}]};
 
-const S={layout:clone(DEFAULT_LAYOUT),res:{},event:{name:""},floor:"unten",pfloor:"unten",sel:null,tab:"plan",cat:"wasser",editing:false,editSel:null,confirmClear:false,confirmReset:false,custom:[],addOpen:false,draft:null,printMode:"liste"};
+const S={layout:normLayout(clone(DEFAULT_LAYOUT)),res:{},event:{name:""},floor:"unten",pfloor:"unten",sel:null,tab:"plan",cat:"wasser",editing:false,editSel:null,confirmClear:false,confirmReset:false,custom:[],addOpen:false,draft:null,printMode:"liste"};
 let db=null, mode="local";
 const timers={}, chains={}, dirty=new Set();
 
 function clone(o){return JSON.parse(JSON.stringify(o))}
+/* Jeder Tisch hat eine feste id. Die Nummer (n) ist nur die Beschriftung und darf doppelt vorkommen. */
+function normLayout(L){const seen=new Set();(L.tables||[]).forEach(t=>{if(t.id==null||seen.has(String(t.id))){let id=String(t.n);while(seen.has(id))id="x"+Math.random().toString(36).slice(2,8);t.id=id}t.id=String(t.id);seen.add(t.id)});return L}
 const eur=v=>v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const $=id=>document.getElementById(id);
 const norm=t=>String(t||"").toLowerCase().replace(/ä/g,"a").replace(/ö/g,"o").replace(/ü/g,"u").replace(/ß/g,"ss").replace(/[-&·,.]/g," ").replace(/\s+/g," ").trim();
@@ -446,12 +455,15 @@ function getCur(){return getKey(curKey())}
 function putKey(k,r){if(!k)return;if(k==="draft"){S.draft=(!r||isEmpty(r))?null:r;saveDraft()}else{S.res[k]=r;if(isEmpty(r))delete S.res[k];saveRes(k)}}
 function saveDraft(){try{if(S.draft)localStorage.setItem("pausenres_draft",JSON.stringify(S.draft));else localStorage.removeItem("pausenres_draft")}catch(e){}}
 function loadDraft(){try{const d=JSON.parse(localStorage.getItem("pausenres_draft")||"null");if(d&&d.items)S.draft=d}catch(e){}}
-const numOf=k=>+k.slice(1);
+const tblById=id=>S.layout.tables.find(t=>t.id===String(id));
+const numOf=k=>{const t=tblById(k.slice(1));return t?t.n:(+k.slice(1)||0)};
+const byNum=(a,b)=>numOf(a)-numOf(b)||(a<b?-1:a>b?1:0);
+const selNum=()=>{const t=tblById(S.sel);return t?t.n:S.sel};
 function resOf(n){return S.res[tid(n)]}
 function total(r){if(!r||!r.items)return 0;let s=0;for(const k in r.items){if(P[k])s+=P[k].price*r.items[k]}return Math.round(s*100)/100}
 function count(r){if(!r||!r.items)return 0;let c=0;for(const k in r.items)c+=r.items[k];return c}
 function isEmpty(r){return !r||(count(r)===0&&!(r.name||"").trim()&&!(r.note||"").trim())}
-function floorOf(n){const t=S.layout.tables.find(t=>t.n===n);return t?t.f:"unten"}
+function floorOf(id){const t=tblById(id);return t?t.f:"unten"}
 function glassesOf(r){const g={};let bottles=[];if(!r||!r.items)return {g,bottles};
   for(const k in r.items){const p=P[k];if(!p||!p.glass)continue;
     if(p.perBottle){bottles.push(p)}else g[p.glass]=(g[p.glass]||0)+r.items[k]}
@@ -466,7 +478,7 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 
 /* ---------- Speichern ---------- */
 function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom}))}catch(e){}}
-function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=d.layout;if(d.event)S.event=d.event;if(Array.isArray(d.custom))S.custom=d.custom}}catch(e){}buildProducts(S.custom)}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.custom))S.custom=d.custom}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
   if(mode!=="db"){lsSave();return}
   dirty.add(id);clearTimeout(timers[id]);
@@ -495,10 +507,10 @@ function renderPlan(){
   let h="";
   h+=lmList().map((l,i)=>`<div class="lm lm-${l.t}${S.editing&&S.lmSel===i?" lsel":""}" data-i="${i}" style="left:${l.x}%;top:${l.y}%;width:${l.w}%;height:${l.h}%">${l.l?`<span>${esc(l.l)}</span>`:""}${S.editing&&S.lmSel===i?'<b class="rs" data-rs="1"></b>':""}</div>`).join("");
   S.layout.tables.filter(t=>t.f===S.floor).sort((a,b)=>a.n-b.n).forEach(t=>{
-    const r=resOf(t.n);const has=!isEmpty(r);
-    const cls=["tbl",t.s||"",has?(r.done?"done":"res"):"free",(S.editing?S.editSel===t.n:S.sel===t.n)?"sel":""].join(" ");
+    const r=resOf(t.id);const has=!isEmpty(r);
+    const cls=["tbl",t.s||"",has?(r.done?"done":"res"):"free",(S.editing?S.editSel===t.id:S.sel===t.id)?"sel":""].join(" ");
     const lbl=has?eur(total(r)).replace(",00",""):"";
-    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-n="${t.n}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}">${t.c?'<i class="ch ch1"></i><i class="ch ch2"></i><i class="ch ch3"></i><i class="ch ch4"></i>':""}<span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done?"✓":esc(lbl)}</span>`:""}</button>`;
+    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-id="${esc(t.id)}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}">${t.c?'<i class="ch ch1"></i><i class="ch ch2"></i><i class="ch ch3"></i><i class="ch ch4"></i>':""}<span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done?"✓":esc(lbl)}</span>`:""}</button>`;
   });
   plan.innerHTML=h;
   $("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
@@ -522,7 +534,7 @@ function renderOrder(full){
   if(full||!box.dataset.n||box.dataset.n!==String(S.sel)){
     box.dataset.n=String(S.sel);
     box.innerHTML=`
-      <div class="o-head">${isD()?`<h2>Neue Bestellung</h2><span class="floor">Tisch noch offen</span>`:`<h2>Tisch ${S.sel}</h2><span class="floor">${floorOf(S.sel)==="oben"?"Oben":"Unten"}</span>`}<span class="donepill" id="ostat" hidden>✓ Fertig</span>
+      <div class="o-head">${isD()?`<h2>Neue Bestellung</h2><span class="floor">Tisch noch offen</span>`:`<h2>Tisch ${selNum()}</h2><span class="floor">${floorOf(S.sel)==="oben"?"Oben":"Unten"}</span>`}<span class="donepill" id="ostat" hidden>✓ Fertig</span>
         <button class="x" id="oclose" aria-label="Tisch schließen">×</button></div>
       <div class="o-body">
         <div class="fields">
@@ -554,7 +566,7 @@ function renderOrder(full){
       +`<button class="btn-solid bigbtn" id="picktbl" ${has?"":"disabled"}>Tisch wählen</button>`;
     $("ostat").hidden=true;return;
   }
-  $("ofoot").innerHTML=(S.confirmClear?`<div class="confirm"><p>Reservierung für Tisch ${S.sel} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
+  $("ofoot").innerHTML=(S.confirmClear?`<div class="confirm"><p>Reservierung für Tisch ${selNum()} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
       :(has?`<button class="linkbtn danger" id="clearask">Reservierung löschen</button>`:""))
     +`<div class="total"><span>Gesamt</span><b>${eur(total(r))}</b></div>`
     +(r.done?`<button class="ghost bigbtn" id="unlock">Bearbeiten</button>`:`<button class="btn-solid bigbtn" id="donebtn" ${has?"":"disabled"}>Fertig</button>`);
@@ -567,7 +579,7 @@ function renderPicker(){
   const r=(on&&selR)?selR:{items:{}};
   const cat=CATS.find(c=>c.id===S.cat);
   const catCount=c=>IDS[c.id].reduce((a,k)=>a+((r.items&&r.items[k])||0),0);
-  $("pickhead").innerHTML=`<h3>Produkte</h3><div class="for">${locked?`Tisch ${S.sel} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:isD()?"für die neue Bestellung, Tisch danach wählen":S.sel!=null?`für Tisch ${S.sel}`:S.draft&&!isEmpty(S.draft)?"Antippen setzt die offene Bestellung fort":"Einfach antippen, den Tisch wählst du danach"}</div>`;
+  $("pickhead").innerHTML=`<h3>Produkte</h3><div class="for">${locked?`Tisch ${selNum()} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:isD()?"für die neue Bestellung, Tisch danach wählen":S.sel!=null?`für Tisch ${selNum()}`:S.draft&&!isEmpty(S.draft)?"Antippen setzt die offene Bestellung fort":"Einfach antippen, den Tisch wählst du danach"}</div>`;
   $("psclear").hidden=!S.q;
   const tile=k=>{const p=P[k];const q=(r.items&&r.items[k])||0;
       const label=p.name.replace(/^Durstlöscher /,"").replace(/^Pringles /,"");
@@ -635,7 +647,7 @@ function mutate(fn){
 }
 
 /* ---------- Packliste ---------- */
-function floorKeys(f){return Object.keys(S.res).filter(k=>!isEmpty(S.res[k])&&floorOf(numOf(k))===f).sort((a,b)=>numOf(a)-numOf(b))}
+function floorKeys(f){return Object.keys(S.res).filter(k=>!isEmpty(S.res[k])&&floorOf(k.slice(1))===f).sort(byNum)}
 function packData(f){
   const keys=floorKeys(f);const tot={};const glass={};let bottleNotes=[];
   keys.forEach(k=>{const r=S.res[k];const it=r.items||{};for(const p in it)tot[p]=(tot[p]||0)+it[p];
@@ -649,21 +661,24 @@ function listRows(keys,tot){return `<table class="list"><tbody>${keys.map(k=>`<t
 function totalsData(){
   const u=packData("unten").tot,o=packData("oben").tot;
   const ids=ORDER.filter(k=>(u[k]||0)+(o[k]||0)>0);
-  const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort((a,b)=>numOf(a)-numOf(b)).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(numOf(k))});
-  return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate)};
+  const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(numOf(k))});
+  return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate&&P[k].when==="kalt"),late:ids.filter(k=>!P[k].crate&&P[k].when!=="kalt")};
 }
-function otherRows(d){return d.other.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n g">${(d.u[k]||0)+(d.o[k]||0)}</td><td class="tabs">${(d.tabs[k]||[]).join(", ")}</td></tr>`).join("")}
+const LATE_TAG={heiss:"heiß, kurz vor der Pause",frisch:"frisch an der Theke"};
+function otherRows(d,ids){return (ids||d.other).map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag ${P[k].when}">${LATE_TAG[P[k].when]||"später"}</span> `:""}${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n g">${(d.u[k]||0)+(d.o[k]||0)}</td><td class="tabs">${(d.tabs[k]||[]).join(", ")}</td></tr>`).join("")}
 function totalsRows(ids,u,o){return ids.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n">${u[k]||""}</td><td class="n">${o[k]||""}</td><td class="n g">${(u[k]||0)+(o[k]||0)}</td></tr>`).join("")}
 function renderTotals(){
   const d=totalsData();
-  if(!d.crate.length&&!d.other.length){$("pack").innerHTML='<div class="empty">Noch keine Pausenreservierungen.</div>';return}
+  if(!d.crate.length&&!d.other.length&&!d.late.length){$("pack").innerHTML='<div class="empty">Noch keine Pausenreservierungen.</div>';return}
   const head='<thead><tr><th>Produkt</th><th class="n">Unten</th><th class="n">Oben</th><th class="n">Gesamt</th></tr></thead>';
   const sum=ids=>ids.reduce((a,k)=>a+(d.u[k]||0)+(d.o[k]||0),0);
   $("pack").innerHTML=`
     ${d.crate.length?`<div class="block"><h3>Aus dem Kühlhaus</h3><p class="sub">Unten und oben zusammengerechnet, so kannst du es 1:1 in die Liste übertragen</p>
       <div class="tscroll"><table class="tot">${head}<tbody>${totalsRows(d.crate,d.u,d.o)}</tbody><tfoot><tr><td>Summe Flaschen</td><td></td><td></td><td class="n g">${sum(d.crate)}</td></tr></tfoot></table></div></div>`:""}
-    ${d.other.length?`<div class="block"><h3>Weitere Artikel</h3><p class="sub">Wein, Sekt, Aperitifs, Heißgetränke und Snacks, oben und unten zusammen</p>
-      <div class="tscroll"><table class="tot"><thead><tr><th>Produkt</th><th class="n">Anzahl</th><th>Tische</th></tr></thead><tbody>${otherRows(d)}</tbody></table></div></div>`:""}`;
+    ${d.other.length?`<div class="block"><h3>Weitere Artikel</h3><p class="sub">Wein, Sekt und Snacks, oben und unten zusammen</p>
+      <div class="tscroll"><table class="tot"><thead><tr><th>Produkt</th><th class="n">Anzahl</th><th>Tische</th></tr></thead><tbody>${otherRows(d)}</tbody></table></div></div>`:""}
+    ${d.late.length?`<div class="block hot"><h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div>
+      <div class="tscroll"><table class="tot"><thead><tr><th>Produkt</th><th class="n">Anzahl</th><th>Tische</th></tr></thead><tbody>${otherRows(d,d.late)}</tbody></table></div></div>`:""}`;
 }
 function renderPack(){
   const f=S.pfloor;
@@ -695,7 +710,7 @@ function renderPack(){
 /* ---------- PDF / Druck ---------- */
 const LOGO=`<svg viewBox="0 0 34 38" aria-hidden="true"><path d="M17 1 33 13V37H1V13Z" fill="#c0202d"/><text x="17" y="24" text-anchor="middle" font-family="Barlow Semi Condensed,Arial" font-weight="600" font-size="10" fill="#fff">CA</text><text x="17" y="34" text-anchor="middle" font-family="Barlow Semi Condensed,Arial" font-weight="600" font-size="10" fill="#fff">SA</text></svg>`;
 function buildCards(){
-  const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort((a,b)=>numOf(a)-numOf(b));
+  const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum);
   if(!keys.length){$("printout").innerHTML="<p>Noch keine Reservierungen.</p>";return}
   const ev=S.event.name?esc(S.event.name):"Catering Saalbau Witten";
   const today=new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
@@ -719,11 +734,12 @@ function buildPrint(){
   const date=new Date().toLocaleDateString("de-DE");
   const time=new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
   let all=0,cnt=0;for(const k in S.res){if(isEmpty(S.res[k]))continue;cnt++;all+=total(S.res[k])}
-  let h=`<h1>${ev}</h1><div class="meta">Pausenreservierung Catering Saalbau Witten, Stand ${date} um ${time} Uhr<br>${cnt} Tische, Umsatz gesamt ${eur(all)}</div>`;
-  if(!cnt)h+=`<p>Noch keine Reservierungen.</p>`;
+  const head=(lbl)=>`<div class="phead"><span class="pfl">${lbl}</span><div><h1>${ev}</h1><div class="meta">Pausenreservierung Catering Saalbau Witten, Stand ${date} um ${time} Uhr</div></div></div>`;
+  let h="";
+  if(!cnt)h+=head("Liste")+`<p>Noch keine Reservierungen.</p>`;
   ["unten","oben"].forEach(f=>{const d=packData(f);if(!d.keys.length)return;
-    let sum=0;d.keys.forEach(k=>sum+=total(S.res[k]));
-    h+=`<section class="floorpage"><h2>${f==="oben"?"Oben":"Unten"}: ${d.keys.length} Tische, ${eur(sum)}</h2><div class="ovw"><b>Zu decken:</b> Tisch ${d.keys.map(numOf).join(", ")}</div>`;
+    let sum=0;d.keys.forEach(k=>sum+=total(S.res[k]));const FL=f==="oben"?"Oben":"Unten";
+    h+=`<section class="psec">${head(FL)}<h2>${FL}: ${d.keys.length} Tische, ${eur(sum)}</h2><div class="ovw"><b>Zu decken:</b> Tisch ${d.keys.map(numOf).join(", ")}</div>`;
     if(d.crate.length)h+=`<h3>Kühlhaus-Kiste</h3><table>${d.crate.map(k=>`<tr><td class="q">${d.tot[k]}×</td><td>${esc(P[k].name)} ${esc(P[k].size)}</td></tr>`).join("")}</table>`;
     const g=GLASS_ORDER.filter(t=>d.glass[t]);
     if(g.length||d.bottleNotes.length)h+=`<h3>Gläser &amp; Teller</h3><table>${g.map(t=>`<tr><td class="q">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("")}${d.bottleNotes.map(n=>`<tr><td></td><td>${esc(n)}</td></tr>`).join("")}</table>`;
@@ -731,13 +747,15 @@ function buildPrint(){
       return `<tr><td class="t">${numOf(k)}${r.done?" ✓":""}</td><td>${esc(cold.join(", ")||"–")}${gl.length?`<br>Gläser: ${esc(gl.join(", "))}`:""}${r.name?`<br>${esc(r.name)}`:""}${r.note?`<br><b>Anmerkung:</b> ${esc(r.note)}`:""}</td><td style="text-align:right;white-space:nowrap">${eur(total(r))}</td></tr>`}).join("")}</table>`;
     if(d.later.length)h+=`<h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div><table>${d.later.map(k=>{const r=S.res[k];
       return `<tr><td class="t">${numOf(k)}</td><td>${esc(itemsText(r,p=>p.when!=="kalt").join(", "))}</td></tr>`}).join("")}</table>`;
-    h+=`</section>`;
+    h+=`<div class="pend">Ende Liste ${FL}</div></section>`;
   });
   const td=totalsData();
-  if(td.crate.length||td.other.length){
+  if(td.crate.length||td.other.length||td.late.length){
     const row=ids=>ids.map(k=>`<tr><td>${esc(P[k].name)} ${esc(P[k].size)}</td><td class="q">${td.u[k]||""}</td><td class="q">${td.o[k]||""}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td></tr>`).join("");
     const hd='<tr><td><b>Produkt</b></td><td class="q">Unten</td><td class="q">Oben</td><td class="q">Gesamt</td></tr>';
-    h+=`<section class="totpage"><h2>Gesamt unten + oben</h2>${td.crate.length?`<h3>Aus dem Kühlhaus</h3><table>${hd}${row(td.crate)}</table>`:""}${td.other.length?`<h3>Weitere Artikel</h3><table><tr><td><b>Produkt</b></td><td class="q">Anzahl</td><td><b>Tische</b></td></tr>${td.other.map(k=>`<tr><td>${esc(P[k].name)} ${esc(P[k].size)}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("")}</table>`:""}</section>`;
+    const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)} ${esc(P[k].size)}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
+    const oh='<tr><td><b>Produkt</b></td><td class="q">Anzahl</td><td><b>Tische</b></td></tr>';
+    h+=`<section class="psec totpage">${head("Gesamt")}<h2>Gesamt unten + oben: ${cnt} Tische, ${eur(all)}</h2>${td.crate.length?`<h3>Aus dem Kühlhaus</h3><table>${hd}${row(td.crate)}</table>`:""}${td.other.length?`<h3>Weitere Artikel</h3><table>${oh}${orow(td.other)}</table>`:""}${td.late.length?`<h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div><table>${oh}${orow(td.late)}</table>`:""}</section>`;
   }
   $("printout").innerHTML=h;
 }
@@ -745,7 +763,7 @@ function buildPrint(){
 /* ---------- Summe ---------- */
 function renderKasse(){
   let n=0,a=0,sum=0;const per={unten:0,oben:0};
-  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;n++;a+=count(r);const t=total(r);sum+=t;per[floorOf(numOf(k))]+=t}
+  for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;n++;a+=count(r);const t=total(r);sum+=t;per[floorOf(k.slice(1))]+=t}
   $("kasse").innerHTML=`
    <div class="kpis"><div class="kpi"><span>Umsatz gesamt</span><b>${eur(sum)}</b></div><div class="kpi"><span>davon unten</span><b>${eur(per.unten)}</b></div>
    <div class="kpi"><span>davon oben</span><b>${eur(per.oben)}</b></div><div class="kpi"><span>Tische / Artikel</span><b>${n} / ${a}</b></div></div>
@@ -777,9 +795,9 @@ function lmList(){const L=S.layout.lm||(S.layout.lm=clone(LANDMARKS));return L[S
 const LM_TYPES=[["theke","Theke","Theke",26,12],["stairs","Treppe","Treppe",8,24],["sitz","Sitztreppe","Sitztreppe",6,30],["bench","Bank","Bank",24,4],["pillar","Säule","",2,3],["yellow","Gelbe Fläche","",18,18],["wall","Wand / Fenster","",30,3],["rail","Geländer","",30,2],["void","Luftraum","Luftraum",30,30],["label","Beschriftung","Text",14,6]];
 function renderEditbar(){
   const eb=$("editbar");if(!S.editing){eb.innerHTML="";return}
-  const t=S.editSel!=null?S.layout.tables.find(x=>x.n===S.editSel):null;const l=S.lmSel!=null?lmList()[S.lmSel]:null;
+  const t=S.editSel!=null?tblById(S.editSel):null;const l=S.lmSel!=null?lmList()[S.lmSel]:null;
   let sel="";
-  if(t)sel=`<div class="eb-row eb-sel"><b>Tisch ${t.n}</b><button class="ghost" data-ea="chairs">${t.c?"Stühle weg":"Stühle dran"}</button><button class="ghost" data-ea="shape">${t.s?"Rund machen":"Eckig machen"}</button><button class="ghost danger" data-ea="deltbl">Tisch entfernen</button></div>`;
+  if(t)sel=`<div class="eb-row eb-sel"><label class="tnum"><b>Tisch</b><input id="tblnum" inputmode="numeric" value="${t.n}" aria-label="Tischnummer ändern"></label><span class="hint" id="tblnumhint">${dupHint(t)}</span><button class="ghost" data-ea="chairs">${t.c?"Stühle weg":"Stühle dran"}</button><button class="ghost" data-ea="shape">${t.s?"Rund machen":"Eckig machen"}</button><button class="ghost danger" data-ea="deltbl">Tisch entfernen</button></div>`;
   else if(l)sel=`<div class="eb-row eb-sel"><b>${esc((LM_TYPES.find(x=>x[0]===l.t)||[0,"Element"])[1])}</b><input id="lmtext" value="${esc(l.l||"")}" placeholder="Beschriftung" aria-label="Beschriftung"><span class="hint">Roten Punkt unten rechts ziehen = Größe ändern</span><button class="ghost danger" data-ea="dellm">Entfernen</button></div>`;
   else sel=`<div class="eb-row eb-sel"><span class="hint">Tisch oder Element (Theke, Treppe usw.) antippen und ziehen. Was du antippst, kannst du hier bearbeiten.</span></div>`;
   eb.innerHTML=`${sel}
@@ -792,22 +810,26 @@ function renderEditbar(){
 }
 $("editbar").addEventListener("click",e=>{
   const b=e.target.closest("[data-ea]");if(!b)return;const a=b.dataset.ea;
-  const t=S.editSel!=null?S.layout.tables.find(x=>x.n===S.editSel):null;
+  const t=S.editSel!=null?tblById(S.editSel):null;
   if(a==="chairs"&&t){if(t.c)delete t.c;else{t.c=1;delete t.s}renderPlan();return}
   if(a==="shape"&&t){if(t.s)delete t.s;else{t.s="sq";delete t.c}renderPlan();return}
-  if(a==="deltbl"&&t){if(!isEmpty(resOf(t.n))){toast("Tisch "+t.n+" hat eine Reservierung. Erst die Reservierung löschen.");return}S.layout.tables=S.layout.tables.filter(x=>x!==t);S.editSel=null;renderPlan();return}
+  if(a==="deltbl"&&t){if(!isEmpty(resOf(t.id))){toast("Tisch "+t.n+" hat eine Reservierung. Erst die Reservierung löschen.");return}S.layout.tables=S.layout.tables.filter(x=>x!==t);S.editSel=null;renderPlan();return}
   if(a==="dellm"&&S.lmSel!=null){lmList().splice(S.lmSel,1);S.lmSel=null;renderPlan();return}
   if(a==="addtbl"){const v=parseInt($("newnum").value,10);if(!(v>0)){toast("Bitte erst eine Tischnummer eingeben.");return}
-    if(S.layout.tables.some(x=>x.n===v)){toast("Tisch "+v+" gibt es schon.");return}
-    const k=$("newkind").value;const nt={n:v,f:S.floor,x:50,y:50};if(k==="sitz")nt.c=1;if(k==="eckig")nt.s="sq";
-    S.layout.tables.push(nt);S.editSel=v;S.lmSel=null;renderPlan();return}
+    const dup=S.layout.tables.some(x=>x.n===v);
+    const k=$("newkind").value;const nt={id:"x"+Date.now().toString(36),n:v,f:S.floor,x:50,y:50};if(k==="sitz")nt.c=1;if(k==="eckig")nt.s="sq";
+    S.layout.tables.push(nt);S.editSel=nt.id;if(dup)toast("Nummer "+v+" gibt es jetzt doppelt.");S.lmSel=null;renderPlan();return}
   if(a==="addlm"){const d=LM_TYPES.find(x=>x[0]===$("newlm").value);const L=lmList();L.push({t:d[0],x:50-d[3]/2,y:50-d[4]/2,w:d[3],h:d[4],l:d[2]});S.lmSel=L.length-1;S.editSel=null;renderPlan();return}
   if(a==="copy"){const txt=JSON.stringify(S.layout);const ok=()=>toast("Plan kopiert. Einfach im Chat einfügen.");
     try{navigator.clipboard.writeText(txt).then(ok,()=>showCopy(txt))}catch(err){showCopy(txt)}return}
-  if(a==="reset"){S.layout=clone(DEFAULT_LAYOUT);S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
+  if(a==="reset"){S.layout=normLayout(clone(DEFAULT_LAYOUT));S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
   if(a==="done"){S.editing=false;S.editSel=null;S.lmSel=null;saveDoc("config/layout",S.layout);renderAll();toast("Plan gespeichert");return}
 });
-$("editbar").addEventListener("input",e=>{if(e.target.id==="lmtext"&&S.lmSel!=null){lmList()[S.lmSel].l=e.target.value;const el=document.querySelector(`.lm[data-i="${S.lmSel}"] span`);if(el)el.textContent=e.target.value;else renderPlan()}});
+function dupHint(t){const o=S.layout.tables.filter(x=>x!==t&&x.n===t.n);return o.length?`Die ${t.n} gibt es jetzt doppelt${o.some(x=>x.f!==t.f)?" (auch "+(o.find(x=>x.f!==t.f).f)+")":""}. Das ist okay.`:""}
+$("editbar").addEventListener("input",e=>{
+  if(e.target.id==="tblnum"&&S.editSel!=null){const t=tblById(S.editSel);const v=parseInt(e.target.value,10);if(!t||!(v>0))return;t.n=v;
+    const el=document.querySelector(`.tbl[data-id="${CSS.escape(t.id)}"] .n`);if(el)el.textContent=v;$("tblnumhint").textContent=dupHint(t);return}
+  if(e.target.id==="lmtext"&&S.lmSel!=null){lmList()[S.lmSel].l=e.target.value;const el=document.querySelector(`.lm[data-i="${S.lmSel}"] span`);if(el)el.textContent=e.target.value;else renderPlan()}});
 function showCopy(txt){const eb=$("editbar");let ta=$("copyta");if(!ta){ta=document.createElement("textarea");ta.id="copyta";ta.rows=3;ta.style.width="100%";eb.appendChild(ta)}ta.value=txt;ta.focus();ta.select();toast("Text markiert. Bitte kopieren und im Chat einfügen.")}
 
 
@@ -815,7 +837,7 @@ let drag=null;
 $("plan").addEventListener("pointerdown",e=>{
   if(!S.editing)return;const rect=$("plan").getBoundingClientRect();
   const rs=e.target.closest("[data-rs]");const lm=e.target.closest(".lm");const b=e.target.closest(".tbl");
-  if(b){const n=+b.dataset.n;e.preventDefault();S.editSel=n;S.lmSel=null;renderPlan();const el=document.querySelector(`.tbl[data-n="${n}"]`);drag={n,rect,el};$("plan").setPointerCapture(e.pointerId);return}
+  if(b){const id=b.dataset.id;e.preventDefault();if(S.editSel!==id){S.editSel=id;S.lmSel=null;renderPlan()}const el=document.querySelector(`.tbl[data-id="${CSS.escape(id)}"]`);drag={id,rect,el,sx:e.clientX,sy:e.clientY,moved:false};$("plan").setPointerCapture(e.pointerId);return}
   if(lm){const i=+lm.dataset.i;const l=lmList()[i];e.preventDefault();S.lmSel=i;S.editSel=null;renderPlan();
     drag={lm:i,rs:!!rs,rect,sx:e.clientX,sy:e.clientY,ox:l.x,oy:l.y,ow:l.w,oh:l.h};$("plan").setPointerCapture(e.pointerId);return}
   S.editSel=null;S.lmSel=null;renderPlan();
@@ -827,29 +849,30 @@ $("plan").addEventListener("pointermove",e=>{
     else{l.x=Math.round(Math.min(100-l.w,Math.max(0,drag.ox+dx))*10)/10;l.y=Math.round(Math.min(100-l.h,Math.max(0,drag.oy+dy))*10)/10}
     const el=document.querySelector(`.lm[data-i="${drag.lm}"]`);if(el){el.style.left=l.x+"%";el.style.top=l.y+"%";el.style.width=l.w+"%";el.style.height=l.h+"%"}return}
   const x=Math.min(97,Math.max(3,(e.clientX-rect.left)/rect.width*100));const y=Math.min(95,Math.max(5,(e.clientY-rect.top)/rect.height*100));
-  const t=S.layout.tables.find(t=>t.n===drag.n);t.x=Math.round(x*10)/10;t.y=Math.round(y*10)/10;
+  if(!drag.moved){if(Math.abs(e.clientX-drag.sx)+Math.abs(e.clientY-drag.sy)<6)return;drag.moved=true}
+  const t=tblById(drag.id);t.x=Math.round(x*10)/10;t.y=Math.round(y*10)/10;
   drag.el.style.left=t.x+"%";drag.el.style.top=t.y+"%";
 });
 const endDrag=()=>{drag=null};
 $("plan").addEventListener("pointerup",endDrag);$("plan").addEventListener("pointercancel",endDrag);
 $("plan").addEventListener("click",e=>{
   const b=e.target.closest(".tbl");if(!b||S.editing)return;
-  const n=+b.dataset.n;
+  const n=b.dataset.id;
   if(isD()&&S.draft&&!isEmpty(S.draft)){assignDraft(n);return}
   S.sel=S.sel===n?null:n;S.confirmClear=false;renderAll();
   if(S.sel!=null&&window.matchMedia("(max-width:979px)").matches){$("order").scrollIntoView({behavior:"smooth",block:"start"})}
 });
 
-function assignDraft(n){
-  const k=tid(n);const ex=S.res[k];
+function assignDraft(id){
+  const k=tid(id);const ex=S.res[k];const n=numOf(k);
   if(ex&&ex.done){toast("Tisch "+n+" ist schon fertig. Erst dort „Bearbeiten“ tippen.");return}
   const d=S.draft;const m=ex?clone(ex):{items:{},name:"",note:""};m.items=m.items||{};
   for(const p in d.items)m.items[p]=(m.items[p]||0)+d.items[p];
   if(!(m.name||"").trim())m.name=d.name||"";
   if((d.note||"").trim())m.note=[m.note,d.note].filter(x=>(x||"").trim()).join(" / ");
   m.ts=Date.now();const had=ex&&!isEmpty(ex);
-  S.res[k]=m;saveRes(k);S.draft=null;saveDraft();S.sel=n;S.confirmClear=false;
-  if(floorOf(n)!==S.floor)S.floor=floorOf(n);
+  S.res[k]=m;saveRes(k);S.draft=null;saveDraft();S.sel=id;S.confirmClear=false;
+  if(floorOf(id)!==S.floor)S.floor=floorOf(id);
   renderAll();renderOrder(true);toast(had?"Zu Tisch "+n+" dazugebucht":"Bestellung an Tisch "+n);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -861,13 +884,13 @@ function onOrderClick(e){
   if(!isD()&&getCur()&&getCur().done&&(t.closest("[data-inc]")||t.closest("[data-dec]")))return;
   const inc=t.closest("[data-inc]");if(inc){const k=inc.dataset.inc;mutate(r=>{r.items[k]=(r.items[k]||0)+1});return}
   const dec=t.closest("[data-dec]");if(dec){const k=dec.dataset.dec;mutate(r=>{r.items[k]=(r.items[k]||0)-1;if(r.items[k]<=0)delete r.items[k]});return}
-  if(t.closest("#donebtn")){const n=S.sel;mutate(r=>{r.done=true});S.sel=null;S.confirmClear=false;renderAll();toast("Tisch "+n+" ist fertig");
+  if(t.closest("#donebtn")){const n=selNum();mutate(r=>{r.done=true});S.sel=null;S.confirmClear=false;renderAll();toast("Tisch "+n+" ist fertig");
     if(window.matchMedia("(max-width:979px)").matches)$("plan").scrollIntoView({behavior:"smooth",block:"center"});return}
   if(t.closest("#unlock")){mutate(r=>{r.done=false});renderOrder(true);return}
   if(t.closest("#clearask")){S.confirmClear=true;renderOrder(false);return}
   if(t.closest("#clearno")){S.confirmClear=false;renderOrder(false);return}
   if(t.closest("#clearyes")&&isD()){S.draft=null;saveDraft();S.sel=null;S.confirmClear=false;renderAll();toast("Bestellung verworfen");return}
-  if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung Tisch "+S.sel+" gelöscht");renderAll();renderOrder(true);return}
+  if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung Tisch "+selNum()+" gelöscht");renderAll();renderOrder(true);return}
 }
 $("order").addEventListener("click",onOrderClick);
 $("picker").addEventListener("click",e=>{
@@ -938,7 +961,7 @@ lsLoad();loadDraft();setSync(false,"Gespeichert auf diesem Gerät");renderAll();
     },()=>setSync(false,"Verbindung weg, bitte neu laden"));
     db.doc("config/layout").onSnapshot(snap=>{
       if(S.editing)return;
-      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=clone(d)}
+      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=normLayout(clone(d))}
       renderAll();
     },()=>{});
     db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
