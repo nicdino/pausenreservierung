@@ -1070,13 +1070,14 @@ function renderAbr(){
     const keepSum=kbSum(keep);const nl=Object.keys(lock).length;
     h+=`<div class="abr-meta"><label><span>Datum</span><input value="${esc(deDate(a.date))}" disabled></label><label><span>Uhrzeit</span><span class="trow"><input type="time" id="kb2-time" value="${esc(a.kb2.time)}" step="1800"><button class="ghost" data-now="kb2">Jetzt</button></span></label>
       <label><span>Soll für nächstes Mal in der Kasse</span><span class="tstep"><button class="ghost" data-tstep="-100" aria-label="100 Euro weniger">−100</button><input class="num" id="abr-target" inputmode="decimal" value="${esc(eurIn(a.target))}"><button class="ghost" data-tstep="100" aria-label="100 Euro mehr">+100</button></span></label></div>`;
+    if(tot1&&!a.kb2.time){a.kb2.time=roundHalf();saveAbr();h=h.replace('id="kb2-time" value=""','id="kb2-time" value="'+a.kb2.time+'"')}
     if(!tot1)h+=`<div class="empty">Zähl zuerst die Kasse unter „Kassenbestand 1“. Dann steht hier, was raus muss.</div>`;
     else{
       h+=`<div class="block take"><h3>1. Aus der Kasse nehmen</h3>
         ${outSum?`<div class="tlist">${DENOMS.filter(d=>out[dkey(d.v)]).map(d=>{const o=out[dkey(d.v)];return `<div class="trow2"><div class="cimg ${d.k==="c"?"coin":""}">${denomSvg(d)}</div><span class="tn">${d.k==="n"?`${d.v}-€-Schein`:d.v>=1?`${d.v}-€-Münze`:`${Math.round(d.v*100)}-Cent-Münze`}</span><b class="tc num">${o} Stück</b><span class="ts num">${eur(o*d.v)}</span></div>`}).join("")}
           <div class="ttot"><span>Zusammen raus</span><b class="num">${eur(outSum)}</b></div></div>`
         :`<p class="sub">Nichts rausnehmen.</p>`}
-        ${prop.over?`<p class="warn">Mit deinen Festlegungen sind schon mehr als ${eur(pnum(a.target))} drin. Nimm eine Festlegung zurück oder setz das Soll hoch.</p>`:!prop.exact?`<p class="warn">Genau ${eur(pnum(a.target))} geht mit diesem Geld nicht. So bleiben ${eur(prop.reached)} drin.</p>`:""}</div>
+        ${prop.over?`<p class="warn">Mit deinen Festlegungen sind schon mehr als ${eur(pnum(a.target))} drin. Nimm eine Festlegung zurück oder setz das Soll hoch.</p>`:!prop.exact?(tot1<pnum(a.target)?`<p class="warn">Es sind nur ${eur(tot1)} in der Kasse, also weniger als ${eur(pnum(a.target))}. Alles bleibt drin.</p>`:`<p class="warn">Genau ${eur(pnum(a.target))} geht mit diesem Geld nicht. So bleiben ${eur(prop.reached)} drin.</p>`):""}</div>
       <div class="block"><h3>2. Das bleibt drin (${eur(keepSum)})</h3><p class="sub">Münzen bleiben drin, dann 5er und 10er, der Rest mit möglichst kleinen Scheinen. Du kannst jede Anzahl ändern, dann rechnet sich oben alles neu.${nl?` <button class="linkbtn" id="kb2-reset">Alle Änderungen zurücksetzen</button>`:""}</p>
         ${cashGrid("kb2",keep,true,{have,lock})}</div>`;
     }
@@ -1212,7 +1213,7 @@ async function buildXlsx(){
   const blob=await zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",compression:"DEFLATE"});
   return {blob,over};
 }
-function xlsxName(){const ev=(S.event.name||"").replace(/[^\wäöüÄÖÜß.\- ]+/g,"").trim().replace(/\s+/g,"_");return `Kassenbericht_${deDate(S.abr.date)||deDate(isoToday())}${ev?"_"+ev:""}.xlsx`}
+function xlsxName(){const ev=(S.event.name||"").replace(/[^\wäöüÄÖÜß.\- ]+/g,"").trim().replace(/\s+/g,"_").replace(/[._-]+$/,"");return `Kassenbericht_${deDate(S.abr.date)||deDate(isoToday())}${ev?"_"+ev:""}.xlsx`}
 async function downloadXlsx(){
   const btn=$("abr-dl");btn.disabled=true;const old=btn.textContent;btn.textContent="Wird erstellt…";
   try{
