@@ -90,6 +90,17 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .ltag{display:inline-block;font-family:var(--f-ui);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 7px;margin-right:4px;vertical-align:2px;background:var(--hot-soft);color:var(--hot)}
 .lm{position:absolute;display:grid;place-items:center;pointer-events:none;font-family:var(--f-ui);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.1;overflow:hidden}
 .lm-theke{background:var(--ink);color:var(--bg);border-radius:6px;font-weight:700;font-size:13px}
+.lm-zone{pointer-events:auto;display:flex;gap:3px;padding:3px}
+.tz{flex:1;align-self:stretch;border:0;border-radius:4px;background:rgba(255,255,255,.12);color:inherit;font:inherit;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px;min-height:40px}
+.tz.has{background:var(--accent);color:var(--on-accent)}
+.tz:hover{background:var(--accent);color:var(--on-accent)}
+.tz small{font-size:10px;letter-spacing:.02em;text-transform:none;font-weight:600;opacity:.9}
+.zlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;max-height:46vh;overflow:auto}
+.zitem{display:flex;gap:10px;align-items:center;text-align:left;border:1.5px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:9px;padding:8px 10px;font:inherit;cursor:pointer}
+.zitem b{font-family:var(--f-ui);font-size:22px;color:var(--accent)}
+.zitem small{color:var(--muted)}
+.zitem.done{border-color:var(--ink);background:var(--sunk)}
+.zitem.done b{color:var(--ink)}
 .lm-bench{background:#e9cf3a;opacity:.85;border-radius:3px;color:#5b4b00;font-size:9px}
 .lm-yellow{background:#f3dc4a;opacity:.28;border-radius:4px}
 .lm-stairs{background:repeating-linear-gradient(0deg,var(--line) 0 2px,transparent 2px 7px);border:1px solid var(--line);border-radius:3px}
@@ -116,6 +127,15 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 @media (prefers-reduced-motion:no-preference){.plan.assigning .tbl.free{animation:pulse 1.4s ease-in-out infinite}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 transparent}50%{box-shadow:0 0 0 6px var(--accent-soft)}}
 .tbl.sel{box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--ink)}
+.tbl.linked.res{background:var(--accent-soft);color:var(--accent);border-style:solid}
+.tbl.linked.done{background:var(--surface);color:var(--ink);border-width:3px}
+.plan.grouping .tbl.free{border-color:var(--accent);border-width:3px}
+.plan.grouping .tbl.linked.gsel{box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--accent)}
+.grprow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 12px}
+.grprow .gl{font-size:15px}
+.grprow .gl b{font-family:var(--f-ui);font-size:18px}
+.holdbox{display:flex;flex-direction:column;align-items:center;gap:10px}
+.holdinfo{padding:14px;border-radius:8px;background:var(--accent-soft);color:var(--ink);font-size:15px;text-align:center}
 .editing .tbl{cursor:grab;border-style:dashed}
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:2px solid var(--ink);background:var(--surface)}
@@ -215,6 +235,9 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .block h3{font-family:var(--f-ui);font-size:20px;margin:0 0 2px}
 .block .sub{font-size:14px;color:var(--muted);margin:0 0 8px}
 .block.hot h3{color:var(--hot)}
+.block.wine h3{color:var(--accent)}
+.block.wine .callout{background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:8px 12px;font-weight:600;font-size:15px;margin-bottom:8px}
+.block.wine .wsum{margin:4px 0 6px;font-size:16px;line-height:1.5}
 .block.hot .callout{background:var(--hot-soft);color:var(--hot);border-radius:8px;padding:8px 12px;font-weight:600;font-size:15px;margin-bottom:8px}
 .cols{display:grid;grid-template-columns:1fr;gap:20px}
 @media (min-width:760px){.cols{grid-template-columns:1fr 1fr}}
@@ -237,6 +260,8 @@ table.list td.qty{width:64px;font-family:var(--f-ui);font-weight:700;font-size:2
 table.list td .sz{color:var(--muted)}
 .tcard{border-bottom:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:12px}
 .tcard .tn{font-family:var(--f-ui);font-weight:700;font-size:26px;line-height:1}
+.tcard .tn.long{font-size:17px;line-height:1.15}
+.tcard{grid-template-columns:64px minmax(0,1fr) auto}
 .tcard .items{font-size:16px;line-height:1.5;min-width:0}
 .tcard .gl{font-size:15px;color:var(--muted)}
 .tcard .who{color:var(--muted);font-size:14px}
@@ -301,6 +326,8 @@ table.list td .sz{color:var(--muted)}
   #printout .c-brand span{display:block;font-size:8pt;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #printout .c-tn{text-align:center;border:0.6mm solid #c0202d;border-radius:2mm;padding:0.8mm 3mm 1mm;min-width:17mm}
   #printout .c-tn small{display:block;font-family:var(--f-ui);font-size:7pt;letter-spacing:.14em;color:#c0202d;font-weight:700}
+  #printout .c-tn strong.long{font-size:13pt;line-height:1.3;white-space:nowrap}
+  #printout .c-brand b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #printout .c-tn strong{display:block;font-family:var(--f-ui);font-size:26pt;line-height:.95;color:#c0202d}
   #printout .c-name{font-family:var(--f-ui);font-size:14pt;font-weight:700;border-bottom:0.3mm solid #ddd;padding-bottom:1mm}
   #printout .c-items{list-style:none;margin:0;padding:0;font-size:12pt;line-height:1.3}
@@ -310,6 +337,7 @@ table.list td .sz{color:var(--muted)}
   #printout .c-items b{display:inline-block;min-width:7mm;font-family:var(--f-ui);font-size:1.1em}
   #printout .c-items .sz{color:#777;font-size:.8em}
   #printout .c-later{font-size:9.5pt;background:#fbeedd;color:#7a3f05;border-radius:1.5mm;padding:1mm 2mm}
+  #printout .c-hold{font-family:var(--f-ui);font-size:16pt;font-weight:700;color:#c0202d;margin-top:2mm}
   #printout .c-note{font-size:9.5pt;background:#f8e3e4;color:#7d121b;border-radius:1.5mm;padding:1mm 2mm;font-weight:600}
   #printout .c-gl{margin-top:auto;font-size:8pt;color:#777}
 }
@@ -387,6 +415,7 @@ table.list td .sz{color:var(--muted)}
   </section>
 </div>
 <div id="printout"></div>
+<div class="modal" id="zonemodal" hidden role="dialog" aria-modal="true"><div class="modal-box" id="zmbox"></div></div>
 <div class="modal" id="resetmodal" hidden role="dialog" aria-modal="true" aria-labelledby="rm-title"><div class="modal-box" id="rmbox"></div></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -466,14 +495,29 @@ function getCur(){return getKey(curKey())}
 function putKey(k,r){if(!k)return;if(k==="draft"){S.draft=(!r||isEmpty(r))?null:r;saveDraft()}else{S.res[k]=r;if(isEmpty(r))delete S.res[k];saveRes(k)}}
 function saveDraft(){try{if(S.draft)localStorage.setItem("pausenres_draft",JSON.stringify(S.draft));else localStorage.removeItem("pausenres_draft")}catch(e){}}
 function loadDraft(){try{const d=JSON.parse(localStorage.getItem("pausenres_draft")||"null");if(d&&d.items)S.draft=d}catch(e){}}
-const tblById=id=>S.layout.tables.find(t=>t.id===String(id));
+/* Thekenplätze: keine Tische im Plan, sondern durchnummerierte Plätze je Bereich */
+const ZONES={o:{f:"oben",name:"Theke",card:"THEKE"},ul:{f:"unten",name:"Theke links",card:"THEKE LINKS"},ur:{f:"unten",name:"Theke rechts",card:"THEKE RECHTS"}};
+const ZORDER=["o","ul","ur"];
+function spotOf(id){const m=/^th-(o|ul|ur)-(\d+)$/.exec(String(id));return m?{z:m[1],num:+m[2]}:null}
+const tblById=id=>{const sp=spotOf(id);if(sp)return {id:String(id),n:ZONES[sp.z].name+" "+sp.num,f:ZONES[sp.z].f,spot:sp};return S.layout.tables.find(t=>t.id===String(id))};
+function zoneSpots(z){return Object.keys(S.res).filter(k=>{const sp=spotOf(k.slice(1));return sp&&sp.z===z&&!isEmpty(S.res[k])}).sort(byNum)}
+function nextSpot(z){let m=0;zoneSpots(z).forEach(k=>{m=Math.max(m,spotOf(k.slice(1)).num)});return "th-"+z+"-"+(m+1)}
 const numOf=k=>{const t=tblById(k.slice(1));return t?t.n:(+k.slice(1)||0)};
-const byNum=(a,b)=>numOf(a)-numOf(b)||(a<b?-1:a>b?1:0);
+const sortKey=k=>{const sp=spotOf(k.slice(1));return sp?100000+ZORDER.indexOf(sp.z)*1000+sp.num:(+numOf(k)||0)};
+const byNum=(a,b)=>sortKey(a)-sortKey(b)||(a<b?-1:a>b?1:0);
 const selNum=()=>{const t=tblById(S.sel);return t?t.n:S.sel};
+const placeName=k=>(spotOf(k.slice(1))?"":"Tisch ")+lbl(k);
+const selName=()=>placeName(tid(S.sel));
+function deckText(keys){const t=keys.filter(k=>!spotOf(k.slice(1)));const out=[];if(t.length)out.push("Tisch "+t.map(lbl).join(", "));
+  ZORDER.forEach(z=>{const n=keys.map(k=>spotOf(k.slice(1))).filter(sp=>sp&&sp.z===z).map(sp=>sp.num);if(n.length)out.push(ZONES[z].name+" "+n.join(", "))});return out.join("; ")}
 function resOf(n){return S.res[tid(n)]}
 function total(r){if(!r||!r.items)return 0;let s=0;for(const k in r.items){if(P[k])s+=P[k].price*r.items[k]}return Math.round(s*100)/100}
 function count(r){if(!r||!r.items)return 0;let c=0;for(const k in r.items)c+=r.items[k];return c}
-function isEmpty(r){return !r||(count(r)===0&&!(r.name||"").trim()&&!(r.note||"").trim())}
+function isEmpty(r){return !r||(count(r)===0&&!(r.name||"").trim()&&!(r.note||"").trim()&&!r.hold&&!(r.group&&r.group.length))}
+/* Gruppen: Haupttisch hat r.group = [ids der dazugestellten Tische] */
+function linkMap(){const m={};for(const k in S.res){const r=S.res[k];if(isEmpty(r)||!r.group)continue;r.group.forEach(g=>{if(tblById(g))m[g]=k})}return m}
+function grpIds(k){const r=S.res[k];return [k.slice(1)].concat((r&&r.group||[]).filter(g=>tblById(g)))}
+function lbl(k){const r=S.res[k];const g=(r&&r.group||[]).map(id=>tblById(id)).filter(Boolean).map(t=>t.n);return [numOf(k)].concat(g).join(" + ")}
 function floorOf(id){const t=tblById(id);return t?t.f:"unten"}
 function glassesOf(r){const g={};let bottles=[];if(!r||!r.items)return {g,bottles};
   for(const k in r.items){const p=P[k];if(!p||!p.glass)continue;
@@ -483,6 +527,8 @@ function glassText(r){const {g,bottles}=glassesOf(r);
   const parts=GLASS_ORDER.filter(t=>g[t]).map(t=>`${g[t]} ${g[t]===1?GLASS[t][0]:GLASS[t][1]}`);
   bottles.forEach(p=>parts.push(`${GLASS[p.glass][1]} für ${p.name} Flasche (nach Gästen)`));
   return parts}
+const nmSz=p=>p.size&&!p.name.includes(p.size)?p.name+" "+p.size:p.name;
+const isWine=p=>p.cat==="wein"&&!p.crate&&p.when==="kalt";
 function itemsText(r,filter){return ORDER.filter(k=>r.items&&r.items[k]>0&&(!filter||filter(P[k]))).map(k=>`${r.items[k]}× ${P[k].name}`)}
 
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
@@ -512,16 +558,22 @@ function renderPlan(){
   const plan=$("plan");plan.classList.toggle("editing",S.editing);
   const assigning=isD()&&S.draft&&!isEmpty(S.draft);plan.classList.toggle("assigning",!!assigning);
   const ab=$("assignbar");
-  if(S.editing||!S.draft||isEmpty(S.draft)){ab.hidden=true}
+  const grouping=!!(S.grouping&&S.sel!=null&&!isD()&&!S.editing);plan.classList.toggle("grouping",grouping);
+  if(grouping){ab.hidden=false;ab.className="assignbar go";ab.innerHTML=`<span><b>Tische antippen</b>, die zu ${esc(selName())} dazukommen. Nochmal antippen nimmt sie wieder raus.</span><button class="btn-solid" id="grpdone" style="background:var(--surface);color:var(--ink)">Fertig</button>`}
+  else if(S.editing||!S.draft||isEmpty(S.draft)){ab.hidden=true}
   else if(assigning){ab.hidden=false;ab.className="assignbar go";ab.innerHTML=`<span><b>Jetzt Tisch antippen</b> für die neue Bestellung (${eur(total(S.draft))})</span>`}
   else{ab.hidden=false;ab.className="assignbar";ab.innerHTML=`<span>Offene Bestellung ohne Tisch (${eur(total(S.draft))})</span><button class="btn-solid" id="draftresume">Fortsetzen</button>`}
-  let h="";
-  h+=lmList().map((l,i)=>`<div class="lm lm-${l.t}${S.editing&&S.lmSel===i?" lsel":""}" data-i="${i}" style="left:${l.x}%;top:${l.y}%;width:${l.w}%;height:${l.h}%">${l.l?`<span>${esc(l.l)}</span>`:""}${S.editing&&S.lmSel===i?'<b class="rs" data-rs="1"></b>':""}</div>`).join("");
+  let h="";const LM=linkMap();
+  let thekeDone=false;
+  const zbtn=(z,txt)=>{const c=zoneSpots(z).length;return `<button class="tz${c?" has":""}" data-zone="${z}" aria-label="${ZONES[z].name}, Platz vergeben"><span>${txt}</span>${c?`<small>${c} ${c===1?"Platz":"Plätze"}</small>`:"<small>+ Platz</small>"}</button>`};
+  h+=lmList().map((l,i)=>{let inner=l.l?`<span>${esc(l.l)}</span>`:"";let cl="";
+    if(l.t==="theke"&&!S.editing&&!thekeDone){thekeDone=true;cl=" lm-zone";inner=S.floor==="oben"?zbtn("o","Theke"):zbtn("ul","◀ Links")+zbtn("ur","Rechts ▶")}
+    return `<div class="lm lm-${l.t}${cl}${S.editing&&S.lmSel===i?" lsel":""}" data-i="${i}" style="left:${l.x}%;top:${l.y}%;width:${l.w}%;height:${l.h}%">${inner}${S.editing&&S.lmSel===i?'<b class="rs" data-rs="1"></b>':""}</div>`}).join("");
   S.layout.tables.filter(t=>t.f===S.floor).sort((a,b)=>a.n-b.n).forEach(t=>{
-    const r=resOf(t.id);const has=!isEmpty(r);
-    const cls=["tbl",t.s||"",has?(r.done?"done":"res"):"free",(S.editing?S.editSel===t.id:S.sel===t.id)?"sel":""].join(" ");
-    const lbl=has?eur(total(r)).replace(",00",""):"";
-    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-id="${esc(t.id)}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}">${t.c?'<i class="ch ch1"></i><i class="ch ch2"></i><i class="ch ch3"></i><i class="ch ch4"></i>':""}<span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done?"✓":esc(lbl)}</span>`:""}</button>`;
+    const lk=S.editing?null:LM[t.id];const r=lk?S.res[lk]:resOf(t.id);const has=!isEmpty(r);
+    const cls=["tbl",t.s||"",has?(r.done?"done":"res"):"free",lk?"linked":"",(S.editing?S.editSel===t.id:S.sel===t.id)?"sel":"",lk&&S.sel!=null&&lk===tid(S.sel)?"gsel":""].join(" ");
+    const lbl=lk?"zu "+numOf(lk):has?(count(r)?eur(total(r)).replace(",00",""):"res."):"";
+    h+=`<button class="${cls}" style="left:${t.x}%;top:${t.y}%" data-id="${esc(t.id)}" aria-label="Tisch ${t.n}${has?", reserviert, "+eur(total(r)):""}">${t.c?'<i class="ch ch1"></i><i class="ch ch2"></i><i class="ch ch3"></i><i class="ch ch4"></i>':""}<span class="n">${t.n}</span>${has&&!S.editing?`<span class="s">${r.done&&!lk?"✓":esc(lbl)}</span>`:""}</button>`;
   });
   plan.innerHTML=h;
   $("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
@@ -545,13 +597,14 @@ function renderOrder(full){
   if(full||!box.dataset.n||box.dataset.n!==String(S.sel)){
     box.dataset.n=String(S.sel);
     box.innerHTML=`
-      <div class="o-head">${isD()?`<h2>Neue Bestellung</h2><span class="floor">Tisch noch offen</span>`:`<h2>Tisch ${selNum()}</h2><span class="floor">${floorOf(S.sel)==="oben"?"Oben":"Unten"}</span>`}<span class="donepill" id="ostat" hidden>✓ Fertig</span>
+      <div class="o-head">${isD()?`<h2>Neue Bestellung</h2><span class="floor">Tisch noch offen</span>`:`<h2>${esc(selName())}</h2><span class="floor">${floorOf(S.sel)==="oben"?"Oben":"Unten"}</span>`}<span class="donepill" id="ostat" hidden>✓ Fertig</span>
         <button class="x" id="oclose" aria-label="Tisch schließen">×</button></div>
       <div class="o-body">
         <div class="fields">
           <div class="field"><label for="gname">Name des Gasts</label><input id="gname" autocomplete="off" placeholder="z. B. Familie Schmidt"></div>
           <div class="field"><label for="gnote">Anmerkungen &amp; Besonderheiten</label><textarea id="gnote" rows="1" placeholder="z. B. ohne Eis, Geburtstag, Sonderwunsch"></textarea></div>
         </div>
+        <div id="ogroup"></div>
         <div id="olines"></div>
         <div class="glassline" id="oglass"></div>
       </div>
@@ -566,7 +619,12 @@ function renderOrder(full){
     <div class="line">${r.done?`<div class="stepper"><span>${r.items[k]}×</span></div>`:`<div class="stepper"><button data-dec="${k}" aria-label="${esc(p.name)} weniger">−</button><span>${r.items[k]}</span><button data-inc="${k}" aria-label="${esc(p.name)} mehr">+</button></div>`}
     <div class="nm">${esc(p.name)}<small>${p.size?esc(p.size)+" · ":""}je ${eur(p.price)}</small></div>
     <div class="sum">${eur(p.price*r.items[k])}</div></div>`}).join("");
-  $("olines").innerHTML=lines?`<div class="lines">${lines}</div>`:`<div class="empty-lines">Noch nichts bestellt. Produkte in der Auswahl antippen.</div>`;
+  if(isD()||r.done)S.grouping=false;
+  const gk=tid(S.sel);
+  $("ogroup").innerHTML=isD()||spotOf(S.sel)?"":`<div class="grprow">${r.group&&r.group.length?`<span class="gl">Zusammengestellt: <b>Tisch ${esc(lbl(gk))}</b></span>`:""}${r.done?"":`<button class="ghost" id="grpbtn">${S.grouping?"Fertig mit Zusammenstellen":r.group&&r.group.length?"Tische ändern":"Tische zusammenstellen (Gruppe)"}</button>`}</div>`;
+  $("olines").innerHTML=lines?`<div class="lines">${lines}</div>`:
+    (!isD()&&r.hold?`<div class="holdinfo"><b>Tisch ist reserviert</b>, ohne Bestellung. Produkte kannst du trotzdem noch dazunehmen.</div>`
+    :`<div class="empty-lines holdbox"><span>Noch nichts bestellt. Produkte in der Auswahl antippen.</span>${isD()||r.done?"":`<button class="ghost" id="holdbtn">Nur Tisch reservieren, ohne Bestellung</button>`}</div>`);
   const gl=glassText(r);
   $("oglass").innerHTML=gl.length?`Auf den Tisch: <b>${esc(gl.join(", "))}</b>`:"";
   const has=!isEmpty(r);
@@ -577,7 +635,7 @@ function renderOrder(full){
       +`<button class="btn-solid bigbtn" id="picktbl" ${has?"":"disabled"}>Tisch wählen</button>`;
     $("ostat").hidden=true;return;
   }
-  $("ofoot").innerHTML=(S.confirmClear?`<div class="confirm"><p>Reservierung für Tisch ${selNum()} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
+  $("ofoot").innerHTML=(S.confirmClear?`<div class="confirm"><p>Reservierung für ${esc(selName())} löschen?</p><button class="ghost" id="clearno">Abbrechen</button><button class="btn-solid" id="clearyes">Löschen</button></div>`
       :(has?`<button class="linkbtn danger" id="clearask">Reservierung löschen</button>`:""))
     +`<div class="total"><span>Gesamt</span><b>${eur(total(r))}</b></div>`
     +(r.done?`<button class="ghost bigbtn" id="unlock">Bearbeiten</button>`:`<button class="btn-solid bigbtn" id="donebtn" ${has?"":"disabled"}>Fertig</button>`);
@@ -590,7 +648,7 @@ function renderPicker(){
   const r=(on&&selR)?selR:{items:{}};
   const cat=CATS.find(c=>c.id===S.cat);
   const catCount=c=>IDS[c.id].reduce((a,k)=>a+((r.items&&r.items[k])||0),0);
-  $("pickhead").innerHTML=`<h3>Produkte</h3><div class="for">${locked?`Tisch ${selNum()} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:isD()?"für die neue Bestellung, Tisch danach wählen":S.sel!=null?`für Tisch ${selNum()}`:S.draft&&!isEmpty(S.draft)?"Antippen setzt die offene Bestellung fort":"Einfach antippen, den Tisch wählst du danach"}</div>`;
+  $("pickhead").innerHTML=`<h3>Produkte</h3><div class="for">${locked?`${esc(selName())} ist fertig. Zum Ändern „Bearbeiten“ tippen.`:isD()?"für die neue Bestellung, Tisch danach wählen":S.sel!=null?`für ${esc(selName())}`:S.draft&&!isEmpty(S.draft)?"Antippen setzt die offene Bestellung fort":"Einfach antippen, den Tisch wählst du danach"}</div>`;
   $("psclear").hidden=!S.q;
   const tile=k=>{const p=P[k];const q=(r.items&&r.items[k])||0;
       const label=p.name.replace(/^Durstlöscher /,"").replace(/^Pringles /,"");
@@ -666,13 +724,14 @@ function packData(f){
   const crate=ORDER.filter(k=>tot[k]&&P[k].crate);
   const other=ORDER.filter(k=>tot[k]&&!P[k].crate&&P[k].when==="kalt");
   const later=keys.filter(k=>itemsText(S.res[k],p=>p.when!=="kalt").length);
-  return {keys,tot,glass,bottleNotes,crate,other,later};
+  const wine=keys.filter(k=>itemsText(S.res[k],isWine).length);
+  return {keys,tot,glass,bottleNotes,crate,other,later,wine};
 }
 function listRows(keys,tot){return `<table class="list"><tbody>${keys.map(k=>`<tr><td class="qty">${tot[k]}×</td><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td></tr>`).join("")}</tbody></table>`}
 function totalsData(){
   const u=packData("unten").tot,o=packData("oben").tot;
   const ids=ORDER.filter(k=>(u[k]||0)+(o[k]||0)>0);
-  const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(numOf(k))});
+  const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(lbl(k))});
   return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate&&P[k].when==="kalt"),late:ids.filter(k=>!P[k].crate&&P[k].when!=="kalt")};
 }
 const LATE_TAG={heiss:"heiß, kurz vor der Pause",frisch:"frisch an der Theke"};
@@ -700,21 +759,26 @@ function renderPack(){
   if(!d.keys.length){$("pack").innerHTML=`<div class="empty">Für ${fl} gibt es noch keine Pausenreservierungen.</div>`;return}
   const glassRows=GLASS_ORDER.filter(t=>d.glass[t]).map(t=>`<tr><td class="qty">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("");
   const tables=d.keys.map(k=>{const r=S.res[k];const cold=itemsText(r,p=>p.when==="kalt");const gl=glassText(r);
-    return `<div class="tcard"><div class="tn">${numOf(k)}</div><div class="items">${cold.length?esc(cold.join(", ")):"<span class='who'>nichts Kaltes</span>"}
+    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${cold.length?esc(cold.join(", ")):`<span class='who'>${count(r)?"nichts Kaltes":"nur reserviert, keine Bestellung"}</span>`}
       ${gl.length?`<div class="gl">Gläser: ${esc(gl.join(", "))}</div>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div>
       <div class="amt">${eur(total(r))}</div></div>`}).join("");
   const later=d.later.map(k=>{const r=S.res[k];const hot=itemsText(r,p=>p.when==="heiss");const fresh=itemsText(r,p=>p.when==="frisch");
-    return `<div class="tcard"><div class="tn">${numOf(k)}</div><div class="items">${hot.length?esc(hot.join(", ")):""}${hot.length&&fresh.length?"<br>":""}${fresh.length?`<span class="gl">frisch an der Theke: ${esc(fresh.join(", "))}</span>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
+    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${hot.length?esc(hot.join(", ")):""}${hot.length&&fresh.length?"<br>":""}${fresh.length?`<span class="gl">frisch an der Theke: ${esc(fresh.join(", "))}</span>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
+  const wineItems=r=>ORDER.filter(k=>r.items&&r.items[k]>0&&isWine(P[k])).map(k=>`${r.items[k]}× ${nmSz(P[k])}`);
+  const wsum={};d.wine.forEach(k=>{const it=S.res[k].items;ORDER.forEach(p=>{if(it[p]>0&&isWine(P[p]))wsum[p]=(wsum[p]||0)+it[p]})});
+  const wine=d.wine.map(k=>{const r=S.res[k];const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${esc(wineItems(r).join(", "))}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
   $("pack").innerHTML=`
     <div class="block overview"><h3>Diese Tische werden gedeckt</h3><p class="sub">${d.keys.length} Tisch${d.keys.length===1?"":"e"} ${fl}</p>
-      <div class="tchips">${d.keys.map(k=>`<span class="tchip">${numOf(k)}</span>`).join("")}</div></div>
+      <div class="tchips">${d.keys.map(k=>`<span class="tchip">${esc(lbl(k))}</span>`).join("")}</div></div>
     <div class="cols">
       <div class="block"><h3>Kühlhaus-Kiste</h3><p class="sub">Alles, was in Flaschen serviert wird</p>${d.crate.length?listRows(d.crate,d.tot):'<p class="hint">Keine Flaschen bestellt.</p>'}
-        ${d.other.length?`<p class="hint" style="margin-top:10px">Wein, Sekt, Snacks usw. stehen gesammelt für oben und unten unter „Gesamt“.</p>`:""}</div>
+        ${d.other.length?`<p class="hint" style="margin-top:10px">Wein und Sekt stehen weiter unten pro Tisch, Snacks usw. gesammelt unter „Gesamt“.</p>`:""}</div>
       <div class="block"><h3>Gläser &amp; Teller</h3><p class="sub">Vorher auf die Tische stellen</p>${glassRows?`<table class="list"><tbody>${glassRows}</tbody></table>`:'<p class="hint">Keine Gläser nötig.</p>'}
         ${d.bottleNotes.length?`<p class="hint" style="margin-top:8px">${esc(d.bottleNotes.join(" · "))}</p>`:""}</div>
     </div>
     <div class="block"><h3>Pro Tisch eindecken</h3><p class="sub">Ca. 15 Minuten vor der Pause hinstellen</p>${tables}</div>
+    ${wine?`<div class="block wine"><h3>Wein &amp; Sekt</h3><div class="callout">Kurz vor der Pause einschenken und an diese Tische bringen</div>
+      <p class="wsum">${ORDER.filter(p=>wsum[p]).map(p=>`<b>${wsum[p]}×</b> ${esc(nmSz(P[p]))}`).join("<br>")}</p>${wine}</div>`:""}
     ${later?`<div class="block hot"><h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div>${later}</div>`:""}`;
 }
 
@@ -726,12 +790,13 @@ function buildCards(){
   const ev=S.event.name?esc(S.event.name):"Catering Saalbau Witten";
   const today=new Date().toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
   const evLine=/\d{1,2}\.\d{1,2}\./.test(S.event.name||"")?ev:`${ev}, ${today}`;
-  const card=k=>{const r=S.res[k];const n=numOf(k);
+  const card=k=>{const r=S.res[k];const L=lbl(k);
     const cold=ORDER.filter(p=>r.items&&r.items[p]>0);const gl=glassText(r);
     const cls=cold.length>10?"c-items cols dense":cold.length>5?"c-items cols":"c-items";
-    return `<div class="card"><div class="c-top">${LOGO}<div class="c-brand"><b>Pausenreservierung</b><span>${evLine}</span></div><div class="c-tn"><small>TISCH</small><strong>${n}</strong></div></div>
+    return `<div class="card"><div class="c-top">${LOGO}<div class="c-brand"><b>Pausenreservierung</b><span>${evLine}</span></div>${(()=>{const sp=spotOf(k.slice(1));const sm=sp?ZONES[sp.z].card:"TISCH";const v=sp?String(sp.num):L;return `<div class="c-tn"><small>${sm}</small><strong${v.length>3?' class="long"':""}>${esc(v)}</strong></div>`})()}</div>
       ${r.name?`<div class="c-name">${esc(r.name)}</div>`:""}
       ${cold.length?`<ul class="${cls}">${cold.map(p=>`<li><b>${r.items[p]}×</b> ${esc(P[p].name)}${P[p].size&&!/^Flasche/.test(P[p].size)?"":P[p].size?` <span class="sz">${esc(P[p].size)}</span>`:""}</li>`).join("")}</ul>`:""}
+      ${!cold.length?`<div class="c-hold">Reserviert</div>`:""}
       ${r.note?`<div class="c-note">${esc(r.note)}</div>`:""}
       ${gl.length?`<div class="c-gl">Gläser: ${esc(gl.join(", "))}</div>`:""}</div>`};
   let h="";for(let i=0;i<keys.length;i+=8){h+=`<section class="cardpage">${keys.slice(i,i+8).map(card).join("")}</section>`}
@@ -749,18 +814,20 @@ function buildPrint(){
   if(!cnt){$("printout").innerHTML=h+`<p>Noch keine Reservierungen.</p>`;return}
   const du=packData("unten"),dob=packData("oben"),td=totalsData();
   const fsum=d=>d.keys.reduce((a,k)=>a+total(S.res[k]),0);
-  h+=`<div class="ovw2">${[["Unten",du],["Oben",dob]].map(([L,d])=>`<div><b>${L}${d.keys.length?`, ${d.keys.length} Tische, ${eur(fsum(d))}`:""}</b><br>${d.keys.length?`Zu decken: Tisch ${d.keys.map(numOf).join(", ")}`:"keine Reservierungen"}</div>`).join("")}</div>`;
+  h+=`<div class="ovw2">${[["Unten",du],["Oben",dob]].map(([L,d])=>`<div><b>${L}${d.keys.length?`, ${d.keys.length} Tische, ${eur(fsum(d))}`:""}</b><br>${d.keys.length?`Zu decken: ${esc(deckText(d.keys))}`:"keine Reservierungen"}</div>`).join("")}</div>`;
   if(td.crate.length){const su=td.crate.reduce((a,k)=>a+(td.u[k]||0),0),so=td.crate.reduce((a,k)=>a+(td.o[k]||0),0);
     h+=`<h3>Kühlhaus-Kiste</h3><table class="ptot"><tr class="hd"><td>Produkt</td><td class="q">Unten</td><td class="q">Oben</td><td class="q">Gesamt</td></tr>${td.crate.map(k=>`<tr><td>${esc(P[k].name)} <span class="sz">${esc(P[k].size)}</span></td><td class="q big">${td.u[k]||""}</td><td class="q big">${td.o[k]||""}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td></tr>`).join("")}<tr class="sum"><td>Summe Flaschen</td><td class="q">${su||""}</td><td class="q">${so||""}</td><td class="q">${su+so}</td></tr></table>`}
   const gl=d=>{const g=GLASS_ORDER.filter(t=>d.glass[t]);if(!g.length&&!d.bottleNotes.length)return '<p class="none">Keine Gläser nötig</p>';
     return `<table>${g.map(t=>`<tr><td class="q">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("")}${d.bottleNotes.map(n=>`<tr><td></td><td>${esc(n)}</td></tr>`).join("")}</table>`};
   h+=`<div class="two"><div><h3>Gläser &amp; Teller unten</h3>${gl(du)}</div><div><h3>Gläser &amp; Teller oben</h3>${gl(dob)}</div></div>`;
   const oh='<tr class="hd"><td>Produkt</td><td class="q">Anzahl</td><td>Tische</td></tr>';
-  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)} <span class="sz">${esc(P[k].size)}</span></td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
-  if(td.other.length)h+=`<h3>Weitere Artikel</h3><table class="ptot">${oh}${orow(td.other)}</table>`;
+  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
+  const tw=td.other.filter(k=>isWine(P[k])),to=td.other.filter(k=>!isWine(P[k]));
+  if(tw.length)h+=`<h3>Wein &amp; Sekt</h3><div class="callout">Kurz vor der Pause einschenken</div><table class="ptot">${oh}${orow(tw)}</table>`;
+  if(to.length)h+=`<h3>Weitere Artikel</h3><table class="ptot">${oh}${orow(to)}</table>`;
   if(td.late.length)h+=`<h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div><table class="ptot">${oh}${orow(td.late)}</table>`;
   const notes=[...du.keys.map(k=>[k,"unten"]),...dob.keys.map(k=>[k,"oben"])].filter(([k])=>(S.res[k].note||"").trim());
-  if(notes.length)h+=`<h3>Anmerkungen</h3><table>${notes.map(([k,f])=>`<tr><td class="t">${numOf(k)}</td><td><span class="sz">${f}${S.res[k].name?", "+esc(S.res[k].name):""}</span> ${esc(S.res[k].note)}</td></tr>`).join("")}</table>`;
+  if(notes.length)h+=`<h3>Anmerkungen</h3><table>${notes.map(([k,f])=>`<tr><td class="t">${esc(lbl(k))}</td><td><span class="sz">${f}${S.res[k].name?", "+esc(S.res[k].name):""}</span> ${esc(S.res[k].note)}</td></tr>`).join("")}</table>`;
   $("printout").innerHTML=h;
 }
 
@@ -817,7 +884,7 @@ $("editbar").addEventListener("click",e=>{
   const t=S.editSel!=null?tblById(S.editSel):null;
   if(a==="chairs"&&t){if(t.c)delete t.c;else{t.c=1;delete t.s}renderPlan();return}
   if(a==="shape"&&t){if(t.s)delete t.s;else{t.s="sq";delete t.c}renderPlan();return}
-  if(a==="deltbl"&&t){if(!isEmpty(resOf(t.id))){toast("Tisch "+t.n+" hat eine Reservierung. Erst die Reservierung löschen.");return}S.layout.tables=S.layout.tables.filter(x=>x!==t);S.editSel=null;renderPlan();return}
+  if(a==="deltbl"&&t){const lk=linkMap()[t.id];if(lk){toast("Tisch "+t.n+" gehört zur Gruppe von Tisch "+numOf(lk)+". Erst dort rausnehmen.");return}if(!isEmpty(resOf(t.id))){toast("Tisch "+t.n+" hat eine Reservierung. Erst die Reservierung löschen.");return}S.layout.tables=S.layout.tables.filter(x=>x!==t);S.editSel=null;renderPlan();return}
   if(a==="dellm"&&S.lmSel!=null){lmList().splice(S.lmSel,1);S.lmSel=null;renderPlan();return}
   if(a==="addtbl"){const v=parseInt($("newnum").value,10);if(!(v>0)){toast("Bitte erst eine Tischnummer eingeben.");return}
     const dup=S.layout.tables.some(x=>x.n===v);
@@ -860,16 +927,29 @@ $("plan").addEventListener("pointermove",e=>{
 const endDrag=()=>{drag=null};
 $("plan").addEventListener("pointerup",endDrag);$("plan").addEventListener("pointercancel",endDrag);
 $("plan").addEventListener("click",e=>{
+  const zb=e.target.closest(".tz");if(zb&&!S.editing){openZone(zb.dataset.zone);return}
   const b=e.target.closest(".tbl");if(!b||S.editing)return;
-  const n=b.dataset.id;
+  const id=b.dataset.id;
+  if(S.grouping&&S.sel!=null&&!isD()){toggleGroup(id);return}
+  const LM=linkMap();const n=LM[id]?LM[id].slice(1):id;
   if(isD()&&S.draft&&!isEmpty(S.draft)){assignDraft(n);return}
-  S.sel=S.sel===n?null:n;S.confirmClear=false;renderAll();
+  S.grouping=false;S.sel=S.sel===n?null:n;S.confirmClear=false;renderAll();
   if(S.sel!=null&&window.matchMedia("(max-width:979px)").matches){$("order").scrollIntoView({behavior:"smooth",block:"start"})}
 });
 
+function toggleGroup(id){
+  if(id===S.sel)return;const t=tblById(id);if(!t)return;
+  const cur=getCur();const grp=(cur&&cur.group||[]).slice();const i=grp.indexOf(id);
+  if(i>=0)grp.splice(i,1);
+  else{const lk=linkMap()[id];
+    if(lk&&lk!==tid(S.sel)){toast("Tisch "+t.n+" gehört schon zur Gruppe von Tisch "+numOf(lk)+".");return}
+    if(!isEmpty(resOf(id))){toast("Tisch "+t.n+" hat schon eine eigene Reservierung.");return}
+    grp.push(id)}
+  mutate(r=>{if(grp.length)r.group=grp;else delete r.group});
+}
 function assignDraft(id){
-  const k=tid(id);const ex=S.res[k];const n=numOf(k);
-  if(ex&&ex.done){toast("Tisch "+n+" ist schon fertig. Erst dort „Bearbeiten“ tippen.");return}
+  const k=tid(id);const ex=S.res[k];const n=placeName(k);
+  if(ex&&ex.done){toast(n+" ist schon fertig. Erst dort „Bearbeiten“ tippen.");return}
   const d=S.draft;const m=ex?clone(ex):{items:{},name:"",note:""};m.items=m.items||{};
   for(const p in d.items)m.items[p]=(m.items[p]||0)+d.items[p];
   if(!(m.name||"").trim())m.name=d.name||"";
@@ -877,31 +957,34 @@ function assignDraft(id){
   m.ts=Date.now();const had=ex&&!isEmpty(ex);
   S.res[k]=m;saveRes(k);S.draft=null;saveDraft();S.sel=id;S.confirmClear=false;
   if(floorOf(id)!==S.floor)S.floor=floorOf(id);
-  renderAll();renderOrder(true);toast(had?"Zu Tisch "+n+" dazugebucht":"Bestellung an Tisch "+n);
+  renderAll();renderOrder(true);toast(had?"Zu "+n+" dazugebucht":"Bestellung an "+n);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function onOrderClick(e){
   const t=e.target;
   if(S.sel==null){if(t.closest("[data-inc]")&&!S.editing){S.sel="D";S.confirmClear=false;if(!S.draft)S.draft={items:{},name:"",note:""};renderOrder(true)}else return}
-  if(t.closest("#oclose")){S.sel=null;S.confirmClear=false;renderAll();return}
+  if(t.closest("#grpbtn")){S.grouping=!S.grouping;renderPlan();renderOrder(false);
+    if(S.grouping&&window.matchMedia("(max-width:979px)").matches)$("assignbar").scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(t.closest("#holdbtn")){mutate(r=>{r.hold=true});toast(selName()+" ist reserviert");return}
+  if(t.closest("#oclose")){S.grouping=false;S.sel=null;S.confirmClear=false;renderAll();return}
   if(t.closest("#picktbl")){$("assignbar").scrollIntoView({behavior:"smooth",block:"start"});return}
   if(!isD()&&getCur()&&getCur().done&&(t.closest("[data-inc]")||t.closest("[data-dec]")))return;
   const inc=t.closest("[data-inc]");if(inc){const k=inc.dataset.inc;mutate(r=>{r.items[k]=(r.items[k]||0)+1});return}
   const dec=t.closest("[data-dec]");if(dec){const k=dec.dataset.dec;mutate(r=>{r.items[k]=(r.items[k]||0)-1;if(r.items[k]<=0)delete r.items[k]});return}
-  if(t.closest("#donebtn")){const n=selNum();mutate(r=>{r.done=true});S.sel=null;S.confirmClear=false;renderAll();toast("Tisch "+n+" ist fertig");
+  if(t.closest("#donebtn")){const n=selName();S.grouping=false;mutate(r=>{r.done=true});S.sel=null;S.confirmClear=false;renderAll();toast(n+" ist fertig");
     if(window.matchMedia("(max-width:979px)").matches)$("plan").scrollIntoView({behavior:"smooth",block:"center"});return}
   if(t.closest("#unlock")){mutate(r=>{r.done=false});renderOrder(true);return}
   if(t.closest("#clearask")){S.confirmClear=true;renderOrder(false);return}
   if(t.closest("#clearno")){S.confirmClear=false;renderOrder(false);return}
   if(t.closest("#clearyes")&&isD()){S.draft=null;saveDraft();S.sel=null;S.confirmClear=false;renderAll();toast("Bestellung verworfen");return}
-  if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung Tisch "+selNum()+" gelöscht");renderAll();renderOrder(true);return}
+  if(t.closest("#clearyes")){const id=tid(S.sel);delete S.res[id];S.confirmClear=false;saveRes(id);toast("Reservierung "+selName()+" gelöscht");renderAll();renderOrder(true);return}
 }
 $("order").addEventListener("click",onOrderClick);
 $("picker").addEventListener("click",e=>{
   const c=e.target.closest("[data-cat]");if(c){S.cat=c.dataset.cat;renderPicker();return}
   onOrderClick(e);
 });
-$("assignbar").addEventListener("click",e=>{if(e.target.closest("#draftresume")){S.sel="D";S.confirmClear=false;renderAll();renderOrder(true);
+$("assignbar").addEventListener("click",e=>{if(e.target.closest("#grpdone")){S.grouping=false;renderAll();return}if(e.target.closest("#draftresume")){S.sel="D";S.confirmClear=false;renderAll();renderOrder(true);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"})}});
 let typeT=null;
 $("order").addEventListener("input",e=>{
@@ -922,7 +1005,7 @@ $("kasse").addEventListener("click",async e=>{
     toast("Alle Reservierungen gelöscht");
   }
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("resetmodal").hidden){closeReset();return}if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("zonemodal").hidden){$("zonemodal").hidden=true;return}if(e.key==="Escape"&&!$("resetmodal").hidden){closeReset();return}if(e.key==="Escape"&&S.grouping){S.grouping=false;renderAll();return}if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
 /* ---------- Neue Veranstaltung ---------- */
 function openReset(){
   const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k]));let sum=0;keys.forEach(k=>sum+=total(S.res[k]));
@@ -932,6 +1015,20 @@ function openReset(){
   $("resetmodal").hidden=false;setTimeout(()=>$("rm-cancel").focus(),30);
 }
 function closeReset(){$("resetmodal").hidden=true}
+function openZone(z){
+  if(S.grouping){toast("Erst „Fertig“ beim Zusammenstellen tippen.");return}
+  if(isD()&&S.draft&&!isEmpty(S.draft)){assignDraft(nextSpot(z));return}
+  const ks=zoneSpots(z);const nx=nextSpot(z);const nn=spotOf(nx).num;
+  $("zmbox").innerHTML=`<h2>${ZONES[z].name}</h2><p>${ks.length?`${ks.length} ${ks.length===1?"Platz ist":"Plätze sind"} schon vergeben. Antippen zum Öffnen.`:"Hier ist noch nichts vergeben."}</p>
+    ${ks.length?`<div class="zlist">${ks.map(k=>{const r=S.res[k];return `<button class="zitem${r.done?" done":""}" data-spot="${esc(k.slice(1))}"><b>${spotOf(k.slice(1)).num}</b><span>${esc(r.name||"")}${r.name?"<br>":""}<small>${count(r)?eur(total(r)):"ohne Bestellung"}${r.done?", fertig":""}</small></span></button>`}).join("")}</div>`:""}
+    <button class="btn-solid" data-spot="${nx}">+ Neuer Platz: ${ZONES[z].name} ${nn}</button>
+    <button class="ghost" id="zm-close">Schließen</button>`;
+  $("zonemodal").hidden=false;
+}
+$("zonemodal").addEventListener("click",e=>{const t=e.target;if(t===$("zonemodal")||t.closest("#zm-close")){$("zonemodal").hidden=true;return}
+  const b=t.closest("[data-spot]");if(!b)return;$("zonemodal").hidden=true;
+  S.grouping=false;S.sel=b.dataset.spot;S.confirmClear=false;renderAll();renderOrder(true);
+  if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});});
 async function doReset(){
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
   closeReset();renderAll();
