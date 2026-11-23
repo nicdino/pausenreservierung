@@ -237,6 +237,7 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .block.hot h3{color:var(--hot)}
 .block.wine h3{color:var(--accent)}
 .block.wine .callout{background:var(--accent-soft);color:var(--accent);border-radius:8px;padding:8px 12px;font-weight:600;font-size:15px;margin-bottom:8px}
+.tcard .gl.wn{color:var(--accent);font-weight:600}
 .block.wine .wsum{margin:4px 0 6px;font-size:16px;line-height:1.5}
 .block.hot .callout{background:var(--hot-soft);color:var(--hot);border-radius:8px;padding:8px 12px;font-weight:600;font-size:15px;margin-bottom:8px}
 .cols{display:grid;grid-template-columns:1fr;gap:20px}
@@ -305,6 +306,7 @@ table.list td .sz{color:var(--muted)}
   #printout .ptot tr.sum td{font-weight:700;border-top:1.5px solid #000;border-bottom:0}
   #printout .sz{color:#666;font-size:.85em}
   #printout .none{color:#777;margin:2px 0}
+  #printout .pour{font-size:10pt;margin:2px 0 4px}
   #printout .pend{margin-top:14px;font-size:9pt;color:#777;text-align:center}
   #printout .ltag{display:inline-block;font-size:8pt;font-weight:700;border:1px solid #000;border-radius:3px;padding:0 4px;letter-spacing:.05em;min-width:13mm;text-align:center;background:none;color:#000}
   #printout h3{font-family:var(--f-ui);font-size:12.5pt;margin:10px 0 3px}
@@ -529,6 +531,10 @@ function glassText(r){const {g,bottles}=glassesOf(r);
   return parts}
 const nmSz=p=>p.size&&!p.name.includes(p.size)?p.name+" "+p.size:p.name;
 const isWine=p=>p.cat==="wein"&&!p.crate&&p.when==="kalt";
+/* Wie viel Wein/Sekt man zum Einschenken mitnehmen muss (Flasche = 0,75 l) */
+function pourText(qty){const g={};for(const k in qty){const p=P[k];const m=/(\d+),(\d+)\s*l/.exec(p.size||p.name);if(!m)continue;const l=parseFloat(m[1]+"."+m[2])*qty[k];
+  const base=p.name.replace(/\s*\d+,\d+\s*l$/,"");g[base]=(g[base]||0)+l}
+  return Object.keys(g).map(b=>{const l=Math.round(g[b]*100)/100;const fl=Math.ceil(l/0.75-1e-9);return `${b}: ${String(l).replace(".",",")} l, also ${fl} ${fl===1?"Flasche":"Flaschen"}`})}
 function itemsText(r,filter){return ORDER.filter(k=>r.items&&r.items[k]>0&&(!filter||filter(P[k]))).map(k=>`${r.items[k]}× ${P[k].name}`)}
 
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
@@ -758,8 +764,8 @@ function renderPack(){
   const d=packData(f);const fl=f==="oben"?"oben":"unten";
   if(!d.keys.length){$("pack").innerHTML=`<div class="empty">Für ${fl} gibt es noch keine Pausenreservierungen.</div>`;return}
   const glassRows=GLASS_ORDER.filter(t=>d.glass[t]).map(t=>`<tr><td class="qty">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("");
-  const tables=d.keys.map(k=>{const r=S.res[k];const cold=itemsText(r,p=>p.when==="kalt");const gl=glassText(r);
-    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${cold.length?esc(cold.join(", ")):`<span class='who'>${count(r)?"nichts Kaltes":"nur reserviert, keine Bestellung"}</span>`}
+  const tables=d.keys.map(k=>{const r=S.res[k];const cold=itemsText(r,p=>p.when==="kalt"&&!isWine(p));const gl=glassText(r);const hasW=itemsText(r,isWine).length>0;
+    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${cold.length?esc(cold.join(", ")):`<span class='who'>${hasW?"nur Gläser hinstellen":count(r)?"nichts Kaltes":"nur reserviert, keine Bestellung"}</span>`}${hasW?`<div class="gl wn">Wein/Sekt wird kurz vor der Pause eingeschenkt</div>`:""}
       ${gl.length?`<div class="gl">Gläser: ${esc(gl.join(", "))}</div>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div>
       <div class="amt">${eur(total(r))}</div></div>`}).join("");
   const later=d.later.map(k=>{const r=S.res[k];const hot=itemsText(r,p=>p.when==="heiss");const fresh=itemsText(r,p=>p.when==="frisch");
@@ -777,8 +783,8 @@ function renderPack(){
         ${d.bottleNotes.length?`<p class="hint" style="margin-top:8px">${esc(d.bottleNotes.join(" · "))}</p>`:""}</div>
     </div>
     <div class="block"><h3>Pro Tisch eindecken</h3><p class="sub">Ca. 15 Minuten vor der Pause hinstellen</p>${tables}</div>
-    ${wine?`<div class="block wine"><h3>Wein &amp; Sekt</h3><div class="callout">Kurz vor der Pause einschenken und an diese Tische bringen</div>
-      <p class="wsum">${ORDER.filter(p=>wsum[p]).map(p=>`<b>${wsum[p]}×</b> ${esc(nmSz(P[p]))}`).join("<br>")}</p>${wine}</div>`:""}
+    ${wine?`<div class="block wine"><h3>Wein &amp; Sekt</h3><div class="callout">Gläser stehen schon auf dem Tisch. Kurz vor der Pause mit den Flaschen rumgehen und einschenken.</div>${pourText(wsum).length?`<p class="wsum"><b>Mitnehmen:</b><br>${pourText(wsum).map(esc).join("<br>")}</p>`:""}
+      <p class="wsum"><b>Einschenken:</b><br>${ORDER.filter(p=>wsum[p]).map(p=>`<b>${wsum[p]}×</b> ${esc(nmSz(P[p]))}`).join("<br>")}</p>${wine}</div>`:""}
     ${later?`<div class="block hot"><h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div>${later}</div>`:""}`;
 }
 
@@ -823,7 +829,8 @@ function buildPrint(){
   const oh='<tr class="hd"><td>Produkt</td><td class="q">Anzahl</td><td>Tische</td></tr>';
   const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
   const tw=td.other.filter(k=>isWine(P[k])),to=td.other.filter(k=>!isWine(P[k]));
-  if(tw.length)h+=`<h3>Wein &amp; Sekt</h3><div class="callout">Kurz vor der Pause einschenken</div><table class="ptot">${oh}${orow(tw)}</table>`;
+  const twq={};tw.forEach(k=>twq[k]=(td.u[k]||0)+(td.o[k]||0));
+  if(tw.length)h+=`<h3>Wein &amp; Sekt</h3><div class="callout">Gläser stehen schon. Kurz vor der Pause mit den Flaschen rumgehen und einschenken.</div><div class="pour">Mitnehmen: ${esc(pourText(twq).join("; "))}</div><table class="ptot">${oh}${orow(tw)}</table>`;
   if(to.length)h+=`<h3>Weitere Artikel</h3><table class="ptot">${oh}${orow(to)}</table>`;
   if(td.late.length)h+=`<h3>Heißgetränke &amp; Aperitifs</h3><div class="callout">Erst kurz vor der Pause zubereiten und hinstellen</div><table class="ptot">${oh}${orow(td.late)}</table>`;
   const notes=[...du.keys.map(k=>[k,"unten"]),...dob.keys.map(k=>[k,"oben"])].filter(([k])=>(S.res[k].note||"").trim());
