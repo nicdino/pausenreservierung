@@ -236,6 +236,28 @@ body.p3full .plan3 .editbar{top:88px}
 .rm-evb[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .rm-hint{color:var(--muted);font-size:14px}
 
+/* Kalender */
+.calhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.calhead h3{font-family:var(--f-ui);font-size:22px;margin:0 6px;min-width:150px;text-align:center}
+.calhead #cal-prev,.calhead #cal-next{width:42px;padding:8px 0;font-size:22px;line-height:1}
+.calwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+@media (max-width:899px){.calwrap{grid-template-columns:1fr}}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-wd{font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 0}
+.cal-c{min-height:96px;display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;padding:6px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;overflow:hidden}
+.cal-c.out{background:transparent;border-color:transparent}.cal-c.past{opacity:.55}
+.cal-c.today .cal-n{background:var(--ink);color:var(--surface)}.cal-c.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.cal-c:hover{border-color:var(--accent)}
+.cal-n{font-family:var(--f-ui);font-weight:700;font-size:15px;align-self:flex-start;min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;padding:0 5px}
+.cal-ev{display:block;font-size:12.5px;line-height:1.25;padding:3px 6px;border-radius:5px;background:var(--accent);color:var(--on-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.cal-ev.no{background:var(--sunk);color:var(--muted);text-decoration:line-through}.cal-ev.cur{outline:2px solid var(--ink)}
+@media (max-width:620px){.cal-c{min-height:58px;padding:4px}.cal-ev{font-size:0;height:6px;padding:0;border-radius:3px}.cal-ev b{display:none}}
+.calday{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
+.calday h4{margin:0;font-family:var(--f-ui);font-size:19px}.calday .sub{margin:0;color:var(--muted)}
+.cd-ev{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}.cd-ev.no .cd-name{text-decoration:line-through}
+.cd-name{font-family:var(--f-ui);font-size:18px}
+.cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cd-grid div{display:flex;flex-direction:column;background:var(--sunk);border-radius:8px;padding:7px 10px}
+.cd-grid span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.cd-grid b{font-family:var(--f-ui);font-size:17px}
+
 /* 3D-Tischplan */
 .plan3{position:relative;width:100%;height:min(74vh,780px);min-height:400px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--paper)}
 .plan3 canvas{display:block;width:100%;height:100%}
@@ -583,7 +605,8 @@ table.list td .sz{color:var(--muted)}
     <button role="tab" id="tab-plan" aria-selected="true" data-tab="plan" title="Pausenreservierung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Pausenreservierung</span></button>
     <button role="tab" id="tab-pack" aria-selected="false" data-tab="pack" title="Packliste"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Packliste</span></button>
     <button role="tab" id="tab-kasse" aria-selected="false" data-tab="kasse" title="Summe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4H7l6 8-6 8h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Summe</span></button>
-    <button role="tab" id="tab-ev" aria-selected="false" data-tab="ev" title="Veranstaltungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Veranstaltungen</span></button>
+    <button role="tab" id="tab-ev" aria-selected="false" data-tab="ev" title="Veranstaltungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">Veranstaltungen</span></button>
+    <button role="tab" id="tab-cal" aria-selected="false" data-tab="cal" title="Kalender"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 14h2M11 14h2M15 14h2M7 17h2M11 17h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Kalender</span></button>
     <button role="tab" id="tab-abr" aria-selected="false" data-tab="abr" title="Abrechnung (Excel)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 9v11M15 9v11" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Abrechnung</span></button>
   </nav>
   <div class="side-foot">
@@ -667,6 +690,11 @@ table.list td .sz{color:var(--muted)}
       </div>
       <div id="abr"></div>
     </div>
+  </section>
+  <section id="view-cal" hidden>
+    <div class="calhead"><button class="ghost" id="cal-prev" aria-label="Vorheriger Monat">‹</button><h3 id="cal-title"></h3><button class="ghost" id="cal-next" aria-label="Nächster Monat">›</button><button class="ghost" id="cal-today">Heute</button>
+      <span class="spacer"></span><label class="btn-solid evup"><input type="file" id="calfile" accept="application/pdf,.pdf" hidden>PDF hochladen</label></div>
+    <div class="calwrap"><div class="calgrid" id="calgrid"></div><aside class="calday" id="calday"></aside></div>
   </section>
   <section id="view-ev" hidden>
     <div class="evhead"><div><h3 id="evtitle">Veranstaltungen</h3><p class="sub" id="evstatus">Monats-PDF mit den Terminen hochladen, dann ist alles automatisch eingetragen.</p></div>
@@ -1568,8 +1596,8 @@ function renderKasse(){
 
 function renderAll(){
   if(S.tab!=="plan"&&document.body.classList.contains("p3full"))setFull(false);
-  ["plan","pack","kasse","abr","ev"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
-  $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen"}[S.tab];if(S.tab==="ev")renderEvents();
+  ["plan","pack","kasse","abr","ev","cal"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
+  $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen",cal:"Kalender"}[S.tab];if(S.tab==="ev")renderEvents();if(S.tab==="cal")renderCal();
   renderSummary();renderPlan();renderOrder(false);renderPicker();syncModal();
   if(S.tab==="pack")renderPack();if(S.tab==="kasse")renderKasse();if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr();
 }
@@ -2107,6 +2135,32 @@ $("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target
     S.events=(S.events||[]).filter(x=>!months.has(x.date.slice(0,7))&&x.date>=lim).concat(L).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);saveEvents();renderEvents();
     $("evstatus").textContent=`${L.length} Termine eingelesen.`}
   catch(err){console.error(err);$("evstatus").textContent="Die PDF ließ sich nicht lesen. Ohne Internet klappt das Einlesen nicht."}});
+/* ---------- Kalender ---------- */
+const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+function calInit(){if(S.calM)return;const L=upcoming();const d=L[0]?L[0].date:isoToday();S.calM=d.slice(0,7);S.calD=d}
+function renderCal(){calInit();const [Y,Mo]=S.calM.split("-").map(Number);$("cal-title").textContent=MON[Mo-1]+" "+Y;
+  const first=new Date(Y,Mo-1,1),days=new Date(Y,Mo,0).getDate(),off=(first.getDay()+6)%7,today=isoToday();
+  const by={};(S.events||[]).forEach(e=>{(by[e.date]=by[e.date]||[]).push(e)});
+  let h=["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>`<div class="cal-wd">${d}</div>`).join("");
+  for(let i=0;i<off;i++)h+=`<div class="cal-c out"></div>`;
+  for(let d=1;d<=days;d++){const iso=`${Y}-${String(Mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;const L=by[iso]||[];
+    const cls=["cal-c",iso===today?"today":"",iso===S.calD?"sel":"",L.length?"has":"",iso<today?"past":""].join(" ");
+    h+=`<button class="${cls}" data-day="${iso}" aria-label="${d}. ${MON[Mo-1]}${L.length?", "+L.map(e=>e.name).join(", "):""}"><span class="cal-n">${d}</span>${L.map(e=>`<span class="cal-ev${e.noCasa?" no":""}${S.event&&S.event.evId===e.id?" cur":""}">${e.pause&&e.pause!=="keine"?`<b>${e.pause}</b> `:""}${esc(e.name)}</span>`).join("")}</button>`}
+  $("calgrid").innerHTML=h;renderCalDay()}
+function renderCalDay(){const d=S.calD;const L=(S.events||[]).filter(e=>e.date===d);const dt=new Date(d+"T12:00");
+  const head=`<h4>${dt.toLocaleDateString("de-DE",{weekday:"long",day:"numeric",month:"long"})}</h4>`;
+  if(!L.length){$("calday").innerHTML=head+`<p class="sub">${(S.events||[]).length?"Keine Veranstaltung an diesem Tag.":"Noch keine Termine drin. Lade oben die Monats-PDF hoch."}</p>`;return}
+  $("calday").innerHTML=head+L.map(e=>{const cur=S.event&&S.event.evId===e.id;const row=(k,v)=>v?`<div><span>${k}</span><b>${esc(v)}</b></div>`:"";
+    return `<div class="cd-ev${e.noCasa?" no":""}"><b class="cd-name">${esc(e.name)}</b>
+      <div class="cd-grid">${row("Saal",e.room?roomName(e.room):"")}${row("Gäste",e.pax?e.pax+" pax":"")}${row("Einlass",e.einlass)}${row("Beginn",e.beginn)}${row("Pause",e.pause==="keine"?"keine Pause":e.pause||"noch offen")}${row("Ende",e.ende)}</div>
+      <span class="ev-tags">${e.noCasa?'<i class="t-no">ohne CaSa</i>':""}${e.kc?'<i>Künstlercatering</i>':""}${e.sekt?'<i>Sektempfang</i>':""}${cur?'<i class="t-cur">läuft gerade</i>':""}</span>
+      ${e.noCasa?"":`<button class="${cur?"ghost":"btn-solid"}" data-evstart="${esc(e.id)}"${cur?" disabled":""}>${cur?"Läuft gerade":"Diese Veranstaltung starten"}</button>`}</div>`}).join("")}
+function calShift(n){const [Y,Mo]=S.calM.split("-").map(Number);const d=new Date(Y,Mo-1+n,1);S.calM=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");renderCal()}
+$("cal-prev").onclick=()=>calShift(-1);$("cal-next").onclick=()=>calShift(1);$("cal-today").onclick=()=>{S.calD=isoToday();S.calM=S.calD.slice(0,7);renderCal()};
+$("calgrid").addEventListener("click",e=>{const b=e.target.closest("[data-day]");if(!b)return;S.calD=b.dataset.day;renderCal();if(matchMedia("(max-width:899px)").matches)$("calday").scrollIntoView({behavior:"smooth",block:"start"})});
+$("calday").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(b)openReset(b.dataset.evstart)});
+$("calfile").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);$("evfile").files=dt.files;e.target.value="";
+  $("evfile").dispatchEvent(new Event("change"));const t=setInterval(()=>{if(!/Lese/.test($("evstatus").textContent)){clearInterval(t);S.calM=null;renderCal();toast($("evstatus").textContent)}},200)});
 $("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
 
 /* ---------- Neue Veranstaltung ---------- */
@@ -2143,7 +2197,7 @@ async function doReset(){
   const ev=(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
   closeReset();renderAll();
   if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
-  toast(ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");
+  toast(ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");if(S.tab==="cal")renderCal();if(S.tab==="ev")renderEvents();
 }
 $("newevent").onclick=()=>openReset();
 $("resetmodal").addEventListener("click",e=>{const t=e.target;if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}
