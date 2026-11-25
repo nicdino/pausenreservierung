@@ -1460,7 +1460,7 @@ function renderAddForm(){
      <div class="field"><label for="af-glass">Auf den Tisch</label><select id="af-glass"><option value="">nichts</option>${GLASS_ORDER.map(g=>`<option value="${g}">${GLASS[g][0]}</option>`).join("")}</select></div>
     </div>
     <label class="chk"><input type="checkbox" id="af-crate"> Kommt in die Kühlhaus-Kiste</label>
-    <label class="chk"><input type="checkbox" id="af-late"> Erst kurz vor der Pause hinstellen (heiß oder frisch)</label>
+    <label class="chk"><input type="checkbox" id="af-late"> Erst kurz vor der Pause hinstellen (z. B. Heißgetränke, Aperitifs)</label>
     <div class="af-btns"><button class="ghost" id="af-cancel">Abbrechen</button><button class="btn-solid" id="af-save">Hinzufügen</button></div>
     ${mine.length?`<div class="af-list"><h4>Deine eigenen Produkte</h4>${mine.map(x=>`<div class="af-row"><span>${esc(x.name)}${x.size?` <span class="sz">${esc(x.size)}</span>`:""} · ${eur(+x.price)} · ${esc((CATS.find(c=>c.id===x.cat)||{}).name||"")}</span><button class="linkbtn danger" data-delcustom="${x.id}">Entfernen</button></div>`).join("")}</div>`:""}
    </div>`;
@@ -1507,7 +1507,7 @@ function totalsData(){
   const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(lbl(k))});
   return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate&&P[k].when==="kalt"),late:ids.filter(k=>!P[k].crate&&P[k].when!=="kalt")};
 }
-const LATE_TAG={heiss:"heiß, kurz vor der Pause",frisch:"frisch an der Theke"};
+const LATE_TAG={heiss:"kurz vor der Pause",frisch:"kurz vor der Pause"};
 function otherRows(d,ids){return (ids||d.other).map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag ${P[k].when}">${LATE_TAG[P[k].when]||"später"}</span> `:""}${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n g">${(d.u[k]||0)+(d.o[k]||0)}</td><td class="tabs">${(d.tabs[k]||[]).join(", ")}</td></tr>`).join("")}
 function totalsRows(ids,u,o){return ids.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n">${u[k]||""}</td><td class="n">${o[k]||""}</td><td class="n g">${(u[k]||0)+(o[k]||0)}</td></tr>`).join("")}
 function renderTotals(){
@@ -1536,7 +1536,7 @@ function renderPack(){
       ${gl.length?`<div class="gl">Gläser: ${esc(gl.join(", "))}</div>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div>
       <div class="amt">${eur(total(r))}</div></div>`}).join("");
   const later=d.later.map(k=>{const r=S.res[k];const hot=itemsText(r,p=>p.when==="heiss");const fresh=itemsText(r,p=>p.when==="frisch");
-    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${hot.length?esc(hot.join(", ")):""}${hot.length&&fresh.length?"<br>":""}${fresh.length?`<span class="gl">frisch an der Theke: ${esc(fresh.join(", "))}</span>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
+    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${esc(hot.concat(fresh).join(", "))}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
   const wineItems=r=>ORDER.filter(k=>r.items&&r.items[k]>0&&isWine(P[k])).map(k=>`${r.items[k]}× ${nmSz(P[k])}`);
   const wsum={};d.wine.forEach(k=>{const it=S.res[k].items;ORDER.forEach(p=>{if(it[p]>0&&isWine(P[p]))wsum[p]=(wsum[p]||0)+it[p]})});
   const wine=d.wine.map(k=>{const r=S.res[k];const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${esc(wineItems(r).join(", "))}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
@@ -1596,7 +1596,7 @@ function buildPrint(){
     return `<table>${g.map(t=>`<tr><td class="q">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("")}${d.bottleNotes.map(n=>`<tr><td></td><td>${esc(n)}</td></tr>`).join("")}</table>`};
   h+=`<div class="two"><div><h3>Gläser &amp; Teller unten</h3>${gl(du)}</div><div><h3>Gläser &amp; Teller oben</h3>${gl(dob)}</div></div>`;
   const oh='<tr class="hd"><td>Produkt</td><td class="q">Anzahl</td><td>Tische</td></tr>';
-  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
+  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">KURZ VORHER</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
   const tw=td.other.filter(k=>isWine(P[k])),to=td.other.filter(k=>!isWine(P[k]));
   const twq={};tw.forEach(k=>twq[k]=(td.u[k]||0)+(td.o[k]||0));
   if(tw.length)h+=`<h3>Wein &amp; Sekt</h3><div class="callout">Gläser stehen schon. Kurz vor der Pause mit den Flaschen rumgehen und einschenken.</div><div class="pour">Mitnehmen: ${esc(pourText(twq).join("; "))}</div><table class="ptot">${oh}${orow(tw)}</table>`;
