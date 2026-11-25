@@ -251,6 +251,9 @@ body.p3full .plan3 .editbar{top:88px}
 .rm-evb[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .rm-hint{color:var(--muted);font-size:14px}
 
+/* Standardplan-Editor */
+body.stdedit .side nav.tabs button:not(#tab-plan),body.stdedit .side-foot>*:not(.themebtn),body.stdedit #evbox,body.stdedit .summary,body.stdedit #nodraft,body.stdedit #legend{display:none!important}
+body.stdedit .plan3 .ed-foot [data-ea="done"]::after{content:" & speichern"}
 /* Kalender */
 .calhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.calhead h3{font-family:var(--f-ui);font-size:22px;margin:0 6px;min-width:150px;text-align:center}
 .calhead #cal-prev,.calhead #cal-next{width:42px;padding:8px 0;font-size:22px;line-height:1}
@@ -882,9 +885,10 @@ async function saveDoc(path,data){
   try{await db.doc(path).set(clone(data))}catch(e){toast("Speichern hat nicht geklappt.")}
 }
 
+const STD_EDITOR=false; /* true nur in der Kopie zum Festlegen des Standardplans */
 /* ---------- 3D-Foyer (Grundlage: Fluchtplan, Fotos vor Ort) ---------- */
 const SAAL_PLAN={"foyer":[[1210,375],[1250,290],[1330,300],[1443,420],[2219,1142],[2069,1300],[1990,1377],[1830,1560],[1830,1760],[1660,1766],[1700,1703],[1683,1630],[1514,1523],[707,1523],[550,1630],[536,1704],[578,1766],[410,1760],[405,1300],[178,1134],[330,1010],[465,868],[740,862]],"openEdges":[4,5,6,7,8,9,10,11,12,13,14,15,16,17],"pillars":[[700,1233],[1101,1231],[1531,1233],[707,1523],[1514,1523]],"theke":[[953,1354,1257,1390],[953,1390,995,1462],[1215,1390,1257,1462],[1045,1412,1165,1442],[955,1499,1204,1522],[1208,1499,1248,1522]],"thekeBack":[960,1524,1250,1625],"ledges":[[[707,1523],[953,1523]],[[1257,1523],[1514,1523]],[[707,1523],[550,1630]],[[550,1630],[536,1704]],[[536,1704],[578,1766]],[[1514,1523],[1683,1630]],[[1683,1630],[1700,1703]],[[1700,1703],[1660,1766]]],"ledgeLbl":[[830,1490],[1390,1490]],"garderobeLbl":[[760,1610],[1460,1610]],"signs":[["Terrasse",[950,560]],["Ausgang",[250,1180]],["WC",[2040,1290]],["Theatersaal",[1110,1700]]],"galerie":[[330,1010],[465,868],[740,862],[1210,375],[1250,290],[1330,300],[1443,420],[2219,1142],[2069,1300],[1754,1000],[1378,645],[1310,722],[1150,722],[1100,672],[1100,640],[770,975],[575,975]],"rails":[[[2069,1300],[1828,1071]],[[1751,998],[1378,645]],[[1310,722],[1150,722]],[[1150,722],[1100,672]],[[1100,672],[1100,640]],[[1100,640],[770,975]],[[770,975],[575,975]],[[575,975],[563,977]],[[453,992],[330,1010]]],"galWindows":[[[330,1010],[465,868]],[[465,868],[740,862]],[[740,862],[1210,375]]],"galWalls":[[[1210,375],[1250,290]],[[1250,290],[1330,300]],[[1330,300],[1443,420]],[[1443,420],[2219,1142]],[[2219,1142],[2069,1300]]],"thekeOben":[[1150,708],[1104,662],[1192,557],[1243,603],[1243,655]],"galLbl":[1756,857],"doors":[[1915,905],[2010,968],[1400,405],[1150,437]],"stairs":[["T5 Treppe",[1468,801],[1344,684],100],["T6 Treppe",[1673,1158],[1790,1034],100],["T3 Treppe",[645,1109],[508,986],105]],"pit":[[1004,757],[1096,849],[1166,779],[1074,687]],"pitStair":[[1039,722],[1131,814],100],"sitz":{"a":[1560,710],"b":[1730,838],"depth":95,"side":1,"lblOff":[-40,60]},"sitzTri":[[1754,1000],[1665,1094],[1555,813]],"void":[[579,984],[791,960],[836,921],[915,1011],[720,1125],[672,1072]],"abgang":[[836,921],[1004,757],[1096,849],[915,1011]],"yellowFloors":[[[720,1125],[915,1011],[991,1140]],[[1096,849],[1166,779],[1251,864]]]};
-const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[666,1308,15.7,81.1,"unten"],"3":[790,1259,25.2,72.3,"unten"],"4":[622,1207,16.6,65.8,"unten"],"5":[848,1106,29.6,15.2,"unten"],"6":[917,1066,34.7,24.1,"unten"],"7":[960,1130,39.6,14,"unten"],"8":[1263,863,72.1,5.3,"unten"],"9":[1304,777,68.5,16.9,"unten"],"10":[1373,842,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1452,1395,84.2,87.4,"unten"],"13":[774,1165,23.4,48.6,"unten"],"14":[1026,1062,31.7,49.7,"unten"],"15":[996,999,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1489,1082,81.7,55.2,"unten"],"21":[1585,998,88.5,43.2,"unten"],"22":[1534,869,86.4,29.9,"unten"],"23":[1550,937,82.5,16.9,"unten"],"34":[1122,531,53.5,35.5,"oben"],"35":[1032,624,44.3,35.5,"oben"],"36":[942,718,35.1,35.5,"oben"],"37":[851,811,25.9,35.5,"oben"],"38":[725,907,16.7,35.5,"oben"],"31":[1626,673,84.7,82.0,"oben"],"32":[1721,763,84.7,65.6,"oben"],"33":[1815,852,84.7,49.2,"oben"]};
+const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[666,1308,15.7,81.1,"unten"],"3":[790,1259,25.2,72.3,"unten"],"4":[622,1207,16.6,65.8,"unten"],"5":[848,1106,29.6,15.2,"unten"],"6":[917,1066,34.7,24.1,"unten"],"7":[960,1130,39.6,14,"unten"],"8":[1263,863,72.1,5.3,"unten"],"9":[1304,777,68.5,16.9,"unten"],"10":[1373,842,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1452,1395,84.2,87.4,"unten"],"13":[774,1165,23.4,48.6,"unten"],"14":[1026,1062,31.7,49.7,"unten"],"15":[996,999,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1489,1082,81.7,55.2,"unten"],"21":[1585,998,88.5,43.2,"unten"],"22":[1534,869,86.4,29.9,"unten"],"23":[1550,937,82.5,16.9,"unten"],"34":[1001,697,53.5,35.5,"oben"],"35":[938,761,44.3,35.5,"oben"],"36":[875,826,35.1,35.5,"oben"],"37":[812,890,25.9,35.5,"oben"],"38":[690,945,16.7,35.5,"oben"],"31":[1554,770,84.7,82.0,"oben"],"32":[1619,832,84.7,65.6,"oben"],"33":[1684,894,84.7,49.2,"oben"]};
 function saalPos(t){if(t.p3)return t.p3;const p=SAAL_POS[t.id];if(p&&p[4]===t.f&&Math.abs(p[2]-t.x)<.6&&Math.abs(p[3]-t.y)<.6)return[p[0],p[1]];
   return t.f==="oben"?[15.562*t.x+-1.022*t.y+441.4,-2.030*t.x+2.350*t.y+733.9]:[476+12.4*t.x,563+9.4*t.y]}
 function Saal3D(stage,cb){
@@ -1152,6 +1156,7 @@ function tlabel(n,sub,st,sel,pick,edit){const H=72,R=14,pad=20;const c=document.
   const ls=.03*(stage.clientWidth<stage.clientHeight?1.15:1);sp.scale.set(ls*c.width/c.height,ls,1);sp.center.set(.5,0);sp.renderOrder=10;return sp}
 function disposeObj(o){o.traverse(x=>{if(x.geometry)x.geometry.dispose();if(x.material&&x.material.map)x.material.map.dispose()})}
 function hashN(s){let h=7;for(const ch of String(s))h=(h*31+ch.charCodeAt(0))%9973;return h}
+function railAt(px,py){let best=null;(PLAN.rails||[]).forEach(([a,b])=>{const dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy,u=Math.max(0,Math.min(1,((px-a[0])*dx+(py-a[1])*dy)/L2));const d=Math.hypot(a[0]+dx*u-px,a[1]+dy*u-py);if(!best||d<best.d)best={d,ang:Math.atan2(dy,dx)}});return best&&best.d<110?best.ang:null}
 function addTable(t){const [px,py]=t.p;const [x,z]=P(px,py);const grp=new THREE.Group();grp.position.set(x,t.f==="oben"?H1:0,z);tblGroup.add(grp);
   const inner=new THREE.Group();grp.add(inner);const parts=[];
   const tm=t.pick?MT.pick:t.st==="free"&&!t.sel?M.black:t.sel?MT.sel:t.st==="done"?MT.done:MT.res;
@@ -1161,6 +1166,9 @@ function addTable(t){const [px,py]=t.p;const [x,z]=P(px,py);const grp=new THREE.
     for(let i=0;i<4;i++){const a=i*Math.PI/2+Math.PI/4;const ch=new THREE.Group();ch.position.set(Math.cos(a)*.78,0,Math.sin(a)*.78);ch.rotation.y=-a-Math.PI/2;
       const seat=box(.42,.05,.42,M.chair);seat.position.y=.46;const back=box(.42,.42,.05,M.chair);back.position.set(0,.68,-.2);
       [[-.18,-.18],[.18,-.18],[-.18,.18],[.18,.18]].forEach(([lx,lz])=>{const l=box(.03,.45,.03,M.chair);l.position.set(lx,.225,lz);ch.add(l)});ch.add(seat,back);inner.add(ch);parts.push(seat,back);seats.push(ch)}}
+  else if(t.s&&t.f==="oben"){topY=1.1;const ra=railAt(px,py);if(ra)inner.rotation.y=-ra;
+    /* Stehtisch oben: 1 m breit, 1,5 m lang, kurze Seite am Geländer */
+    const top=box(1.0,.05,1.5,tm);top.position.y=1.08;const ped=box(.5,1.05,.12,M.black);ped.position.y=.53;const base=box(.7,.03,.5,M.black);base.position.y=.015;inner.add(top,ped,base);parts.push(top,ped)}
   else if(t.s){topY=1.1;const top=box(.8,.04,.8,tm);top.position.y=1.08;const stand=box(.08,1.06,.08,M.black);stand.position.y=.53;const base=box(.56,.03,.5,M.black);base.position.y=.015;inner.add(top,stand,base);parts.push(top,stand)}
   else{topY=1.12;const top=cyl(.36,.36,.035,tm);top.position.y=1.1;const leg=cyl(.03,.03,1.08,M.black);leg.position.y=.54;inner.add(top,leg);parts.push(top,leg);
     for(let i=0;i<4;i++){const f=box(.6,.03,.05,M.black);f.rotation.y=i*Math.PI/2+Math.PI/4;f.position.set(Math.cos(i*Math.PI/2+Math.PI/4)*.15,.015,-Math.sin(i*Math.PI/2+Math.PI/4)*.15);inner.add(f)}}
@@ -1169,8 +1177,9 @@ function addTable(t){const [px,py]=t.p;const [x,z]=P(px,py);const grp=new THREE.
   /* Gäste: sitzen auf den Stühlen oder stehen um den Tisch */
   const seed=hashN(t.id);
   if(t.pp){if(t.c){seats.slice(0,t.pp).forEach((ch,i)=>{const p=person(seed+i,true);ch.add(p)})}
+    else if(t.s&&t.f==="oben"){const sp=[[.78,-.35,-1],[-.78,-.35,1],[.78,.35,-1],[-.78,.35,1]];for(let i=0;i<t.pp;i++){const [x,z,r]=sp[i];const p=person(seed+i,false);p.position.set(x,0,z);p.rotation.y=r*Math.PI/2;inner.add(p)}}
     else for(let i=0;i<t.pp;i++){const a=(i/t.pp)*Math.PI*2+seed%7;const p=person(seed+i,false);p.position.set(Math.cos(a)*.62,0,Math.sin(a)*.62);p.rotation.y=-a-Math.PI/2;inner.add(p)}}
-  const hit=new THREE.Mesh(new THREE.CylinderGeometry(t.c?1.05:.65,t.c?1.05:.65,1.4,12),new THREE.MeshBasicMaterial({visible:false}));hit.position.y=.7;grp.add(hit);parts.push(hit);
+  const hit=new THREE.Mesh(new THREE.CylinderGeometry(t.c?1.05:t.s&&t.f==="oben"?.85:.65,t.c?1.05:t.s&&t.f==="oben"?.85:.65,1.4,12),new THREE.MeshBasicMaterial({visible:false}));hit.position.y=.7;grp.add(hit);parts.push(hit);
   const lb=tlabel(t.n===""||t.n==null?"":String(t.n),t.sub,t.st,t.sel,t.pick,t.edit);lb.position.set(0,t.c?(t.pp?1.35:1.0):(t.pp?1.85:1.3),0);grp.add(lb);parts.push(lb);
   parts.forEach(p=>p.userData.tid=t.id);tbls.push({t,grp,inner,lb,base:lb.scale.clone(),k:1,goal:1,lk:1,lgoal:t.sel?1.6:1})}
 function setTables(list){const hv=hoverId;hoverId=null;tbls.forEach(r=>{disposeObj(r.grp);tblGroup.remove(r.grp)});tbls=[];list.forEach(addTable);tbls.forEach(r=>{r.lk=r.lgoal;r.lb.scale.copy(r.base).multiplyScalar(r.lk)});setHover(hv);dirty=true}
@@ -1614,7 +1623,7 @@ function renderKasse(){
 function renderAll(){
   if(S.tab!=="plan"&&document.body.classList.contains("p3full"))setFull(false);
   ["plan","pack","kasse","abr","ev","cal"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
-  $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen",cal:"Kalender"}[S.tab];if(S.tab==="ev")renderEvents();if(S.tab==="cal")renderCal();
+  if(STD_EDITOR){}else $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen",cal:"Kalender"}[S.tab];if(S.tab==="ev")renderEvents();if(S.tab==="cal")renderCal();
   renderSummary();renderPlan();renderOrder(false);renderPicker();syncModal();
   if(S.tab==="pack")renderPack();if(S.tab==="kasse")renderKasse();if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr();
 }
@@ -1981,6 +1990,7 @@ $("editbar").addEventListener("click",e=>{
   if(a==="copy"){const txt=JSON.stringify(S.layout);const ok=()=>toast("Plan kopiert. Einfach im Chat einfügen.");
     try{navigator.clipboard.writeText(txt).then(ok,()=>showCopy(txt))}catch(err){showCopy(txt)}return}
   if(a==="reset"){S.layout=normLayout(clone(DEFAULT_LAYOUT));S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
+  if(a==="done"&&STD_EDITOR){S.editSel=null;saveDoc("config/layout",S.layout);renderPlan();toast("Standardplan gespeichert. Sag Claude Bescheid, dann wird er übernommen.");return}
   if(a==="done"){S.editing=false;S.editSel=null;S.lmSel=null;saveDoc("config/layout",S.layout);renderAll();toast("Plan gespeichert");return}
 });
 function dupHint(t){const o=S.layout.tables.filter(x=>x!==t&&x.n===t.n);return o.length?`Die ${t.n} gibt es jetzt doppelt${o.some(x=>x.f!==t.f)?" (auch "+(o.find(x=>x.f!==t.f).f)+")":""}. Das ist okay.`:""}
@@ -2239,6 +2249,7 @@ async function doReset(){
   toast(ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");if(S.tab==="cal")renderCal();if(S.tab==="ev")renderEvents();
 }
 $("newevent").onclick=()=>openReset();
+if(STD_EDITOR){document.body.classList.add("stdedit");S.tab="plan";S.editing=true;S.sel=null;renderAll();$("pagetitle").textContent="Standardplan festlegen"}
 $("resetmodal").addEventListener("click",e=>{const t=e.target;if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}
   const pb=t.closest("[data-pick]");if(pb){S.pickEv=pb.dataset.pick;document.querySelectorAll("#rmbox [data-pick]").forEach(b=>b.setAttribute("aria-pressed",b===pb));return}
   if(t.closest("#rm-go"))doReset()});
