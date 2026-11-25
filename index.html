@@ -811,10 +811,10 @@ async function saveDoc(path,data){
 }
 
 /* ---------- 3D-Foyer (Grundlage: Fluchtplan, Fotos vor Ort) ---------- */
-const SAAL_PLAN={"foyer":[[1037,405],[1150,330],[1300,235],[1507,340],[2204,989],[2010,1199],[1990,1377],[1830,1560],[1830,1760],[1660,1766],[1700,1703],[1683,1630],[1514,1523],[707,1523],[550,1630],[536,1704],[578,1766],[410,1760],[405,1300],[178,1134],[340,875],[486,745],[745,729]],"openEdges":[0,5,6,7,8,9,10,11,12,13,14,15,16,17],"pillars":[[702,1083],[1102,1078],[1532,1075],[707,1523],[1514,1523]],"theke":[[953,1354,1257,1390],[953,1390,995,1462],[1215,1390,1257,1462],[1045,1412,1165,1442],[955,1499,1204,1522],[1208,1499,1248,1522]],"thekeBack":[960,1524,1250,1625],"ledges":[[[707,1523],[953,1523]],[[1257,1523],[1514,1523]],[[707,1523],[550,1630]],[[550,1630],[536,1704]],[[536,1704],[578,1766]],[[1514,1523],[1683,1630]],[[1683,1630],[1700,1703]],[[1700,1703],[1660,1766]]],"ledgeLbl":[[830,1490],[1390,1490]],"garderobeLbl":[[760,1610],[1460,1610]],"signs":[["Terrasse",[1090,330]],["Ausgang",[250,1180]],["WC",[2040,1290]],["Theatersaal",[1110,1700]]],"galerie":[[1037,405],[1150,330],[1300,235],[1507,340],[2204,989],[2106,1075],[1750,850],[1360,566],[1312,630],[1250,630],[1250,564],[1166,567],[1037,570],[761,810],[535,850],[373,905],[340,875],[486,745],[745,729]],"rails":[[[2106,1075],[1835,904]],[[1750,850],[1360,566]],[[1312,630],[1250,630]],[[1250,630],[1250,564]],[[1250,564],[1166,567]],[[1166,567],[1037,570]],[[1037,570],[761,810]],[[761,810],[561,845]],[[478,869],[373,905]]],"galWindows":[[[486,745],[745,729]],[[745,729],[1037,405]],[[340,875],[486,745]]],"galWalls":[[[1150,330],[1300,235]],[[1300,235],[1507,340]],[[1507,340],[2204,989]],[[2204,989],[2106,1075]],[[373,905],[340,875]]],"thekeOben":[[1240,548],[1062,552],[1164,452],[1242,381],[1278,428],[1257,486]],"galLbl":[1760,640],"stairs":[["T5 Treppe",[1439,675],[1336,598],80],["T6 Treppe",[1726,987],[1795,878],90],["T3 Treppe",[612,950],[520,858],80]],"pit":[[974,607],[1066,699],[1136,629],[1044,537]],"pitStair":[[1009,572],[1101,664],100],"sitz":{"a":[1560,710],"b":[1730,838],"depth":95,"side":1,"lblOff":[-40,60]},"sitzTri":[[1757,854],[1688,963],[1476,645]],"void":[[549,834],[761,810],[806,771],[885,861],[690,975],[642,922]],"abgang":[[806,771],[974,607],[1066,699],[885,861]],"yellowFloors":[[[690,975],[885,861],[961,990]],[[1066,699],[1136,629],[1221,714]]]};
-const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[650,1318,15.7,81.1,"unten"],"3":[788,1243,25.2,72.3,"unten"],"4":[682,1182,16.6,65.8,"unten"],"5":[818,956,29.6,15.2,"unten"],"6":[887,916,34.7,24.1,"unten"],"7":[930,980,39.6,14,"unten"],"8":[1280,685,72.1,5.3,"unten"],"9":[1349,750,68.5,16.9,"unten"],"10":[1387,837,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1452,1385,84.2,87.4,"unten"],"13":[758,1030,23.4,48.6,"unten"],"14":[861,1045,31.7,49.7,"unten"],"15":[991,1053,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1487,1082,81.7,55.2,"unten"],"21":[1573,969,88.5,43.2,"unten"],"22":[1547,844,86.4,29.9,"unten"],"23":[1491,743,82.5,16.9,"unten"],"34":[1010,502,53.5,35.5,"oben"],"35":[943,576,44.3,35.5,"oben"],"36":[876,651,35.1,35.5,"oben"],"37":[809,725,25.9,35.5,"oben"],"38":[694,777,16.7,35.5,"oben"],"31":[1577,514,84.7,82.0,"oben"],"32":[1665,596,84.7,65.6,"oben"],"33":[1753,678,84.7,49.2,"oben"]};
+const SAAL_PLAN={"foyer":[[1210,375],[1250,290],[1330,300],[1443,420],[2219,1142],[2069,1300],[1990,1377],[1830,1560],[1830,1760],[1660,1766],[1700,1703],[1683,1630],[1514,1523],[707,1523],[550,1630],[536,1704],[578,1766],[410,1760],[405,1300],[178,1134],[330,1010],[465,868],[740,862]],"openEdges":[4,5,6,7,8,9,10,11,12,13,14,15,16,17],"pillars":[[700,1233],[1101,1231],[1531,1233],[707,1523],[1514,1523]],"theke":[[953,1354,1257,1390],[953,1390,995,1462],[1215,1390,1257,1462],[1045,1412,1165,1442],[955,1499,1204,1522],[1208,1499,1248,1522]],"thekeBack":[960,1524,1250,1625],"ledges":[[[707,1523],[953,1523]],[[1257,1523],[1514,1523]],[[707,1523],[550,1630]],[[550,1630],[536,1704]],[[536,1704],[578,1766]],[[1514,1523],[1683,1630]],[[1683,1630],[1700,1703]],[[1700,1703],[1660,1766]]],"ledgeLbl":[[830,1490],[1390,1490]],"garderobeLbl":[[760,1610],[1460,1610]],"signs":[["Terrasse",[950,560]],["Ausgang",[250,1180]],["WC",[2040,1290]],["Theatersaal",[1110,1700]]],"galerie":[[330,1010],[465,868],[740,862],[1210,375],[1250,290],[1330,300],[1443,420],[2219,1142],[2069,1300],[1754,1000],[1378,645],[1310,722],[1150,722],[1100,672],[1100,640],[770,975],[575,975]],"rails":[[[2069,1300],[1828,1071]],[[1751,998],[1378,645]],[[1310,722],[1150,722]],[[1150,722],[1100,672]],[[1100,672],[1100,640]],[[1100,640],[770,975]],[[770,975],[575,975]],[[575,975],[563,977]],[[453,992],[330,1010]]],"galWindows":[[[330,1010],[465,868]],[[465,868],[740,862]],[[740,862],[1210,375]]],"galWalls":[[[1210,375],[1250,290]],[[1250,290],[1330,300]],[[1330,300],[1443,420]],[[1443,420],[2219,1142]],[[2219,1142],[2069,1300]]],"thekeOben":[[1150,708],[1104,662],[1192,557],[1243,603],[1243,655]],"galLbl":[1756,857],"doors":[[1915,905],[2010,968],[1400,405],[1150,437]],"stairs":[["T5 Treppe",[1468,801],[1344,684],100],["T6 Treppe",[1673,1158],[1790,1034],100],["T3 Treppe",[645,1109],[508,986],105]],"pit":[[1004,757],[1096,849],[1166,779],[1074,687]],"pitStair":[[1039,722],[1131,814],100],"sitz":{"a":[1560,710],"b":[1730,838],"depth":95,"side":1,"lblOff":[-40,60]},"sitzTri":[[1754,1000],[1665,1094],[1555,813]],"void":[[579,984],[791,960],[836,921],[915,1011],[720,1125],[672,1072]],"abgang":[[836,921],[1004,757],[1096,849],[915,1011]],"yellowFloors":[[[720,1125],[915,1011],[991,1140]],[[1096,849],[1166,779],[1251,864]]]};
+const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[666,1308,15.7,81.1,"unten"],"3":[790,1259,25.2,72.3,"unten"],"4":[622,1207,16.6,65.8,"unten"],"5":[848,1106,29.6,15.2,"unten"],"6":[917,1066,34.7,24.1,"unten"],"7":[960,1130,39.6,14,"unten"],"8":[1263,863,72.1,5.3,"unten"],"9":[1304,777,68.5,16.9,"unten"],"10":[1373,842,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1452,1395,84.2,87.4,"unten"],"13":[774,1165,23.4,48.6,"unten"],"14":[1026,1062,31.7,49.7,"unten"],"15":[996,999,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1489,1082,81.7,55.2,"unten"],"21":[1585,998,88.5,43.2,"unten"],"22":[1534,869,86.4,29.9,"unten"],"23":[1550,937,82.5,16.9,"unten"],"34":[1122,531,53.5,35.5,"oben"],"35":[1032,624,44.3,35.5,"oben"],"36":[942,718,35.1,35.5,"oben"],"37":[851,811,25.9,35.5,"oben"],"38":[725,907,16.7,35.5,"oben"],"31":[1626,673,84.7,82.0,"oben"],"32":[1721,763,84.7,65.6,"oben"],"33":[1815,852,84.7,49.2,"oben"]};
 function saalPos(t){if(t.p3)return t.p3;const p=SAAL_POS[t.id];if(p&&p[4]===t.f&&Math.abs(p[2]-t.x)<.6&&Math.abs(p[3]-t.y)<.6)return[p[0],p[1]];
-  return t.f==="oben"?[14.583203*t.x+0.608859*t.y+354.270024,-2.141077*t.x+0.210469*t.y+732.503504]:[476+12.4*t.x,563+9.4*t.y]}
+  return t.f==="oben"?[15.562*t.x+-1.022*t.y+441.4,-2.030*t.x+2.350*t.y+733.9]:[476+12.4*t.x,563+9.4*t.y]}
 function Saal3D(stage,cb){
 const PLAN=SAAL_PLAN;const ZNAME={ul:"Theke links",ur:"Theke rechts",sz:"Sitztreppe",o:"Theke oben"};
 const renderer=new THREE.WebGLRenderer({antialias:true});
@@ -948,7 +948,7 @@ function flight(g,a,b,wpx,y1,mat,skip){const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0]
   {const V=PLAN.void;g.add(flat(V,M.floor,-1.3));
    V.forEach((p,i)=>{const q=V[(i+1)%V.length];if(i!==2)g.add(wallSeg(p,q,1.3,.12,M.white,-1.3));
      if(i>=2&&i<=4){g.add(wallSeg(p,q,1.0,.3,M.white,0,.15));g.add(wallSeg(p,q,.08,.42,M.wood,1.0,.21))}});
-   sign(g,"Luftraum UG",[680,860],1.5,.6)}
+   sign(g,"Luftraum UG",[710,1010],1.5,.6)}
   /* Abgang zwischen Luftraum und T4: breite Treppe, 8 Stufen runter Richtung Wand zum Ausgang (Glastüren unter der Galerie) */
   {const A=PLAN.abgang;const D=1.3,n=8;
    /* rechte Seite teilt sich das Geländer mit T4 */
@@ -964,7 +964,7 @@ function flight(g,a,b,wpx,y1,mat,skip){const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0]
    const [ax,az]=P(A[0][0],A[0][1]),[bx,bz]=P(A[1][0],A[1][1]);const dl=Math.hypot(bx-ax,bz-az);
    const door=box(dl*.8,2.3,.06,M.glass);door.position.set((ax+bx)/2+(x0-x1)/len*.08,-D+1.15,(az+bz)/2+(z0-z1)/len*.08);door.rotation.y=-Math.atan2(bz-az,bx-ax);g.add(door);
    const fr=box(dl*.8,.08,.1,M.wood);fr.position.copy(door.position);fr.position.y=-D+2.3;fr.rotation.y=door.rotation.y;g.add(fr);
-   sign(g,"Ausgang",[880,760],1.6,.7)}
+   sign(g,"Ausgang",[910,910],1.6,.7)}
   /* gelbe Flächen: vor der Brüstung rechts neben T3 und vor T4 */
   {const ym=new THREE.MeshStandardMaterial({color:0xe2bb2a,roughness:.75});PLAN.yellowFloors.forEach(y=>g.add(flat(y,ym,.012)))}
   {const [a,b,w]=PLAN.pitStair;const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0],b[1]);const len=Math.hypot(x2-x1,z2-z1),n=12;
@@ -978,7 +978,7 @@ function flight(g,a,b,wpx,y1,mat,skip){const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0]
   const slab=solid(G,H,M.white);g.add(slab);g.add(flat(G,M.floor,H+.02));
   PLAN.rails.forEach(([a,b])=>{g.add(wallSeg(a,b,.95,.18,M.white,H,.09));g.add(wallSeg(a,b,.07,.32,M.wood,H+.95,.16))});
   PLAN.galWindows.forEach(([a,b])=>g.add(wallSeg(a,b,2.6,.08,M.glass,H)));
-  PLAN.galWalls.forEach(([a,b])=>g.add(wallSeg(a,b,1.2,.25,M.white,H)));
+  PLAN.galWalls.forEach(([a,b])=>g.add(wallSeg(a,b,2.8,.25,M.white,H,.12)));
   /* Theke oben nach Zeichnung: offene Form ab T5, innen frei für die Bedienung */
   {const T=PLAN.thekeOben.map(p=>P(p[0],p[1]));const W=.72,Y=H;
    const cx=T.reduce((a,p)=>a+p[0],0)/T.length,cz=T.reduce((a,p)=>a+p[1],0)/T.length;
@@ -992,22 +992,24 @@ function flight(g,a,b,wpx,y1,mat,skip){const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0]
      const top=box(L+ext+.06,.04,W+.08,M.top);top.position.y=1.04;grp.add(top);
      /* Holzablage außen auf Stützen */
      /* Holzablage nur zur Terrasse und an der Seite rechts daneben */
-     if(i===2||i===3){const wood=box(L+ext,.05,.32,M.wood);wood.position.set(0,1.28,sgn*(W/2-.02));grp.add(wood);
+     if(i===1||i===2){const wood=box(L+ext,.05,.32,M.wood);wood.position.set(0,1.28,sgn*(W/2-.02));grp.add(wood);
      for(let k=-1;k<=1;k+=2){const p=cyl(.03,.03,.22,M.steel,10);p.position.set(k*(L/2-.2),1.16,sgn*(W/2-.1));grp.add(p)}}
      return {grp,L,sgn}};
    const S=[];for(let i=0;i<T.length-1;i++){const r=seg(T[i],T[i+1],i);g.add(r.grp);r.grp.traverse(o=>{if(o.isMesh){o.userData.zone="o";ZM.push(o)}});S.push(r)}
    /* Details auf der Innenseite: Spüle, Zapfanlage, Glaskästen dahinter, Kühlschränke darunter */
    const inner=(r,x,o)=>{o.position.x+=x;o.position.z+=-r.sgn*.15;r.grp.add(o);return o};
-   /* Rückseite am Geländer: Spüle, Zapfanlage mit Tropfblech, Glaskästen zum Foyer hin, Kühlschränke darunter */
-   {const r=S[0];const sk=box(.7,.05,.4,M.steel);sk.position.y=1.06;inner(r,-.75,sk);const hahn=cyl(.02,.02,.3,M.steel,8);hahn.position.y=1.2;inner(r,-.75,hahn);
-    for(let k=0;k<2;k++){const t=cyl(.04,.04,.42,M.steel,12);t.position.y=1.27;inner(r,.45+k*.35,t);const sp=box(.14,.05,.05,M.steel);sp.position.set(0,1.42,-r.sgn*.06);inner(r,.45+k*.35,sp)}
-    const dr=box(1.0,.03,.4,M.steel);dr.position.y=1.065;inner(r,.6,dr);
-    const gk=box(r.L,.5,.06,M.glass);gk.position.set(0,1.33,r.sgn*.3);r.grp.add(gk);
-    for(let k=0;k<3;k++){const f=box(.55,.75,.04,M.steel);f.position.set(-0.3+k*.6,.42,-r.sgn*(W/2+.01));r.grp.add(f)}}
-   {const r=S[1];const gk=box(r.L,.5,.06,M.glass);gk.position.set(0,1.33,r.sgn*.3);r.grp.add(gk);const dr=box(1.2,.03,.4,M.steel);dr.position.y=1.065;inner(r,0,dr)}
-   /* eingelassenes Becken an der Ecke rechts */
-   {const r=S[3];const sk=box(.5,.05,.4,M.black);sk.position.y=1.065;inner(r,.2,sk)}
-   zsign(g,"o",PLAN.thekeOben[3].map((v,i)=>v+(i?40:-40)),H+2.0,.8)}
+   /* Seite am Geländer: Glaskasten zum Foyer, Kühlschränke darunter */
+   {const r=S[0];const gk=box(r.L,.5,.06,M.glass);gk.position.set(0,1.33,r.sgn*.3);r.grp.add(gk);
+    for(let k=0;k<2;k++){const f=box(.55,.75,.04,M.steel);f.position.set(-0.3+k*.6,.42,-r.sgn*(W/2+.01));r.grp.add(f)}}
+   /* rechte Seite an der Tür: Spüle, Zapfanlage mit Tropfblech, Glaskasten dahinter */
+   {const r=S[3];const sk=box(.5,.05,.35,M.steel);sk.position.y=1.06;inner(r,-.35,sk);const hahn=cyl(.02,.02,.3,M.steel,8);hahn.position.y=1.2;inner(r,-.35,hahn);
+    const t=cyl(.04,.04,.42,M.steel,12);t.position.y=1.27;inner(r,.4,t);const dr=box(.5,.03,.35,M.steel);dr.position.y=1.065;inner(r,.4,dr);
+    const gk=box(r.L,.5,.06,M.glass);gk.position.set(0,1.33,r.sgn*.3);r.grp.add(gk)}
+   {const r=S[2];const dr=box(1.0,.03,.4,M.steel);dr.position.y=1.065;inner(r,0,dr)}
+   zsign(g,"o",[1180,630],H+2.0,.8)}
+  /* Türen in den Wänden der Galerie */
+  (PLAN.doors||[]).forEach(([px,py])=>{const G=PLAN.galerie;let best=null;G.forEach((a,k)=>{const b=G[(k+1)%G.length];const dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy,t=Math.max(0,Math.min(1,((px-a[0])*dx+(py-a[1])*dy)/L2));const dd=Math.hypot(a[0]+dx*t-px,a[1]+dy*t-py);if(!best||dd<best.d)best={d:dd,ang:Math.atan2(dy,dx),x:a[0]+dx*t,y:a[1]+dy*t}});
+    const [dx0,dz0]=P(best.x,best.y);const dg=new THREE.Group();dg.position.set(dx0,H,dz0);dg.rotation.y=-best.ang;const fr=box(1.16,2.2,.32,M.counter);fr.position.y=1.1;const leaf=box(1.0,2.1,.36,M.wood);leaf.position.y=1.05;const kn=box(.06,.06,.42,M.steel);kn.position.set(.36,1.05,0);dg.add(fr,leaf,kn);floors.oben.add(dg)})
   sign(g,"Galerie",PLAN.galLbl,H+.5,.9);
   /* Treppen und Sitztreppe gehören zum Übergang */
   PLAN.stairs.forEach(([nm,a,b,w])=>{flight(floors.unten,a,b,w,H,M.step,nm.startsWith("T5")?1:0);sign(floors.unten,nm,[(a[0]+b[0])/2,(a[1]+b[1])/2],H+.9,.7)});
