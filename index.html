@@ -279,6 +279,12 @@ body.stdedit .plan3 .ed-foot [data-ea="done"]::after{content:" & speichern"}
 .hist .cols{display:flex;gap:10px;align-items:flex-end;height:200px;padding-top:10px;overflow-x:auto}
 .hist .col{flex:1 0 56px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;text-align:center}
 .hist .col i{display:block;width:70%;max-width:64px;background:var(--accent);border-radius:6px 6px 2px 2px;min-height:3px}.hist .col b{font-family:var(--f-ui);font-size:13px}.hist .col span{font-weight:700;font-size:13px}.hist .col small{color:var(--muted);font-size:11px;line-height:1.2;max-height:2.4em;overflow:hidden}
+
+.st-bar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px}.demo-tag{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#e8b33a;color:#1d1a1a;padding:4px 10px;border-radius:999px}
+.s3d{height:280px;border-radius:10px;background:radial-gradient(ellipse at 50% 30%,var(--surface),var(--sunk));overflow:hidden}
+.tl.cols{display:flex;gap:6px;align-items:flex-end;height:170px}.tl .col{flex:1 0 28px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+.tl .col i{display:block;width:80%;background:#e0763a;border-radius:4px 4px 1px 1px;min-height:2px}.tl .col span{font-size:11px;color:var(--muted)}.tl .col b{font-size:12px;font-family:var(--f-ui)}
+.hist .kpis{margin:26px 0 0}
 @media (max-width:560px){.st-grid{grid-template-columns:1fr}.kpi b{font-size:23px}}
 /* Kalender */
 .calhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.calhead h3{font-family:var(--f-ui);font-size:22px;margin:0 6px;min-width:150px;text-align:center}
@@ -651,8 +657,8 @@ table.list td .sz{color:var(--muted)}
     <button role="tab" id="tab-kasse" aria-selected="false" data-tab="kasse" title="Summe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4H7l6 8-6 8h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Summe</span></button>
     <button role="tab" id="tab-ev" aria-selected="false" data-tab="ev" title="Veranstaltungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.5" fill="currentColor"/><circle cx="4.5" cy="12" r="1.5" fill="currentColor"/><circle cx="4.5" cy="18" r="1.5" fill="currentColor"/></svg><span class="lbl">Veranstaltungen</span></button>
     <button role="tab" id="tab-cal" aria-selected="false" data-tab="cal" title="Kalender"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 14h2M11 14h2M15 14h2M7 17h2M11 17h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Kalender</span></button>
-    <button role="tab" id="tab-stat" aria-selected="false" data-tab="stat" title="Statistiken"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Statistiken</span></button>
     <button role="tab" id="tab-abr" aria-selected="false" data-tab="abr" title="Abrechnung (Excel)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 9v11M15 9v11" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Abrechnung</span></button>
+    <button role="tab" id="tab-stat" aria-selected="false" data-tab="stat" title="Statistiken"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Statistiken</span></button>
   </nav>
   <div class="side-foot">
     <button class="sideact" id="cardsbtn2" title="Tischkarten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Tischkarten</span></button>
@@ -897,6 +903,7 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history}))}catch(e){}}
 function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
+  {const r=S.res[id];if(r&&!isEmpty(r)&&!r.ts)r.ts=Date.now()}
   if(mode!=="db"){lsSave();return}
   dirty.add(id);clearTimeout(timers[id]);
   timers[id]=setTimeout(()=>{timers[id]=null;
@@ -1367,7 +1374,11 @@ function render3D(){init3D();if(!S3)return false;
    const sg=JSON.stringify(m);if(sg!==render3D.ssig){render3D.ssig=sg;S3.setSpots(m)}}
   if(S3floor!==S.floor){if(S3floor!==null)S3.view(S.floor);S3floor=S.floor}
   return true}
-function syncModal(){const open=S.sel!=null&&!S.editing&&!S.grouping&&!S.picking&&S.tab==="plan";const m=$("ordmodal");
+let openKey=null,openAt=0;
+function trackWork(open){const key=open?(isD()?"D":tid(S.sel)):null;if(key===openKey)return;const now=Date.now();
+  if(openKey){const dt=Math.min(15*60e3,now-openAt);if(openKey==="D")S.draftWork=(S.draftWork||0)+dt;else{const r=S.res[openKey];if(r&&!isEmpty(r)){r.work=(r.work||0)+dt;if(!r.ts)r.ts=openAt;saveRes(openKey)}}}
+  openKey=key;openAt=now}
+function syncModal(){const open=S.sel!=null&&!S.editing&&!S.grouping&&!S.picking&&S.tab==="plan";const m=$("ordmodal");trackWork(open);
   if(m.hidden===open){m.hidden=!open;document.body.classList.toggle("modal-open",open);if(open)m.scrollTop=0}}
 $("ordbox").append($("order"),$("picker"));
 $("ordmodal").addEventListener("click",e=>{if(e.target===$("ordmodal")){S.grouping=false;S.sel=null;S.confirmClear=false;renderAll()}});
@@ -1682,6 +1693,7 @@ function renderKasse(){
 function renderAll(){
   if(S.tab!=="plan"&&document.body.classList.contains("p3full"))setFull(false);
   ["plan","pack","kasse","abr","ev","cal","stat"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
+  if(S.tab!=="stat"){stop3D();renderStats.sig=null}
   if(STD_EDITOR){}else $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen",cal:"Kalender",stat:"Statistiken"}[S.tab];if(S.tab==="stat")renderStats();if(S.tab==="ev")renderEvents();if(S.tab==="cal")renderCal();
   renderSummary();renderPlan();renderOrder(false);renderPicker();syncModal();
   if(S.tab==="pack")renderPack();if(S.tab==="kasse")renderKasse();if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr();
@@ -2115,7 +2127,7 @@ function assignDraft(id){
   if(!(m.name||"").trim())m.name=d.name||"";
   if((d.note||"").trim())m.note=[m.note,d.note].filter(x=>(x||"").trim()).join(" / ");
   m.ts=Date.now();const had=ex&&!isEmpty(ex);
-  S.res[k]=m;saveRes(k);S.draft=null;saveDraft();S.sel=id;S.picking=false;S.confirmClear=false;
+  m.work=(m.work||0)+(S.draftWork||0);S.draftWork=0;S.res[k]=m;saveRes(k);S.draft=null;saveDraft();S.sel=id;S.picking=false;S.confirmClear=false;
   if(floorOf(id)!==S.floor)S.floor=floorOf(id);
   renderAll();renderOrder(true);toast(had?"Zu "+n+" dazugebucht":"Bestellung an "+n);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});
@@ -2272,13 +2284,55 @@ function statMap(perTable){const pts=S.layout.tables.map(t=>({t,p:saalPos(t),v:p
   return `<svg viewBox="150 220 2120 1580" class="smap" role="img" aria-label="Umsatz je Tisch auf dem Plan"><polygon points="${poly(F)}" class="mf"/><polygon points="${poly(G)}" class="mg"/>
     ${(SAAL_PLAN.theke||[]).map(r=>`<rect x="${r[0]}" y="${r[1]}" width="${r[2]-r[0]}" height="${r[3]-r[1]}" class="mt"/>`).join("")}
     ${pts.map(x=>{const r=x.v?16+Math.sqrt(x.v/mx)*52:11;return `<g><circle cx="${x.p[0]}" cy="${x.p[1]}" r="${r.toFixed(1)}" class="${x.v?"mh":"m0"}${x.t.f==="oben"?" mo":""}"><title>Tisch ${esc(String(tn(x.t)))}: ${eur(x.v)}</title></circle>${x.v?`<text x="${x.p[0]}" y="${x.p[1]+9}" text-anchor="middle" class="mn">${esc(String(tn(x.t)))}</text>`:""}</g>`}).join("")}</svg>`}
-function renderStats(){const box=$("statbox");const s=statSnapshot();const keys=s.keys;
+/* --- 3D-Grafiken für die Statistik --- */
+let STAT3D=[];
+function stop3D(){STAT3D.forEach(f=>f());STAT3D=[]}
+function mini3D(el,build){if(!window.THREE||!el)return;const T=THREE;const w=el.clientWidth||320,h=el.clientHeight||260;
+  const r=new T.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(w,h);r.outputEncoding=T.sRGBEncoding;r.shadowMap.enabled=true;el.appendChild(r.domElement);
+  const sc=new T.Scene();const cam=new T.PerspectiveCamera(36,w/h,.1,200);sc.add(new T.HemisphereLight(0xffffff,0x887766,.9));const d=new T.DirectionalLight(0xffffff,.8);d.position.set(6,12,8);d.castShadow=true;sc.add(d);
+  const grp=new T.Group();sc.add(grp);const info=build(T,grp)||{};const R=info.r||14,Y=info.y||3;let th=.6,drag=null,run=true;const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const cv=r.domElement;cv.style.touchAction="pan-y";cv.style.cursor="grab";
+  cv.addEventListener("pointerdown",e=>{drag=e.clientX;cv.setPointerCapture(e.pointerId)});cv.addEventListener("pointermove",e=>{if(drag==null)return;th-=(e.clientX-drag)*.01;drag=e.clientX});
+  const end=()=>drag=null;cv.addEventListener("pointerup",end);cv.addEventListener("pointercancel",end);
+  const ro=new ResizeObserver(()=>{const W=el.clientWidth,H=el.clientHeight;if(W&&H){r.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}});ro.observe(el);
+  (function loop(){if(!run)return;requestAnimationFrame(loop);if(drag==null&&!reduce)th+=.004;cam.position.set(Math.sin(th)*R,Y+R*.55,Math.cos(th)*R);cam.lookAt(0,Y*.55,0);
+    grp.children.forEach(o=>{if(o.userData.grow!=null&&o.scale.y<1){o.scale.y=Math.min(1,o.scale.y+.03);}});r.render(sc,cam)})();
+  STAT3D.push(()=>{run=false;ro.disconnect();sc.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}});r.dispose();cv.remove()})}
+function txtSprite(T,txt,col){const c=document.createElement("canvas");const g=c.getContext("2d");g.font='700 52px "Barlow Semi Condensed", Arial';const w=Math.ceil(g.measureText(txt).width+30);c.width=w;c.height=76;
+  const g2=c.getContext("2d");g2.fillStyle="rgba(255,255,255,.92)";if(g2.roundRect){g2.beginPath();g2.roundRect(0,0,w,76,16);g2.fill()}else g2.fillRect(0,0,w,76);g2.fillStyle=col||"#1d1a1a";g2.font='700 52px "Barlow Semi Condensed", Arial';g2.textAlign="center";g2.textBaseline="middle";g2.fillText(txt,w/2,40);
+  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;const s=new T.Sprite(new T.SpriteMaterial({map:t,depthTest:false}));s.scale.set(.9*w/76,.9,1);s.renderOrder=5;return s}
+function skyline3D(el,rows){mini3D(el,(T,g)=>{const n=rows.length,mx=Math.max(1,...rows.map(r=>r.v));const R=Math.max(3.2,n*.62);
+  const base=new T.Mesh(new T.CylinderGeometry(R+1.2,R+1.4,.3,48),new T.MeshStandardMaterial({color:0xd9d3cc,roughness:.9}));base.position.y=-.15;base.receiveShadow=true;g.add(base);
+  rows.forEach((r,i)=>{const a=i/n*Math.PI*2,hgt=.4+r.v/mx*6;const m=new T.Mesh(new T.BoxGeometry(1,hgt,1),new T.MeshStandardMaterial({color:new T.Color(r.c),roughness:.5}));
+    m.geometry.translate(0,hgt/2,0);m.position.set(Math.cos(a)*R,0,Math.sin(a)*R);m.castShadow=true;m.scale.y=.01;m.userData.grow=1;g.add(m);
+    const s=txtSprite(T,r.short||r.l);s.position.set(Math.cos(a)*R,hgt+.8,Math.sin(a)*R);g.add(s)});return {r:R*2.6+6,y:3.2}})}
+function tower3D(el,stack){mini3D(el,(T,g)=>{const cols={bier:0xe0a024,wein:0x8a1c2a,aper:0xf26a1b,wasser:0x9fd3ea,soft:0x4a2a1a,durst:0xf39a1e,heiss:0xf2efe9,snack:0xd8402a,schnaps:0xd9b45a,fl:0x1f4a2a};
+  const glass=new T.MeshStandardMaterial({color:0xdfefff,transparent:true,opacity:.35,roughness:.1});let y=0;const per=7;
+  const plate=new T.Mesh(new T.CylinderGeometry(2.4,2.6,.25,40),new T.MeshStandardMaterial({color:0x1d1a1a,roughness:.6}));plate.position.y=-.13;g.add(plate);
+  stack.slice(0,140).forEach((cat,i)=>{const ring=Math.floor(i/per),k=i%per;const a=k/per*Math.PI*2+ring*.45;const rr=1.35;
+    const cup=new T.Mesh(new T.CylinderGeometry(.34,.28,.62,14),glass);const liq=new T.Mesh(new T.CylinderGeometry(.3,.26,.46,14),new T.MeshStandardMaterial({color:cols[cat]||0xbbbbbb,roughness:.4}));
+    const gg=new T.Group();gg.add(cup,liq);liq.position.y=-.06;gg.position.set(Math.cos(a)*rr,ring*.66+.31,Math.sin(a)*rr);g.add(gg);y=ring*.66+.9});
+  const s=txtSprite(T,stack.length+" Getränke","#c0202d");s.position.set(0,y+.9,0);g.add(s);return {r:Math.max(9,y*1.5+6),y:Math.max(2,y*.6)}})}
+/* --- Beispieldaten zum Anschauen --- */
+function demoData(){let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;const pick=a=>a[Math.floor(rnd()*a.length)];
+  const fav=["pils","pils","pils","weiss","rot","sekt","aperol","cola","sprudel","kaffee","latte","weizen","brezel","schorle","weinschorle","espresso","radler","naturell","p_original","gluehwein"].filter(k=>P[k]);
+  const res={};const t0=new Date();t0.setHours(18,30,0,0);let n=0;
+  S.layout.tables.forEach(t=>{if(rnd()<.62){const it={};const m=1+Math.floor(rnd()*5);for(let i=0;i<m;i++){const k=pick(fav);it[k]=(it[k]||0)+1+(rnd()<.3?1:0)}
+    res["t"+t.id]={items:it,name:rnd()<.5?pick(["Müller","Schmidt","Becker","Yilmaz","Kowalski","Fischer","Wagner","Rossi","Hoffmann","Klein"]):"",done:rnd()<.4,ts:+t0+Math.floor(rnd()*95)*60e3,work:Math.round((25+rnd()*rnd()*240)*1000)};n++}});
+  [["ul",3],["ur",2],["sz",4],["o",2]].forEach(([z,c])=>{for(let i=1;i<=c;i++){const it={};it[pick(fav)]=1+Math.floor(rnd()*3);if(rnd()<.5)it[pick(fav)]=1;res["tth-"+z+"-"+i]={items:it,ts:+t0+Math.floor(rnd()*95)*60e3,work:Math.round((20+rnd()*120)*1000)}}});
+  const hist=["Creative Kirche","1.Wittener Lachnacht","Miria Boes","Sparkassenclassics","Sebastian Fitzek liest","Tanztheater","Volksbühne","Shaky Everett"].map((nm,i)=>({name:nm,date:`2026-11-${String(1+i*3).padStart(2,"0")}`,rev:Math.round(180+rnd()*420),items:Math.round(60+rnd()*120),res:Math.round(15+rnd()*25)}));
+  return {res,event:{name:"Beispiel: Theaterabend",pax:420,date:isoToday()},history:hist}}
+
+function renderStats(){const sig=JSON.stringify([S.statDemo,S.res,S.history,S.event&&S.event.pax]);if(sig===renderStats.sig&&$("statbox").innerHTML)return;renderStats.sig=sig;stop3D();
+  if(!S.statDemo){renderStatsInner();return}const keep={res:S.res,event:S.event,history:S.history};const d=demoData();S.res=d.res;S.event=d.event;S.history=d.history;
+  try{renderStatsInner()}finally{S.res=keep.res;S.event=keep.event;S.history=keep.history}}
+function renderStatsInner(){const box=$("statbox");const s=statSnapshot();const keys=s.keys;
   const LM=linkMap();const tables=S.layout.tables;const resT=new Set();const perTable={};let zoneSpots=0,holds=0,groups=0,unten=0,oben=0,uRev=0,oRev=0;
   keys.forEach(k=>{const r=S.res[k];const id=k.slice(1);const sp=spotOf(id);const t=tblById(id);if(r.hold)holds++;if(r.group&&r.group.length)groups++;
     const f=sp?ZONES[sp.z].f:t?t.f:"unten";if(f==="oben"){oben++;oRev+=total(r)}else{unten++;uRev+=total(r)}
-    if(sp)zoneSpots++;if(t){resT.add(t.id);perTable[t.id]=(perTable[t.id]||0)+total(r);(r.group||[]).forEach(g=>resT.add(g))}});
+    if(sp)zoneSpots++;if(t&&!sp){resT.add(t.id);perTable[t.id]=(perTable[t.id]||0)+total(r);(r.group||[]).forEach(g=>resT.add(g))}});
   const tU=tables.filter(t=>t.f==="unten"),tO=tables.filter(t=>t.f==="oben");
-  const occ=pct(resT.size,tables.length),occU=pct(tU.filter(t=>resT.has(t.id)).length,tU.length),occO=pct(tO.filter(t=>resT.has(t.id)).length,tO.length);
+  const tIds=new Set(tables.map(t=>t.id));[...resT].forEach(x=>{if(!tIds.has(x))resT.delete(x)});const occ=pct(resT.size,tables.length),occU=pct(tU.filter(t=>resT.has(t.id)).length,tU.length),occO=pct(tO.filter(t=>resT.has(t.id)).length,tO.length);
   const sitz=tables.filter(t=>t.c),steh=tables.filter(t=>!t.c);const occSitz=pct(sitz.filter(t=>resT.has(t.id)).length,sitz.length),occSteh=pct(steh.filter(t=>resT.has(t.id)).length,steh.length);
   let guests=0;keys.forEach(k=>{const d=drinksOf(S.res[k]);guests+=Math.max(1,d.pp||0)});
   const pax=(S.event&&S.event.pax)||0;const share=pax?Math.min(100,Math.round(guests/pax*1000)/10):null;
@@ -2293,7 +2347,14 @@ function renderStats(){const box=$("statbox");const s=statSnapshot();const keys=
   const top=Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([p,q])=>({l:P[p].name+(P[p].size&&!P[p].name.includes(P[p].size)?" "+P[p].size:""),v:q,t:q+"×"}));
   const prodN=Object.keys(s.prod).length;const allProd=Object.keys(P).length;
   const H=S.history||[];
-  if(!keys.length&&!H.length){box.innerHTML=`<div class="ev-empty"><b>Noch keine Zahlen da.</b><p>Sobald Reservierungen drin sind, siehst du hier Auslastung, Umsatz, Lieblingsgetränke und mehr. Nach jeder Veranstaltung landet eine Zusammenfassung im Verlauf.</p></div>`;return}
+  const bar=`<div class="st-bar">${S.statDemo?`<span class="demo-tag">Beispieldaten</span>`:""}<button class="${S.statDemo?"btn-solid":"ghost"}" id="statdemo">${S.statDemo?"Zurück zu den echten Zahlen":"Beispiel ansehen"}</button></div>`;
+  if(!keys.length&&!H.length){box.innerHTML=bar+`<div class="ev-empty"><b>Noch keine Zahlen da.</b><p>Sobald Reservierungen drin sind, siehst du hier Auslastung, Umsatz, Lieblingsgetränke und mehr. Mit „Beispiel ansehen“ siehst du, wie das aussieht.</p></div>`;return}
+  /* Zeiten */
+  const W=keys.map(k=>({k,w:S.res[k].work||0,n:count(S.res[k])})).filter(x=>x.w>0).sort((a,b)=>a.w-b.w);const wsum=W.reduce((a,x)=>a+x.w,0);
+  const fmtT=ms=>{const t=Math.round(ms/1000);return t<60?t+" s":Math.floor(t/60)+":"+String(t%60).padStart(2,"0")+" min"};
+  const TS=keys.map(k=>S.res[k].ts).filter(Boolean).sort((a,b)=>a-b);let tl="";
+  if(TS.length>1){const b0=Math.floor(TS[0]/9e5)*9e5,bins={};TS.forEach(t=>{const b=Math.floor((t-b0)/9e5);bins[b]=(bins[b]||0)+1});const nb=Math.max(...Object.keys(bins).map(Number))+1;const mx=Math.max(...Object.values(bins));
+    tl=`<div class="cols tl">${Array.from({length:Math.min(nb,24)},(_,i)=>{const v=bins[i]||0;const d=new Date(b0+i*9e5);return `<div class="col"><b>${v||""}</b><i style="height:${(v/mx*100).toFixed(1)}%"></i><span>${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}</span></div>`}).join("")}</div>`}
   const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
   const kb=abrTotals();const kbSum2=kb.sum;
   let h=`<div class="st-title"><h3>${esc((S.event&&S.event.name)||"Aktuelle Pause")}</h3><p class="sub">${keys.length} Reservierungen, Stand jetzt</p></div>
@@ -2309,8 +2370,13 @@ function renderStats(){const box=$("statbox");const s=statSnapshot();const keys=
    <section class="st-card"><h4>Unten gegen oben</h4>${(()=>{const t=uRev+oRev||1;return `<div class="vs"><div style="flex:${uRev||.0001}"><b>${eur(uRev)}</b><span>Foyer unten</span></div><div class="o" style="flex:${oRev||.0001}"><b>${eur(oRev)}</b><span>Galerie</span></div></div><p class="sub">${pct(uRev,t)} % vom Umsatz kommt von unten.</p>`})()}
      <h4 style="margin-top:14px">Bier gegen Wein</h4>${(()=>{const t=beerL+wineL||1;return `<div class="vs duel"><div style="flex:${beerL||.0001}"><b>${fmtN(beerL)} l</b><span>Bier</span></div><div class="o" style="flex:${wineL||.0001}"><b>${fmtN(wineL)} l</b><span>Wein, Sekt & Co.</span></div></div>`})()}</section>
    <section class="st-card"><h4>Größte Bestellungen</h4>${amounts.length?hbars(amounts.slice(0,6).map(a=>({l:lbl(a.k)+(S.res[a.k].name?" ("+S.res[a.k].name+")":""),v:a.v,t:eur(a.v)}))):`<p class="sub">Noch keine.</p>`}</section>
+   <section class="st-card"><h4>Tempo an der Theke</h4>${W.length?`<div class="kpis small">${kpi(fmtT(wsum/W.length),"Ø pro Reservierung")}${kpi(fmtT(W[0].w),"Schnellste",esc(lbl(W[0].k)))}${kpi(fmtT(W[W.length-1].w),"Längste",esc(lbl(W[W.length-1].k)))}</div>
+     <p class="sub">Zusammen ${fmtT(wsum)} im Bestellfenster, das sind ${fmtN(W.reduce((a,x)=>a+x.n,0)/(wsum/60000||1))} Artikel pro Minute.</p>`:`<p class="sub">Gemessen wird, wie lange das Bestellfenster je Reservierung offen war. Ab jetzt läuft die Uhr mit.</p>`}</section>
+   ${tl?`<section class="st-card wide"><h4>Wann wurde reserviert?</h4><p class="sub">Neue Reservierungen pro Viertelstunde</p>${tl}</section>`:""}
+   ${window.THREE&&catRows.length?`<section class="st-card"><h4>Umsatz-Skyline in 3D</h4><div class="s3d" id="s3d-sky"></div><p class="sub">Jede Säule ist eine Kategorie. Zum Drehen ziehen.</p></section>
+   <section class="st-card"><h4>Der Getränketurm</h4><div class="s3d" id="s3d-tower"></div><p class="sub">Alle bestellten Getränke als Gläser gestapelt, farbig nach Sorte.</p></section>`:""}
    <section class="st-card fun"><h4>Fun Facts</h4><ul class="facts">
-     ${(()=>{const L=Object.values(liters).reduce((a,b)=>a+b,0);return L?`<li><b>${fmtN(L)} l</b> Getränke stehen bereit${L>=10?`, das sind ungefähr ${Math.round(L/10)} volle Eimer`:`, das sind ${Math.round(L/0.33)} kleine Flaschen`}.</li>`:""})()}
+     ${(()=>{const L=Object.values(liters).reduce((a,b)=>a+b,0);return L?`<li><b>${fmtN(L)} l</b> Getränke stehen bereit${L>=10?(Math.round(L/10)===1?`, das ist ungefähr ein voller Eimer`:`, das sind ungefähr ${Math.round(L/10)} volle Eimer`):`, das sind ${Math.round(L/0.33)} kleine Flaschen`}.</li>`:""})()}
      <li><b>${glasses}</b> Gläser werden eingedeckt. Gestapelt wären das ${fmtN(glasses*.13)} m.</li>
      ${beerL?`<li><b>${fmtN(beerL)} l</b> Bier, das sind ${fmtN(beerL)} Maß.</li>`:""}
      ${brezel?`<li><b>${brezel}</b> Brezeln, hintereinandergelegt ${fmtN(brezel*.2)} m lang.</li>`:""}
@@ -2325,7 +2391,10 @@ function renderStats(){const box=$("statbox");const s=statSnapshot();const keys=
   if(H.length){const hh=H.slice(-12);const mx=Math.max(1,...hh.map(x=>x.rev));
     h+=`<section class="st-card wide hist"><h4>Verlauf der letzten Veranstaltungen</h4><div class="cols">${hh.map(x=>`<div class="col"><b>${eur(x.rev).replace(",00","")}</b><i style="height:${(x.rev/mx*100).toFixed(1)}%"><title></title></i><span>${esc(x.date.slice(8,10)+"."+x.date.slice(5,7)+".")}</span><small>${esc(x.name.replace(/\s\d{2}\.\d{2}\.$/,""))}</small></div>`).join("")}</div>
     <div class="kpis small">${kpi(eur(H.reduce((a,x)=>a+x.rev,0)/H.length),"Ø Umsatz pro Pause")}${kpi(Math.round(H.reduce((a,x)=>a+x.res,0)/H.length),"Ø Reservierungen")}${kpi(esc(H.slice().sort((a,b)=>b.rev-a.rev)[0].name),"Rekord-Pause",eur(H.slice().sort((a,b)=>b.rev-a.rev)[0].rev))}</div></section>`}
-  box.innerHTML=h}
+  box.innerHTML=bar+h;
+  if(window.THREE&&catRows.length){const short={"Wein & Sekt":"Wein","Durstlöscher & Capri":"Durst","Ganze Flaschen":"Flaschen","Heißgetränke":"Heiß"};
+    skyline3D($("s3d-sky"),catRows.map(r=>({...r,short:(short[r.l]||r.l)+" "+pct(r.v,s.rev)+"%"})));
+    const stack=[];ORDER.forEach(p=>{const q=s.prod[p]||0;if(P[p].cat==="snack"||P[p].cat==="fl")return;for(let i=0;i<q;i++)stack.push(P[p].cat)});tower3D($("s3d-tower"),stack)}}
 
 /* ---------- Kalender ---------- */
 const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
@@ -2353,6 +2422,7 @@ $("calgrid").addEventListener("click",e=>{const b=e.target.closest("[data-day]")
 $("calday").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(b)openReset(b.dataset.evstart)});
 $("calfile").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);$("evfile").files=dt.files;e.target.value="";
   $("evfile").dispatchEvent(new Event("change"));const t=setInterval(()=>{if(!/Lese/.test($("evstatus").textContent)){clearInterval(t);S.calM=null;renderCal();toast($("evstatus").textContent)}},200)});
+$("statbox").addEventListener("click",e=>{if(e.target.closest("#statdemo")){S.statDemo=!S.statDemo;renderStats.sig=null;renderStats()}});
 $("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
 
 /* ---------- Neue Veranstaltung ---------- */
