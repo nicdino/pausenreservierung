@@ -96,6 +96,23 @@ nav.tabs .badge{display:inline-block;min-width:22px;padding:0 6px;margin-left:6p
 .summary .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block}
 .summary .v{font-size:24px;font-weight:700}
 .floorbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.fullbtn{display:inline-flex;align-items:center;gap:7px}.fullbtn svg{width:18px;height:18px}
+/* Vollbild: Plan füllt den Bildschirm, Zahlen und Knöpfe schweben als Hologramm darüber */
+body.p3full{overflow:hidden}
+body.p3full .side,body.p3full header.top,body.p3full #legend,body.p3full .scrim{display:none!important}
+body.p3full .plan3{position:fixed;inset:0;height:100vh;height:100dvh;min-height:0;z-index:45;border:0;border-radius:0}
+body.p3full .summary,body.p3full .floorbar,body.p3full .assignbar{position:fixed;z-index:47;margin:0;background:color-mix(in srgb,var(--surface) 78%,transparent);backdrop-filter:blur(12px) saturate(1.3);-webkit-backdrop-filter:blur(12px) saturate(1.3);
+  border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);box-shadow:0 0 22px color-mix(in srgb,var(--accent) 22%,transparent),0 10px 30px rgba(0,0,0,.2);border-radius:14px}
+body.p3full .summary{top:max(12px,env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));padding:8px 16px;gap:18px}
+body.p3full .summary .v{font-size:24px}
+body.p3full .floorbar{top:max(12px,env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));padding:6px;flex-wrap:nowrap}
+body.p3full .floorbar .spacer{display:none}
+body.p3full .assignbar{top:84px;left:50%;transform:translateX(-50%);width:min(720px,calc(100% - 24px))}
+body.p3full .assignbar.go{background:color-mix(in srgb,var(--accent) 88%,transparent)}
+body.p3full .p3hint{top:auto;bottom:14px}
+body.p3full .plan3 .editbar{top:88px}
+@media (max-width:900px){body.p3full .floorbar{top:auto;bottom:max(12px,env(safe-area-inset-bottom,0px));right:auto;left:max(12px,env(safe-area-inset-left,0px));flex-wrap:wrap;max-width:calc(100% - 120px)}
+  body.p3full .floorbar #nodraft{font-size:14px;padding:9px 10px}body.p3full .p3hint{display:none}body.p3full .summary .v{font-size:19px}}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{border:0;background:var(--surface);padding:10px 20px;font-family:var(--f-ui);font-weight:600;font-size:17px}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
@@ -577,6 +594,7 @@ table.list td .sz{color:var(--muted)}
             <button id="fl-oben" data-floor="oben" aria-pressed="false">Oben</button>
           </div>
           <span class="spacer"></span>
+          <button class="ghost fullbtn" id="fullbtn" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Vollbild</span></button>
           <button class="btn-solid" id="nodraft">+ Neue Bestellung, Tisch später</button>
           <button class="ghost" id="editbtn">Plan anpassen</button>
         </div>
@@ -794,7 +812,7 @@ async function saveDoc(path,data){
 
 /* ---------- 3D-Foyer (Grundlage: Fluchtplan, Fotos vor Ort) ---------- */
 const SAAL_PLAN={"foyer":[[1037,405],[1150,330],[1300,235],[1507,340],[2204,989],[2010,1199],[1990,1377],[1830,1560],[1830,1760],[1660,1766],[1700,1703],[1683,1630],[1514,1523],[707,1523],[550,1630],[536,1704],[578,1766],[410,1760],[405,1300],[178,1134],[340,875],[486,745],[745,729]],"openEdges":[0,5,6,7,8,9,10,11,12,13,14,15,16,17],"pillars":[[702,1083],[1102,1078],[1532,1075],[707,1523],[1514,1523]],"theke":[[953,1354,1257,1390],[953,1390,995,1462],[1215,1390,1257,1462],[1045,1412,1165,1442],[955,1499,1204,1522],[1208,1499,1248,1522]],"thekeBack":[960,1524,1250,1625],"ledges":[[[707,1523],[953,1523]],[[1257,1523],[1514,1523]],[[707,1523],[550,1630]],[[550,1630],[536,1704]],[[536,1704],[578,1766]],[[1514,1523],[1683,1630]],[[1683,1630],[1700,1703]],[[1700,1703],[1660,1766]]],"ledgeLbl":[[830,1490],[1390,1490]],"garderobeLbl":[[760,1610],[1460,1610]],"signs":[["Terrasse",[1090,330]],["Ausgang",[250,1180]],["WC",[2040,1290]],["Theatersaal",[1110,1700]]],"galerie":[[1037,405],[1150,330],[1300,235],[1507,340],[2204,989],[2106,1075],[1750,850],[1360,566],[1312,630],[1250,630],[1250,564],[1166,567],[1037,570],[761,810],[535,850],[373,905],[340,875],[486,745],[745,729]],"rails":[[[2106,1075],[1835,904]],[[1750,850],[1360,566]],[[1312,630],[1250,630]],[[1250,630],[1250,564]],[[1250,564],[1166,567]],[[1166,567],[1037,570]],[[1037,570],[761,810]],[[761,810],[561,845]],[[478,869],[373,905]]],"galWindows":[[[486,745],[745,729]],[[745,729],[1037,405]],[[340,875],[486,745]]],"galWalls":[[[1150,330],[1300,235]],[[1300,235],[1507,340]],[[1507,340],[2204,989]],[[2204,989],[2106,1075]],[[373,905],[340,875]]],"thekeOben":[[1240,548],[1062,552],[1164,452],[1242,381],[1278,428],[1257,486]],"galLbl":[1760,640],"stairs":[["T5 Treppe",[1439,675],[1336,598],80],["T6 Treppe",[1726,987],[1795,878],90],["T3 Treppe",[612,950],[520,858],80]],"pit":[[974,607],[1066,699],[1136,629],[1044,537]],"pitStair":[[1009,572],[1101,664],100],"sitz":{"a":[1560,710],"b":[1730,838],"depth":95,"side":1,"lblOff":[-40,60]},"sitzTri":[[1757,854],[1688,963],[1476,645]],"void":[[549,834],[761,810],[806,771],[885,861],[690,975],[642,922]],"abgang":[[806,771],[974,607],[1066,699],[885,861]],"yellowFloors":[[[690,975],[885,861],[961,990]],[[1066,699],[1136,629],[1221,714]]]};
-const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[671,1325,15.7,81.1,"unten"],"3":[788,1243,25.2,72.3,"unten"],"4":[682,1182,16.6,65.8,"unten"],"5":[818,956,29.6,15.2,"unten"],"6":[887,916,34.7,24.1,"unten"],"7":[930,980,39.6,14,"unten"],"8":[1280,685,72.1,5.3,"unten"],"9":[1349,750,68.5,16.9,"unten"],"10":[1387,837,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1520,1385,84.2,87.4,"unten"],"13":[758,1030,23.4,48.6,"unten"],"14":[861,1045,31.7,49.7,"unten"],"15":[991,1053,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1487,1082,81.7,55.2,"unten"],"21":[1573,969,88.5,43.2,"unten"],"22":[1547,844,86.4,29.9,"unten"],"23":[1491,743,82.5,16.9,"unten"],"34":[1010,502,53.5,35.5,"oben"],"35":[943,576,44.3,35.5,"oben"],"36":[876,651,35.1,35.5,"oben"],"37":[809,725,25.9,35.5,"oben"],"38":[694,777,16.7,35.5,"oben"],"31":[1577,514,84.7,82.0,"oben"],"32":[1665,596,84.7,65.6,"oben"],"33":[1753,678,84.7,49.2,"oben"]};
+const SAAL_POS={"1":[781,1384,24.6,87.3,"unten"],"2":[650,1318,15.7,81.1,"unten"],"3":[788,1243,25.2,72.3,"unten"],"4":[682,1182,16.6,65.8,"unten"],"5":[818,956,29.6,15.2,"unten"],"6":[887,916,34.7,24.1,"unten"],"7":[930,980,39.6,14,"unten"],"8":[1280,685,72.1,5.3,"unten"],"9":[1349,750,68.5,16.9,"unten"],"10":[1387,837,73,28,"unten"],"11":[1456,1255,79,73.6,"unten"],"12":[1452,1385,84.2,87.4,"unten"],"13":[758,1030,23.4,48.6,"unten"],"14":[861,1045,31.7,49.7,"unten"],"15":[991,1053,40,49.7,"unten"],"16":[1118,1017,51.8,48.3,"unten"],"17":[1205,969,58.8,43.2,"unten"],"18":[1297,997,66.2,46.2,"unten"],"19":[1379,1021,72.8,48.7,"unten"],"20":[1487,1082,81.7,55.2,"unten"],"21":[1573,969,88.5,43.2,"unten"],"22":[1547,844,86.4,29.9,"unten"],"23":[1491,743,82.5,16.9,"unten"],"34":[1010,502,53.5,35.5,"oben"],"35":[943,576,44.3,35.5,"oben"],"36":[876,651,35.1,35.5,"oben"],"37":[809,725,25.9,35.5,"oben"],"38":[694,777,16.7,35.5,"oben"],"31":[1577,514,84.7,82.0,"oben"],"32":[1665,596,84.7,65.6,"oben"],"33":[1753,678,84.7,49.2,"oben"]};
 function saalPos(t){if(t.p3)return t.p3;const p=SAAL_POS[t.id];if(p&&p[4]===t.f&&Math.abs(p[2]-t.x)<.6&&Math.abs(p[3]-t.y)<.6)return[p[0],p[1]];
   return t.f==="oben"?[14.583203*t.x+0.608859*t.y+354.270024,-2.141077*t.x+0.210469*t.y+732.503504]:[476+12.4*t.x,563+9.4*t.y]}
 function Saal3D(stage,cb){
@@ -915,8 +933,8 @@ function flight(g,a,b,wpx,y1,mat,skip){const [x1,z1]=P(a[0],a[1]),[x2,z2]=P(b[0]
    sign(g,"Glühwein",[1205,1510],1.95,.45);
    /* Gläser auf der Front */
    [[1050,1366],[1160,1366],[972,1440],[1237,1440]].forEach(([px,py])=>{for(let k=0;k<6;k++)put(cyl(.035,.03,.16,M.glass,10),px+(k%3)*3,py+Math.floor(k/3)*3,TOP+.08)});
-   /* schwarze Tafelpfeiler an den vorderen Ecken */
-   [[936,1372],[1274,1372]].forEach(([px,py])=>{const p=box(.6,3.2,.6,M.board);put(p,px,py,1.6)});
+   /* eckige Säulen auf einer Linie: die beiden schwarzen mit Tafeln an der Theke, links und rechts noch je eine weiße */
+   [[962,1383,1],[1245,1383,1],[684,1386,0],[1535,1382,0]].forEach(([px,py,b])=>{const p=box(.5,3.6,.8,b?M.board:M.white);put(p,px,py,1.8)});
   }
   sign(g,"Theke",[1105,1430],1.9);
   PLAN.ledges.forEach(([a,b])=>{const w=wallSeg(a,b,1.0,.35,M.yellow);w.userData.zone=(a[0]+b[0])/2<1105?"ul":"ur";ZM.push(w);g.add(w)});
@@ -1150,7 +1168,7 @@ comp.addEventListener("pointermove",e=>{if(!cdrag)return;const a=Math.atan2(e.cl
 comp.addEventListener("pointerup",()=>{if(cdrag&&cdrag.m<4)flyTo({th:0});cdrag=null});comp.addEventListener("pointercancel",()=>cdrag=null);
 comp.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"){flyTo({th:cam.th+Math.PI/8});e.preventDefault()}if(e.key==="ArrowRight"){flyTo({th:cam.th-Math.PI/8});e.preventDefault()}
   if(e.key==="ArrowUp"){flyTo({ph:Math.max(.09,cam.ph-.2)});e.preventDefault()}if(e.key==="ArrowDown"){flyTo({ph:Math.min(1.4,cam.ph+.2)});e.preventDefault()}});
-let lastTh=null;function syncComp(){if(lastTh===cam.th)return;lastTh=cam.th;needle.setAttribute("transform",`rotate(${(cam.th*180/Math.PI).toFixed(1)} 50 50)`);comp.setAttribute("aria-valuenow",Math.round(((cam.th*180/Math.PI)%360+360)%360))}
+const tbtn=ctl.querySelector('[data-v="t"]');let lastTh=null,lastTop=null;function syncComp(){const top=cam.ph<.3;if(top!==lastTop){lastTop=top;tbtn.textContent=top?"3D":"2D";tbtn.title=tbtn.ariaLabel=top?"Zurück zur 3D-Ansicht":"Draufsicht (2D)"}if(lastTh===cam.th)return;lastTh=cam.th;needle.setAttribute("transform",`rotate(${(cam.th*180/Math.PI).toFixed(1)} 50 50)`);comp.setAttribute("aria-valuenow",Math.round(((cam.th*180/Math.PI)%360+360)%360))}
 
 /* --- Antippen: Tische und Zonen --- */
 function hitAt(cx,cy){ray.setFromCamera(ndc(cx,cy),camera);
@@ -1167,7 +1185,7 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)retur
 if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);addEventListener("resize",resize);
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",bg);new MutationObserver(bg).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;let last=performance.now();
-function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,((now||performance.now())-last)/1000);last=now||performance.now();if(!stage.offsetParent)return;
+function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,((now||performance.now())-last)/1000);last=now||performance.now();if(!stage.getClientRects().length)return;
   keyMove(dt);
   if(goal){const k=reduce?1:.12;cam.r+=(goal.r-cam.r)*k;cam.th+=(goal.th-cam.th)*k;cam.ph+=(goal.ph-cam.ph)*k;cam.tgt.x+=(goal.tx-cam.tgt.x)*k;cam.tgt.y+=(goal.ty-cam.tgt.y)*k;cam.tgt.z+=(goal.tz-cam.tgt.z)*k;
     if(Math.abs(goal.r-cam.r)+Math.abs(goal.th-cam.th)+Math.abs(goal.ph-cam.ph)+Math.abs(goal.ty-cam.tgt.y)+Math.abs(goal.tx-cam.tgt.x)+Math.abs(goal.tz-cam.tgt.z)<.003)goal=null;applyCam()}
@@ -1226,7 +1244,7 @@ function renderPlan(){
   else{ab.hidden=false;ab.className="assignbar";ab.innerHTML=`<span>Offene Bestellung ohne Tisch (${eur(total(S.draft))})</span><button class="btn-solid" id="draftresume">Fortsetzen</button>`}
   const d3=use3D()&&render3D();$("plan3d").hidden=!d3;$("plan3d").classList.toggle("picking",!!(S.picking&&isD()));
   $("p3hint").textContent=S.picking&&isD()?"Gelbe Tische sind frei. Tisch für die Bestellung antippen":S.editing?"Tisch antippen zum Bearbeiten, ziehen zum Verschieben":matchMedia("(pointer:coarse)").matches?"Ein Finger verschiebt, zwei Finger drehen und zoomen":"Ziehen verschiebt, Mausrad zoomt, zum Drehen den Kompass ziehen oder rechte Maustaste";document.querySelector(".planwrap").hidden=!!d3;document.querySelector("#view-plan .main").classList.add("m3d");
-  $("nodraft").hidden=S.editing||(isD());
+  $("nodraft").hidden=S.editing||(isD());$("fullbtn").hidden=!use3D();
   if(d3){$("fl-unten").setAttribute("aria-pressed",S.floor==="unten");$("fl-oben").setAttribute("aria-pressed",S.floor==="oben");
     $("editbar").hidden=!S.editing;$("legend").hidden=S.editing;$("editbtn").hidden=S.editing;$("plan3d").classList.toggle("editing",S.editing);
     if($("editbar").parentNode!==$("plan3d"))$("plan3d").appendChild($("editbar"));renderEditbar3D();return}
@@ -1520,6 +1538,7 @@ function renderKasse(){
 }
 
 function renderAll(){
+  if(S.tab!=="plan"&&document.body.classList.contains("p3full"))setFull(false);
   ["plan","pack","kasse","abr"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
   $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung"}[S.tab];
   renderSummary();renderPlan();renderOrder(false);renderPicker();syncModal();
@@ -1816,6 +1835,14 @@ $("sidetog").onclick=()=>{if(matchMedia("(max-width:899px)").matches)sideOpen(fa
 $("menubtn").onclick=()=>sideOpen(true);$("scrim").onclick=()=>sideOpen(false);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("side-open"))sideOpen(false)});
 try{if(localStorage.getItem("casahub_mini")==="1")sideMini(true)}catch(e){}
+/* Vollbild für den 3D-Plan */
+function setFull(on){document.body.classList.toggle("p3full",on);const b=$("fullbtn");b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=on?"Vollbild beenden":"Vollbild";
+  try{if(on&&!document.fullscreenElement&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
+      if(!on&&document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{})}catch(e){}
+  setTimeout(()=>{if(S3&&S3.resize)S3.resize()},60)}
+$("fullbtn").onclick=()=>setFull(!document.body.classList.contains("p3full"));
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&document.body.classList.contains("p3full"))setFull(false)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.body.classList.contains("p3full")&&$("ordmodal").hidden&&$("zonemodal").hidden&&$("resetmodal").hidden&&!S.editing)setFull(false)});
 $("floorseg").addEventListener("click",e=>{const b=e.target.closest("[data-floor]");if(!b)return;S.floor=b.dataset.floor;S.editSel=null;renderAll()});
 $("packseg").addEventListener("click",e=>{const b=e.target.closest("[data-pfloor]");if(!b)return;S.pfloor=b.dataset.pfloor;renderPack()});
 $("pdfbtn").onclick=$("pdfbtn2").onclick=()=>{S.printMode="liste";buildPrint();setTimeout(()=>window.print(),50)};
