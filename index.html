@@ -1184,6 +1184,26 @@ function addTable(t){const [px,py]=t.p;const [x,z]=P(px,py);const grp=new THREE.
   parts.forEach(p=>p.userData.tid=t.id);tbls.push({t,grp,inner,lb,base:lb.scale.clone(),k:1,goal:1,lk:1,lgoal:t.sel?1.6:1})}
 function setTables(list){const hv=hoverId;hoverId=null;tbls.forEach(r=>{disposeObj(r.grp);tblGroup.remove(r.grp)});tbls=[];list.forEach(addTable);tbls.forEach(r=>{r.lk=r.lgoal;r.lb.scale.copy(r.base).multiplyScalar(r.lk)});setHover(hv);dirty=true}
 function setZones(c){for(const z in ZS)setZone(z,c[z]||0);dirty=true}
+/* --- Plätze an den Theken und der Sitztreppe: Getränke und Gäste je Reservierung --- */
+const SPOT_PATH={ul:{pts:[[953,1523],[707,1523],[550,1630],[536,1704],[578,1766]],away:[1105,1700],y:0,top:1.0,shelf:0,stand:.55},
+  /* rechts erst ab der Säule, davor ist die Garderobe offen */
+  ur:{pts:[[1514,1523],[1683,1630],[1700,1703],[1660,1766]],away:[1105,1700],y:0,top:1.0,shelf:0,stand:.55},
+  sz:{pts:[PLAN.sitzTri[1],PLAN.sitzTri[2]],away:PLAN.sitzTri[0],y:0,top:.42,shelf:-.22,stand:.45},
+  o:{pts:[PLAN.thekeOben[1],PLAN.thekeOben[2],PLAN.thekeOben[3]],away:null,y:H1,top:1.305,shelf:.34,stand:.85}};
+const spotGrp=new THREE.Group();root.add(spotGrp);
+function pathAt(z,dist){const sp=SPOT_PATH[z];const W=sp.pts.map(q=>P(q[0],q[1]));let tot=0;const L=[];for(let i=0;i<W.length-1;i++){const l=Math.hypot(W[i+1][0]-W[i][0],W[i+1][1]-W[i][1]);L.push(l);tot+=l}
+  let d=((dist%tot)+tot)%tot;let i=0;while(i<L.length-1&&d>L[i]){d-=L[i];i++}
+  const a=W[i],b=W[i+1],tx=(b[0]-a[0])/L[i],tz=(b[1]-a[1])/L[i];let nx=-tz,nz=tx;
+  let ref;if(sp.away){const r=P(sp.away[0],sp.away[1]);ref=r}else{const T=PLAN.thekeOben.map(q=>P(q[0],q[1]));ref=[T.reduce((s,q)=>s+q[0],0)/T.length,T.reduce((s,q)=>s+q[1],0)/T.length]}
+  const fx=a[0]+tx*d,fz=a[1]+tz*d;if((ref[0]-fx)*nx+(ref[1]-fz)*nz>0){nx=-nx;nz=-nz}
+  return {x:fx,z:fz,tx,tz,nx,nz}}
+function setSpots(map){spotGrp.children.slice().forEach(o=>{disposeObj(o);spotGrp.remove(o)});
+  for(const z in map){const sp=SPOT_PATH[z];if(!sp)continue;map[z].forEach(r=>{const a=pathAt(z,(r.n-.5)*1.3);const g=new THREE.Group();spotGrp.add(g);const seed=hashN(z+r.n);
+    const n=r.d.length;r.d.forEach((k,i)=>{const o=(DR[k]||DR.wasser)();const off=n<2?0:(i/(n-1)-.5)*Math.min(.8,n*.14);const dep=(i%2?.07:-.07)*(n>4?1:0);
+      o.position.set(a.x+a.tx*off+a.nx*(sp.shelf+dep),sp.y+sp.top,a.z+a.tz*off+a.nz*(sp.shelf+dep));o.traverse(m=>{if(m.isMesh)m.castShadow=true});g.add(o)});
+    const pp=Math.max(1,Math.min(3,r.pp||1));for(let i=0;i<pp;i++){const p=person(seed+i,false);const off=(i-(pp-1)/2)*.5;
+      p.position.set(a.x+a.tx*off+a.nx*sp.stand,sp.y,a.z+a.tz*off+a.nz*sp.stand);p.rotation.y=Math.atan2(-a.nx,-a.nz);g.add(p)}})}
+  dirty=true}
 
 /* --- Hover: Tisch wird größer, Zone leuchtet --- */
 let hoverId=null,hoverZone=null;const YH=new THREE.MeshStandardMaterial({color:0xffe27a,roughness:.5,emissive:0x6a5200});
@@ -1277,7 +1297,7 @@ function loop(now){requestAnimationFrame(loop);const dt=Math.min(.05,((now||perf
 bg();resize();if(portrait()){const v=VIEWS.port;Object.assign(cam,{r:v.r,th:v.th,ph:v.ph});cam.tgt.set(v.tx,v.ty,v.tz)}applyCam();requestAnimationFrame(loop);
 function centerPx(fl){const r=el.getBoundingClientRect();const g=groundAt(r.left+r.width/2,r.top+r.height/2,fl==="oben"?H1:0);return g?[g.x*S+CX,g.z*S+CY]:[1100,1000]}
 function setEdit(on){editMode=!!on;Object.values(ZS).forEach(o=>o.s.visible=!on);dirty=true}
-return {setTables,setZones,setEdit,centerPx,view:v=>flyTo(portrait()&&v!=='oben'?VIEWS.port:VIEWS[v]||VIEWS.unten),resize,flyTo}
+return {setTables,setZones,setSpots,setEdit,centerPx,view:v=>flyTo(portrait()&&v!=='oben'?VIEWS.port:VIEWS[v]||VIEWS.unten),resize,flyTo}
 }
 
 let S3=null,S3floor=null;
@@ -1295,7 +1315,7 @@ function drinksOf(r){const out=[];let pp=0;if(!r||!r.items)return {d:out,pp};
   return {d:out,pp}}
 function render3D(){init3D();if(!S3)return false;
   const LM=linkMap();
-  S3.setEdit(S.editing);
+  S3.setEdit(S.editing);if(S.editing&&render3D.ssig!=="{}"){render3D.ssig="{}";S3.setSpots({})}
   if(S.editing){const list=S.layout.tables.map(t=>({id:t.id,n:t.n,f:t.f,c:!!t.c,s:t.s==="sq",p:saalPos(t),st:"free",sub:"",sel:S.editSel===t.id,d:[],pp:0,edit:true}));
     const sig=JSON.stringify(list);if(sig!==render3D.sig){render3D.sig=sig;S3.setTables(list)}if(S3floor!==S.floor){if(S3floor!==null)S3.view(S.floor);S3floor=S.floor}return true}
   const list=S.layout.tables.map(t=>{const lk=LM[t.id];const r=lk?S.res[lk]:resOf(t.id);const has=!isEmpty(r);
@@ -1306,6 +1326,8 @@ function render3D(){init3D();if(!S3)return false;
     const pick=!!(S.picking&&isD()&&st==="free");
     return {id:t.id,n:t.n,f:t.f,c:!!t.c,s:t.s==="sq",p:saalPos(t),st,sub,sel:!!sel,d:dr.d,pp,pick}});
   const sig=JSON.stringify(list);if(sig!==render3D.sig){render3D.sig=sig;S3.setTables(list)}S3.setZones({ul:zoneSpots("ul").length,ur:zoneSpots("ur").length,sz:zoneSpots("sz").length,o:zoneSpots("o").length});
+  {const m={};ZORDER.forEach(z=>{m[z]=zoneSpots(z).map(k=>{const r=S.res[k];const dr=drinksOf(r);return {n:spotOf(k.slice(1)).num,d:dr.d.slice(0,6),pp:dr.pp||(r.hold?2:1)}})});
+   const sg=JSON.stringify(m);if(sg!==render3D.ssig){render3D.ssig=sg;S3.setSpots(m)}}
   if(S3floor!==S.floor){if(S3floor!==null)S3.view(S.floor);S3floor=S.floor}
   return true}
 function syncModal(){const open=S.sel!=null&&!S.editing&&!S.grouping&&!S.picking&&S.tab==="plan";const m=$("ordmodal");
@@ -1460,7 +1482,7 @@ function renderAddForm(){
      <div class="field"><label for="af-glass">Auf den Tisch</label><select id="af-glass"><option value="">nichts</option>${GLASS_ORDER.map(g=>`<option value="${g}">${GLASS[g][0]}</option>`).join("")}</select></div>
     </div>
     <label class="chk"><input type="checkbox" id="af-crate"> Kommt in die Kühlhaus-Kiste</label>
-    <label class="chk"><input type="checkbox" id="af-late"> Erst kurz vor der Pause hinstellen (z. B. Heißgetränke, Aperitifs)</label>
+    <label class="chk"><input type="checkbox" id="af-late"> Erst kurz vor der Pause hinstellen (heiß oder frisch)</label>
     <div class="af-btns"><button class="ghost" id="af-cancel">Abbrechen</button><button class="btn-solid" id="af-save">Hinzufügen</button></div>
     ${mine.length?`<div class="af-list"><h4>Deine eigenen Produkte</h4>${mine.map(x=>`<div class="af-row"><span>${esc(x.name)}${x.size?` <span class="sz">${esc(x.size)}</span>`:""} · ${eur(+x.price)} · ${esc((CATS.find(c=>c.id===x.cat)||{}).name||"")}</span><button class="linkbtn danger" data-delcustom="${x.id}">Entfernen</button></div>`).join("")}</div>`:""}
    </div>`;
@@ -1507,7 +1529,7 @@ function totalsData(){
   const tabs={};Object.keys(S.res).filter(k=>!isEmpty(S.res[k])).sort(byNum).forEach(k=>{const it=S.res[k].items||{};for(const p in it)if(it[p]>0)(tabs[p]=tabs[p]||[]).push(lbl(k))});
   return {u,o,tabs,crate:ids.filter(k=>P[k].crate),other:ids.filter(k=>!P[k].crate&&P[k].when==="kalt"),late:ids.filter(k=>!P[k].crate&&P[k].when!=="kalt")};
 }
-const LATE_TAG={heiss:"kurz vor der Pause",frisch:"kurz vor der Pause"};
+const LATE_TAG={heiss:"heiß, kurz vor der Pause",frisch:"frisch an der Theke"};
 function otherRows(d,ids){return (ids||d.other).map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag ${P[k].when}">${LATE_TAG[P[k].when]||"später"}</span> `:""}${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n g">${(d.u[k]||0)+(d.o[k]||0)}</td><td class="tabs">${(d.tabs[k]||[]).join(", ")}</td></tr>`).join("")}
 function totalsRows(ids,u,o){return ids.map(k=>`<tr><td>${esc(P[k].name)}${P[k].size?` <span class="sz">${esc(P[k].size)}</span>`:""}</td><td class="n">${u[k]||""}</td><td class="n">${o[k]||""}</td><td class="n g">${(u[k]||0)+(o[k]||0)}</td></tr>`).join("")}
 function renderTotals(){
@@ -1536,7 +1558,7 @@ function renderPack(){
       ${gl.length?`<div class="gl">Gläser: ${esc(gl.join(", "))}</div>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div>
       <div class="amt">${eur(total(r))}</div></div>`}).join("");
   const later=d.later.map(k=>{const r=S.res[k];const hot=itemsText(r,p=>p.when==="heiss");const fresh=itemsText(r,p=>p.when==="frisch");
-    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${esc(hot.concat(fresh).join(", "))}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
+    const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${hot.length?esc(hot.join(", ")):""}${hot.length&&fresh.length?"<br>":""}${fresh.length?`<span class="gl">frisch an der Theke: ${esc(fresh.join(", "))}</span>`:""}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
   const wineItems=r=>ORDER.filter(k=>r.items&&r.items[k]>0&&isWine(P[k])).map(k=>`${r.items[k]}× ${nmSz(P[k])}`);
   const wsum={};d.wine.forEach(k=>{const it=S.res[k].items;ORDER.forEach(p=>{if(it[p]>0&&isWine(P[p]))wsum[p]=(wsum[p]||0)+it[p]})});
   const wine=d.wine.map(k=>{const r=S.res[k];const L=lbl(k);return `<div class="tcard"><div class="tn${L.length>3?" long":""}">${esc(L)}</div><div class="items">${esc(wineItems(r).join(", "))}${r.name?`<div class="who">${esc(r.name)}</div>`:""}</div><div></div></div>`}).join("");
@@ -1596,7 +1618,7 @@ function buildPrint(){
     return `<table>${g.map(t=>`<tr><td class="q">${d.glass[t]}×</td><td>${GLASS[t][1]}</td></tr>`).join("")}${d.bottleNotes.map(n=>`<tr><td></td><td>${esc(n)}</td></tr>`).join("")}</table>`};
   h+=`<div class="two"><div><h3>Gläser &amp; Teller unten</h3>${gl(du)}</div><div><h3>Gläser &amp; Teller oben</h3>${gl(dob)}</div></div>`;
   const oh='<tr class="hd"><td>Produkt</td><td class="q">Anzahl</td><td>Tische</td></tr>';
-  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">KURZ VORHER</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
+  const orow=ids=>ids.map(k=>`<tr><td>${P[k].when!=="kalt"?`<span class="ltag">${P[k].when==="heiss"?"HEISS":"FRISCH"}</span> `:""}${esc(P[k].name)}${P[k].name.includes(P[k].size)?"":` <span class="sz">${esc(P[k].size)}</span>`}</td><td class="q">${(td.u[k]||0)+(td.o[k]||0)}</td><td>${(td.tabs[k]||[]).join(", ")}</td></tr>`).join("");
   const tw=td.other.filter(k=>isWine(P[k])),to=td.other.filter(k=>!isWine(P[k]));
   const twq={};tw.forEach(k=>twq[k]=(td.u[k]||0)+(td.o[k]||0));
   if(tw.length)h+=`<h3>Wein &amp; Sekt</h3><div class="callout">Gläser stehen schon. Kurz vor der Pause mit den Flaschen rumgehen und einschenken.</div><div class="pour">Mitnehmen: ${esc(pourText(twq).join("; "))}</div><table class="ptot">${oh}${orow(tw)}</table>`;
