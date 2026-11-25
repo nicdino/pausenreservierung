@@ -280,7 +280,10 @@ body.stdedit .plan3 .ed-foot [data-ea="done"]::after{content:" & speichern"}
 .hist .col{flex:1 0 56px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;text-align:center}
 .hist .col i{display:block;width:70%;max-width:64px;background:var(--accent);border-radius:6px 6px 2px 2px;min-height:3px}.hist .col b{font-family:var(--f-ui);font-size:13px}.hist .col span{font-weight:700;font-size:13px}.hist .col small{color:var(--muted);font-size:11px;line-height:1.2;max-height:2.4em;overflow:hidden}
 
-.st-bar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px}.demo-tag{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#e8b33a;color:#1d1a1a;padding:4px 10px;border-radius:999px}
+.st-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}.st-bar .spacer{flex:1}
+.st-sel{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 280px}.st-sel span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.st-sel select{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-weight:600}
+.demo-note{display:flex;align-items:center;gap:8px;color:var(--muted);margin:0 0 8px}.hist .col.best i{background:#e8b33a}.demo-tag{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#e8b33a;color:#1d1a1a;padding:4px 10px;border-radius:999px}
 .s3d{height:280px;border-radius:10px;background:radial-gradient(ellipse at 50% 30%,var(--surface),var(--sunk));overflow:hidden}
 .tl.cols{display:flex;gap:6px;align-items:flex-end;height:170px}.tl .col{flex:1 0 28px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
 .tl .col i{display:block;width:80%;background:#e0763a;border-radius:4px 4px 1px 1px;min-height:2px}.tl .col span{font-size:11px;color:var(--muted)}.tl .col b{font-size:12px;font-family:var(--f-ui)}
@@ -2256,6 +2259,7 @@ document.addEventListener("click",e=>{if(!$("evmenu").hidden&&!e.target.closest(
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("evmenu").hidden){closeEvMenu();$("evpick").focus()}});
 
 /* ---------- Statistiken ---------- */
+const SHOW_DEMO=false; /* in der GitHub-Version aus */
 const SCOL=["#c0202d","#e0763a","#e8b33a","#6f9a5a","#3f7f93","#5b5fa8","#9a5aa0","#8a7a6a","#c95a7a","#4a4a4a"];
 const litersOf=size=>{const m=/(\d+(?:,\d+)?)\s*l\b/.exec(size||"");return m?parseFloat(m[1].replace(",",".")):0};
 const isAF=p=>["wasser","soft","durst","heiss"].includes(p.cat)&&p.id!=="gluehwein"&&p.id!=="hotaperol"||/alkoholfrei/i.test(p.name)||/0$/.test(p.id);
@@ -2265,8 +2269,9 @@ function statSnapshot(){const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k
   keys.forEach(k=>{const r=S.res[k];rev+=total(r);items+=count(r);for(const p in r.items||{}){const q=r.items[p];if(!P[p]||!q)continue;prod[p]=(prod[p]||0)+q;cats[P[p].cat]=(cats[P[p].cat]||0)+q*P[p].price}});
   return {keys,rev,items,cats,prod}}
 function saveHistory(){const s=statSnapshot();if(!s.keys.length)return;const e=S.event||{};
-  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,cats:s.cats,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3)};
-  S.history=(S.history||[]).filter(x=>!(x.name===h.name&&x.date===h.date)).concat(h).slice(-60);saveDoc("config/history",{items:S.history})}
+  const ev=(S.events||[]).find(x=>x.id===e.evId)||{};const keep={};s.keys.forEach(k=>keep[k]=clone(S.res[k]));
+  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep};
+  S.history=(S.history||[]).filter(x=>!(x.name===h.name&&x.date===h.date)).concat(h).sort((a,b)=>a.date<b.date?-1:1).slice(-200);saveDoc("config/history",{items:S.history})}
 function svgDonut(data,size=190,inner=.62){const tot=data.reduce((a,d)=>a+d.v,0)||1;let a0=-Math.PI/2;const R=size/2,r=R*inner,c=R;
   const arcs=data.filter(d=>d.v>0).map(d=>{const a1=a0+d.v/tot*Math.PI*2;const big=a1-a0>Math.PI?1:0;const p=(a,rr)=>[c+rr*Math.cos(a),c+rr*Math.sin(a)];
     const [x0,y0]=p(a0,R),[x1,y1]=p(a1,R),[x2,y2]=p(a1,r),[x3,y3]=p(a0,r);const full=d.v/tot>.9999;
@@ -2323,10 +2328,38 @@ function demoData(){let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233
   const hist=["Creative Kirche","1.Wittener Lachnacht","Miria Boes","Sparkassenclassics","Sebastian Fitzek liest","Tanztheater","Volksbühne","Shaky Everett"].map((nm,i)=>({name:nm,date:`2026-11-${String(1+i*3).padStart(2,"0")}`,rev:Math.round(180+rnd()*420),items:Math.round(60+rnd()*120),res:Math.round(15+rnd()*25)}));
   return {res,event:{name:"Beispiel: Theaterabend",pax:420,date:isoToday()},history:hist}}
 
-function renderStats(){const sig=JSON.stringify([S.statDemo,S.res,S.history,S.event&&S.event.pax]);if(sig===renderStats.sig&&$("statbox").innerHTML)return;renderStats.sig=sig;stop3D();
-  if(!S.statDemo){renderStatsInner();return}const keep={res:S.res,event:S.event,history:S.history};const d=demoData();S.res=d.res;S.event=d.event;S.history=d.history;
-  try{renderStatsInner()}finally{S.res=keep.res;S.event=keep.event;S.history=keep.history}}
-function renderStatsInner(){const box=$("statbox");const s=statSnapshot();const keys=s.keys;
+function statViewBar(){const H=S.history||[];const v=S.statView||"cur";
+  return `<div class="st-bar"><label class="st-sel"><span>Ansicht</span><select id="statview"><option value="cur"${v==="cur"?" selected":""}>Aktuelle Veranstaltung</option>${H.length?`<option value="all"${v==="all"?" selected":""}>Alle Veranstaltungen zusammen (${H.length})</option><optgroup label="Frühere Veranstaltungen">${H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<option value="${i}"${String(i)===String(v)?" selected":""}>${esc(h.date.slice(8,10)+"."+h.date.slice(5,7)+". "+h.name.replace(/\s\d{2}\.\d{2}\.$/,""))}</option>`).join("")}</optgroup>`:""}${SHOW_DEMO?`<option value="demo"${v==="demo"?" selected":""}>Beispieldaten</option>`:""}</select></label>
+    <span class="spacer"></span><button class="ghost" id="histexp">Verlauf sichern</button><label class="ghost evup"><input type="file" id="histimp" accept=".json,application/json" hidden>Verlauf laden</label></div>`}
+function renderStats(){const sig=JSON.stringify([S.statView,S.res,S.history&&S.history.length,S.history&&S.history.map(h=>h.saved),S.event&&S.event.pax]);if(sig===renderStats.sig&&$("statbox").innerHTML)return;renderStats.sig=sig;stop3D();
+  const v=S.statView||"cur";const H=S.history||[];
+  if(v==="all"&&H.length){renderAllStats();return}
+  if(v==="cur"||(v!=="demo"&&!H[+v])){S.statView="cur";renderStatsInner();return}
+  const keep={res:S.res,event:S.event,history:S.history};
+  if(v==="demo"){const d=demoData();S.res=d.res;S.event=d.event;S.history=d.history}
+  else{const h=H[+v];S.res=clone(h.data||{});S.event={name:h.name,pax:h.pax,date:h.date}}
+  try{renderStatsInner(v!=="demo"&&!H[+v].data)}finally{S.res=keep.res;S.event=keep.event;S.history=keep.history}}
+function renderAllStats(){const H=S.history;const box=$("statbox");const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+  const rev=H.reduce((a,h)=>a+h.rev,0),items=H.reduce((a,h)=>a+h.items,0),res=H.reduce((a,h)=>a+h.res,0);const best=H.slice().sort((a,b)=>b.rev-a.rev)[0];
+  const cats={},prod={};H.forEach(h=>{for(const c in h.cats||{})cats[c]=(cats[c]||0)+h.cats[c];const pr=h.prod||Object.fromEntries(h.top||[]);for(const p in pr)prod[p]=(prod[p]||0)+pr[p]});
+  const catRows=CATS.map((c,i)=>({l:c.name,v:cats[c.id]||0,c:SCOL[i%SCOL.length],t:eur(cats[c.id]||0)})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);const csum=catRows.reduce((a,r)=>a+r.v,0);
+  const top=Object.entries(prod).filter(([p])=>P[p]).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([p,q])=>({l:P[p].name+(P[p].size&&!P[p].name.includes(P[p].size)?" "+P[p].size:""),v:q,t:q+"×"}));
+  const WD=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];const wd={};H.forEach(h=>{const d=h.wd||WD[(new Date(h.date+"T12:00").getDay()+6)%7];(wd[d]=wd[d]||[]).push(h.rev)});
+  const wdRows=WD.filter(d=>wd[d]).map(d=>({l:d,v:wd[d].reduce((a,b)=>a+b,0)/wd[d].length,t:eur(wd[d].reduce((a,b)=>a+b,0)/wd[d].length)+` (${wd[d].length}×)`}));
+  const rooms={};H.forEach(h=>{if(!h.room)return;const r=roomName(h.room);(rooms[r]=rooms[r]||[]).push(h)});const roomRows=Object.entries(rooms).map(([r,L])=>({l:r,v:L.reduce((a,h)=>a+h.rev,0)/L.length,t:eur(L.reduce((a,h)=>a+h.rev,0)/L.length)+` (${L.length}×)`}));
+  const perGuest=H.filter(h=>h.pax).map(h=>h.rev/h.pax);
+  const hh=H.slice(-16);const mx=Math.max(1,...hh.map(x=>x.rev));
+  box.innerHTML=statViewBar()+`<div class="st-title"><h3>Alle Veranstaltungen</h3><p class="sub">${H.length} Veranstaltungen von ${esc(H[0].date.split("-").reverse().join("."))} bis ${esc(H[H.length-1].date.split("-").reverse().join("."))}</p></div>
+   <div class="kpis">${kpi(eur(rev),"Umsatz gesamt")}${kpi(eur(rev/H.length),"Ø pro Veranstaltung")}${kpi(res,"Reservierungen",`Ø ${Math.round(res/H.length)} pro Pause`)}${kpi(items,"Artikel")}${kpi(eur(res?rev/res:0),"Ø pro Reservierung")}${perGuest.length?kpi(eur(perGuest.reduce((a,b)=>a+b,0)/perGuest.length),"Ø Umsatz pro Gast"):""}</div>
+   <div class="st-grid"><section class="st-card wide hist"><h4>Umsatz je Veranstaltung</h4><div class="cols">${hh.map(x=>`<div class="col${x===best?" best":""}"><b>${eur(x.rev).replace(",00","")}</b><i style="height:${(x.rev/mx*100).toFixed(1)}%"></i><span>${esc(x.date.slice(8,10)+"."+x.date.slice(5,7)+".")}</span><small>${esc(x.name.replace(/\s\d{2}\.\d{2}\.$/,""))}</small></div>`).join("")}</div></section>
+    <section class="st-card"><h4>Rekord-Pause</h4><p class="big">${eur(best.rev)}</p><p class="sub">${esc(best.name)}, ${best.res} Reservierungen, ${best.items} Artikel</p></section>
+    ${catRows.length?`<section class="st-card"><h4>Umsatz nach Kategorie, alle zusammen</h4><div class="donutrow">${svgDonut(catRows)}<ul class="legend2">${catRows.map(r=>`<li><i style="background:${r.c}"></i>${esc(r.l)}<b>${pct(r.v,csum)} %</b></li>`).join("")}</ul></div></section>`:""}
+    ${top.length?`<section class="st-card"><h4>Dauerbrenner</h4>${hbars(top)}</section>`:""}
+    ${wdRows.length?`<section class="st-card"><h4>Bester Wochentag</h4><p class="sub">Ø Umsatz pro Pause</p>${hbars(wdRows)}</section>`:""}
+    ${roomRows.length?`<section class="st-card"><h4>Theatersaal gegen Festsaal</h4><p class="sub">Ø Umsatz pro Pause</p>${hbars(roomRows)}</section>`:""}
+    ${window.THREE&&catRows.length?`<section class="st-card"><h4>Skyline aller Veranstaltungen</h4><div class="s3d" id="s3d-sky"></div></section>`:""}</div>`;
+  if(window.THREE&&catRows.length){const short={"Wein & Sekt":"Wein","Durstlöscher & Capri":"Durst","Ganze Flaschen":"Flaschen","Heißgetränke":"Heiß"};skyline3D($("s3d-sky"),catRows.map(r=>({...r,short:(short[r.l]||r.l)+" "+pct(r.v,csum)+"%"})))}}
+function renderStatsInner(noDetail){const box=$("statbox");const s=statSnapshot();const keys=s.keys;
   const LM=linkMap();const tables=S.layout.tables;const resT=new Set();const perTable={};let zoneSpots=0,holds=0,groups=0,unten=0,oben=0,uRev=0,oRev=0;
   keys.forEach(k=>{const r=S.res[k];const id=k.slice(1);const sp=spotOf(id);const t=tblById(id);if(r.hold)holds++;if(r.group&&r.group.length)groups++;
     const f=sp?ZONES[sp.z].f:t?t.f:"unten";if(f==="oben"){oben++;oRev+=total(r)}else{unten++;uRev+=total(r)}
@@ -2347,8 +2380,8 @@ function renderStatsInner(){const box=$("statbox");const s=statSnapshot();const 
   const top=Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([p,q])=>({l:P[p].name+(P[p].size&&!P[p].name.includes(P[p].size)?" "+P[p].size:""),v:q,t:q+"×"}));
   const prodN=Object.keys(s.prod).length;const allProd=Object.keys(P).length;
   const H=S.history||[];
-  const bar=`<div class="st-bar">${S.statDemo?`<span class="demo-tag">Beispieldaten</span>`:""}<button class="${S.statDemo?"btn-solid":"ghost"}" id="statdemo">${S.statDemo?"Zurück zu den echten Zahlen":"Beispiel ansehen"}</button></div>`;
-  if(!keys.length&&!H.length){box.innerHTML=bar+`<div class="ev-empty"><b>Noch keine Zahlen da.</b><p>Sobald Reservierungen drin sind, siehst du hier Auslastung, Umsatz, Lieblingsgetränke und mehr. Mit „Beispiel ansehen“ siehst du, wie das aussieht.</p></div>`;return}
+  const bar=statViewBar()+(S.statView==="demo"?`<p class="demo-note"><span class="demo-tag">Beispieldaten</span> Erfundene Zahlen zum Anschauen</p>`:"")+(noDetail?`<p class="sub">Für diese Veranstaltung sind nur die Eckdaten gespeichert.</p>`:"");
+  if(!keys.length&&!H.length){box.innerHTML=bar+`<div class="ev-empty"><b>Noch keine Zahlen da.</b><p>Sobald Reservierungen drin sind, siehst du hier Auslastung, Umsatz, Lieblingsgetränke und mehr. Nach jeder Veranstaltung landet sie automatisch im Verlauf, oben bei „Ansicht“ kannst du frühere Veranstaltungen und alle zusammen anschauen.</p></div>`;return}
   /* Zeiten */
   const W=keys.map(k=>({k,w:S.res[k].work||0,n:count(S.res[k])})).filter(x=>x.w>0).sort((a,b)=>a.w-b.w);const wsum=W.reduce((a,x)=>a+x.w,0);
   const fmtT=ms=>{const t=Math.round(ms/1000);return t<60?t+" s":Math.floor(t/60)+":"+String(t%60).padStart(2,"0")+" min"};
@@ -2357,12 +2390,12 @@ function renderStatsInner(){const box=$("statbox");const s=statSnapshot();const 
     tl=`<div class="cols tl">${Array.from({length:Math.min(nb,24)},(_,i)=>{const v=bins[i]||0;const d=new Date(b0+i*9e5);return `<div class="col"><b>${v||""}</b><i style="height:${(v/mx*100).toFixed(1)}%"></i><span>${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}</span></div>`}).join("")}</div>`}
   const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
   const kb=abrTotals();const kbSum2=kb.sum;
-  let h=`<div class="st-title"><h3>${esc((S.event&&S.event.name)||"Aktuelle Pause")}</h3><p class="sub">${keys.length} Reservierungen, Stand jetzt</p></div>
+  let h=`<div class="st-title"><h3>${esc((S.event&&S.event.name)||"Aktuelle Pause")}</h3><p class="sub">${keys.length} Reservierungen${S.statView==="cur"||!S.statView?", Stand jetzt":""}</p></div>
   <div class="kpis">${kpi(eur(s.rev),"Umsatz vorbestellt")}${kpi(keys.length,"Reservierungen",`${unten} unten, ${oben} oben`)}${kpi(s.items,"Artikel")}${kpi(eur(avg),"Ø pro Reservierung",`Median ${eur(med)}`)}
     ${kpi(share!=null?fmtN(share)+" %":"–","Gäste mit Reservierung",pax?`ca. ${guests} von ${pax} Gästen`:"Gästezahl fehlt, Veranstaltung aus dem Kalender starten")}${kpi(occ+" %","Tische belegt",`${resT.size} von ${tables.length}`)}</div>
   <div class="st-grid">
    <section class="st-card"><h4>Auslastung</h4><div class="gauges">${svgGauge(occU,"Tische unten")}${svgGauge(occO,"Tische oben")}</div>
-     ${hbars([{l:"Sitzplätze",v:occSitz,t:occSitz+" %"},{l:"Stehtische",v:occSteh,t:occSteh+" %"},{l:"Theken & Sitztreppe",v:zoneSpots,t:zoneSpots+" Plätze"}])}</section>
+     ${hbars([{l:"Sitzplätze",v:occSitz,t:occSitz+" %"},{l:"Stehtische",v:occSteh,t:occSteh+" %"},{l:"Theken & Sitztreppe",v:zoneSpots,t:zoneSpots+(zoneSpots===1?" Platz":" Plätze")}])}</section>
    <section class="st-card"><h4>Umsatz nach Kategorie</h4>${catRows.length?`<div class="donutrow">${svgDonut(catRows)}<ul class="legend2">${catRows.map(r=>`<li><i style="background:${r.c}"></i>${esc(r.l)}<b>${pct(r.v,s.rev)} %</b></li>`).join("")}</ul></div>`:`<p class="sub">Noch nichts bestellt.</p>`}</section>
    <section class="st-card wide"><h4>Wo wird bestellt?</h4><p class="sub">Je größer der Kreis, desto mehr Umsatz am Tisch. Oben ist die Galerie.</p>${statMap(perTable)}</section>
    <section class="st-card"><h4>Top-Produkte</h4>${top.length?hbars(top):`<p class="sub">Noch nichts bestellt.</p>`}<p class="sub">${prodN} von ${allProd} Produkten wurden mindestens einmal bestellt.</p></section>
@@ -2422,7 +2455,16 @@ $("calgrid").addEventListener("click",e=>{const b=e.target.closest("[data-day]")
 $("calday").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(b)openReset(b.dataset.evstart)});
 $("calfile").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const dt=new DataTransfer();dt.items.add(f);$("evfile").files=dt.files;e.target.value="";
   $("evfile").dispatchEvent(new Event("change"));const t=setInterval(()=>{if(!/Lese/.test($("evstatus").textContent)){clearInterval(t);S.calM=null;renderCal();toast($("evstatus").textContent)}},200)});
-$("statbox").addEventListener("click",e=>{if(e.target.closest("#statdemo")){S.statDemo=!S.statDemo;renderStats.sig=null;renderStats()}});
+$("statbox").addEventListener("change",async e=>{
+  if(e.target.id==="statview"){S.statView=e.target.value;renderStats.sig=null;renderStats();return}
+  if(e.target.id==="histimp"){const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+    try{const d=JSON.parse(await f.text());const L=Array.isArray(d)?d:d.history;if(!Array.isArray(L))throw 0;const key=h=>h.name+"|"+h.date;const m=new Map((S.history||[]).map(h=>[key(h),h]));L.forEach(h=>{if(h&&h.date&&h.name)m.set(key(h),h)});
+      S.history=[...m.values()].sort((a,b)=>a.date<b.date?-1:1);saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats();toast(L.length+" Veranstaltungen geladen")}catch(err){toast("Die Datei ist kein Casa-Verlauf.")}}});
+$("statbox").addEventListener("click",async e=>{if(!e.target.closest("#histexp"))return;const H=S.history||[];if(!H.length){toast("Noch kein Verlauf zum Sichern.");return}
+  const name=`Casa-Verlauf ${isoToday()}.json`;const blob=new Blob([JSON.stringify({history:H},null,1)],{type:"application/json"});
+  let dl=null;if(window.claude&&window.claude.use){try{dl=await window.claude.use("downloads")}catch(err){dl=null}}
+  if(dl){try{await dl.save({filename:name,data:blob});toast("Verlauf gesichert")}catch(err){toast("Sichern hat hier nicht geklappt.")}}
+  else{const u=URL.createObjectURL(blob);const l=document.createElement("a");l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Verlauf gesichert")}});
 $("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
 
 /* ---------- Neue Veranstaltung ---------- */
