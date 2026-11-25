@@ -215,6 +215,27 @@ body.p3full .plan3 .editbar{top:88px}
 .editbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
 .editbar input{width:76px;padding:9px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);font:inherit}
 
+/* Veranstaltungen */
+.evhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.evhead h3{font-family:var(--f-ui);font-size:22px;margin:0}.evhead .sub{margin:4px 0 0;color:var(--muted)}
+.evup{cursor:pointer;display:inline-flex;align-items:center}
+#evlist{display:flex;flex-direction:column;gap:8px}
+.ev-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.ev-row.past{opacity:.5}.ev-row.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.ev-row.nocasa .ev-m>b{text-decoration:line-through;text-decoration-thickness:1px}
+.ev-d{display:flex;flex-direction:column;align-items:center;font-family:var(--f-ui);line-height:1.1}.ev-d b{font-size:21px}.ev-d span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.ev-m{display:flex;flex-direction:column;gap:2px;min-width:0}.ev-m>b{font-family:var(--f-ui);font-size:17px}.ev-m>span{color:var(--muted);font-size:14px}
+.ev-tags{display:flex;gap:6px;flex-wrap:wrap}.ev-tags i{font-style:normal;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+.ev-tags .t-no{background:var(--hot-soft);color:var(--hot)}.ev-tags .t-cur{background:var(--accent);color:var(--on-accent)}
+.ev-row button[disabled]{opacity:.55}
+.ev-empty{padding:28px;border:1.5px dashed var(--line);border-radius:var(--r);text-align:center;color:var(--muted)}.ev-empty b{color:var(--ink);font-size:17px}
+@media (max-width:560px){.ev-row{grid-template-columns:52px minmax(0,1fr);}.ev-row button{grid-column:1/-1}}
+.rm-ev{margin:12px 0}.rm-ev>b{display:block;margin-bottom:6px;font-family:var(--f-ui)}
+.rm-evlist{display:flex;flex-direction:column;gap:6px;max-height:42vh;overflow:auto}
+.rm-evb{display:flex;gap:12px;align-items:center;text-align:left;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit}
+.rm-evb .d{font-family:var(--f-ui);font-weight:700;min-width:86px}.rm-evb small{display:block;color:var(--muted);font-size:13px}
+.rm-evb[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.rm-hint{color:var(--muted);font-size:14px}
+
 /* 3D-Tischplan */
 .plan3{position:relative;width:100%;height:min(74vh,780px);min-height:400px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--paper)}
 .plan3 canvas{display:block;width:100%;height:100%}
@@ -562,6 +583,7 @@ table.list td .sz{color:var(--muted)}
     <button role="tab" id="tab-plan" aria-selected="true" data-tab="plan" title="Pausenreservierung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9-4 9 4-9 4-9-4Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="lbl">Pausenreservierung</span></button>
     <button role="tab" id="tab-pack" aria-selected="false" data-tab="pack" title="Packliste"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Packliste</span></button>
     <button role="tab" id="tab-kasse" aria-selected="false" data-tab="kasse" title="Summe"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 4H7l6 8-6 8h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Summe</span></button>
+    <button role="tab" id="tab-ev" aria-selected="false" data-tab="ev" title="Veranstaltungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Veranstaltungen</span></button>
     <button role="tab" id="tab-abr" aria-selected="false" data-tab="abr" title="Abrechnung (Excel)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M9 9v11M15 9v11" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Abrechnung</span></button>
   </nav>
   <div class="side-foot">
@@ -645,6 +667,11 @@ table.list td .sz{color:var(--muted)}
       </div>
       <div id="abr"></div>
     </div>
+  </section>
+  <section id="view-ev" hidden>
+    <div class="evhead"><div><h3 id="evtitle">Veranstaltungen</h3><p class="sub" id="evstatus">Monats-PDF mit den Terminen hochladen, dann ist alles automatisch eingetragen.</p></div>
+      <label class="btn-solid evup"><input type="file" id="evfile" accept="application/pdf,.pdf" hidden>PDF hochladen</label></div>
+    <div id="evlist"></div>
   </section>
 </div>
 </div>
@@ -791,8 +818,8 @@ function itemsText(r,filter){return ORDER.filter(k=>r.items&&r.items[k]>0&&(!fil
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
 
 /* ---------- Speichern ---------- */
-function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr}))}catch(e){}}
-function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
+function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth}))}catch(e){}}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
   if(mode!=="db"){lsSave();return}
   dirty.add(id);clearTimeout(timers[id]);
@@ -1541,8 +1568,8 @@ function renderKasse(){
 
 function renderAll(){
   if(S.tab!=="plan"&&document.body.classList.contains("p3full"))setFull(false);
-  ["plan","pack","kasse","abr"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
-  $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung"}[S.tab];
+  ["plan","pack","kasse","abr","ev"].forEach(t=>{$("view-"+t).hidden=S.tab!==t;$("tab-"+t).setAttribute("aria-selected",S.tab===t)});
+  $("pagetitle").textContent={plan:"Pausenreservierung",pack:"Packliste",kasse:"Summe",abr:"Abrechnung",ev:"Veranstaltungen"}[S.tab];if(S.tab==="ev")renderEvents();
   renderSummary();renderPlan();renderOrder(false);renderPicker();syncModal();
   if(S.tab==="pack")renderPack();if(S.tab==="kasse")renderKasse();if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr();
 }
@@ -2028,11 +2055,70 @@ $("kasse").addEventListener("click",async e=>{
   }
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("zonemodal").hidden){$("zonemodal").hidden=true;return}if(e.key==="Escape"&&!$("resetmodal").hidden){closeReset();return}if(e.key==="Escape"&&S.grouping){S.grouping=false;renderAll();return}if(e.key==="Escape"&&S.sel!=null){S.sel=null;renderAll()}});
+/* ---------- Veranstaltungen aus der Monats-PDF ---------- */
+const PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=()=>no(new Error("load"));document.head.appendChild(s)})}
+async function pdfLib(){if(!window.pdfjsWorker)await loadScript(PDFJS+"pdf.worker.min.js");if(!window.pdfjsLib)await loadScript(PDFJS+"pdf.min.js");window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+"pdf.worker.min.js";return window.pdfjsLib}
+async function pdfLines(buf){const lib=await pdfLib();const doc=await lib.getDocument({data:buf}).promise;const out=[];
+  for(let p=1;p<=doc.numPages;p++){const pg=await doc.getPage(p);const tc=await pg.getTextContent();const rows=[];
+    tc.items.forEach(it=>{if(!it.str)return;const y=it.transform[5],x=it.transform[4];let r=rows.find(r=>Math.abs(r.y-y)<3);if(!r){r={y,items:[]};rows.push(r)}r.items.push({x,w:it.width||0,s:it.str})});
+    rows.sort((a,b)=>b.y-a.y).forEach(r=>{let t="",end=null;r.items.sort((a,b)=>a.x-b.x).forEach(i=>{if(end!=null&&i.x-end>2.5&&!/\s$/.test(t)&&!/^\s/.test(i.s))t+=" ";t+=i.s;end=i.x+i.w});out.push(t.replace(/\s+/g," ").trim())})}
+  return out.filter(Boolean)}
+const WD="Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag";
+function parseEvents(lines){const blocks=[];const re=new RegExp(`^(${WD})\\s*,?\\s*(\\d{1,2})\\s*\\.\\s*(\\d{1,2})\\s*\\.\\s*(\\d{4})\\s*(.*)$`);
+  lines.forEach(l=>{const m=l.match(re);if(m)blocks.push({m,rest:[]});else if(blocks.length)blocks[blocks.length-1].rest.push(l)});
+  const tm=(txt,lab)=>{const m=txt.match(new RegExp(lab+"\\s*:?\\s*(\\d{1,2})\\s*[:.]\\s*(\\d{2})","i"));return m?m[1].padStart(2,"0")+":"+m[2]:""};
+  return blocks.map(({m,rest})=>{const head=m[5].trim();const all=(head+" "+rest.join(" ")).replace(/\s+/g," ");
+    const room=(head.match(/\b(Foyer\s*\+\s*TS|Foyer\s*\+\s*FS|TS|FS|Foyer)\b/)||[])[1]||"";
+    const pax=+((all.match(/(\d+)\s*pax/i)||[])[1]||0);
+    let name=head;const cut=[room?head.indexOf(room):-1,head.search(/\d+\s*pax/i)].filter(i=>i>0);if(cut.length)name=head.slice(0,Math.min(...cut));
+    name=name.replace(/[\s–-]+$/,"").trim();
+    let ein=tm(all,"Einlass"),beg=tm(all,"Beginn"),pau=tm(all,"Pause"),end=tm(all,"Ende");
+    if(!ein&&!beg){const r=all.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/);if(r){beg=r[1];end=r[2]}}
+    const noCasa=/no\s*casa|eigenbewirtung/i.test(all),kc=/künstlercatering/i.test(all),sekt=/sektempfang/i.test(all),noPause=/pause\s*:?\s*keine/i.test(all);
+    const date=`${m[4]}-${m[3].padStart(2,"0")}-${m[2].padStart(2,"0")}`;
+    return {id:date+"_"+name.slice(0,24),date,wd:m[1],name,room,pax,einlass:ein,beginn:beg,pause:noPause?"keine":pau,ende:end,noCasa,kc,sekt}})}
+const ROOMS={TS:"Theatersaal",FS:"Festsaal",Foyer:"Foyer"};
+const roomName=r=>r.replace(/\s+/g,"").split("+").map(x=>ROOMS[x]||x).join(" + ");
+const evLabel=e=>`${e.name} ${e.date.slice(8,10)}.${e.date.slice(5,7)}.`;
+const evDe=e=>`${e.wd.slice(0,2)}, ${e.date.slice(8,10)}.${e.date.slice(5,7)}.`;
+function evMeta(e){const p=[];if(e.room)p.push(roomName(e.room));if(e.pax)p.push(e.pax+" Gäste");
+  const t=[e.einlass&&"Einlass "+e.einlass,e.beginn&&"Beginn "+e.beginn,e.pause&&(e.pause==="keine"?"keine Pause":"Pause "+e.pause),e.ende&&"Ende "+e.ende].filter(Boolean);return {where:p.join(", "),times:t.join(", ")}}
+function upcoming(){const t=isoToday();return (S.events||[]).filter(e=>e.date>=t)}
+function nextAfter(e){return (S.events||[]).filter(x=>x.date>e.date&&!x.noCasa)[0]||null}
+function applyEvent(e){S.event={name:evLabel(e),evId:e.id,date:e.date,pause:e.pause,room:e.room,pax:e.pax};$("evname").value=S.event.name;saveDoc("config/event",S.event);
+  S.abr.date=e.date;const nx=nextAfter(e);if(nx){S.abr.kb2.event=evLabel(nx);S.abr.kb2.date=nx.date;S.abr.kb2.time=nx.einlass||nx.beginn||""}saveAbr()}
+function saveEvents(){saveDoc("config/events",{items:S.events,month:S.evMonth||""})}
+function renderEvents(){const box=$("evlist");const L=S.events||[];const t=isoToday();
+  $("evtitle").textContent=S.evMonth||"Termine";
+  if(!L.length){box.innerHTML=`<div class="ev-empty"><b>Noch keine Termine drin.</b><p>Lade die Monats-PDF mit den Terminen hoch. Dann stehen hier alle Veranstaltungen, und bei „Neue Veranstaltung“ kannst du direkt eine auswählen.</p></div>`;return}
+  box.innerHTML=L.map(e=>{const m=evMeta(e);const cur=S.event&&S.event.evId===e.id;const past=e.date<t;
+    return `<div class="ev-row${past?" past":""}${cur?" cur":""}${e.noCasa?" nocasa":""}"><div class="ev-d"><b>${e.date.slice(8,10)}.${e.date.slice(5,7)}.</b><span>${esc(e.wd)}</span></div>
+      <div class="ev-m"><b>${esc(e.name)}</b><span>${esc(m.where)}</span><span>${esc(m.times||"Zeiten noch offen")}</span>
+      <span class="ev-tags">${e.noCasa?'<i class="t-no">ohne CaSa</i>':""}${e.kc?'<i>Künstlercatering</i>':""}${e.sekt?'<i>Sektempfang</i>':""}${cur?'<i class="t-cur">läuft gerade</i>':""}</span></div>
+      <button class="${cur?"ghost":"btn-solid"}" data-evstart="${esc(e.id)}"${cur||e.noCasa?" disabled":""}>${cur?"Aktiv":"Starten"}</button></div>`}).join("")}
+$("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  $("evstatus").textContent="Lese die PDF…";
+  try{const lines=await pdfLines(await f.arrayBuffer());const L=parseEvents(lines);
+    if(!L.length){$("evstatus").textContent="In der PDF hab ich keine Termine gefunden. Ist das die Monatsliste?";return}
+    const head=lines.find(l=>/^Termine\b/i.test(l));S.evMonth=head||"";
+    /* andere Monate behalten, damit z. B. der erste Termin im Folgemonat als nächste Veranstaltung gefunden wird */
+    const months=new Set(L.map(x=>x.date.slice(0,7)));const old=new Date();old.setDate(old.getDate()-62);const lim=old.toISOString().slice(0,10);
+    S.events=(S.events||[]).filter(x=>!months.has(x.date.slice(0,7))&&x.date>=lim).concat(L).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);saveEvents();renderEvents();
+    $("evstatus").textContent=`${L.length} Termine eingelesen.`}
+  catch(err){console.error(err);$("evstatus").textContent="Die PDF ließ sich nicht lesen. Ohne Internet klappt das Einlesen nicht."}});
+$("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
+
 /* ---------- Neue Veranstaltung ---------- */
-function openReset(){
+function openReset(pre){if(typeof pre!=="string")pre="";
+  const ups=upcoming().filter(e=>!e.noCasa);S.pickEv=pre||(ups[0]&&ups[0].id)||"";
+  const evs=(S.events||[]).filter(e=>!e.noCasa&&(e.date>=isoToday()||e.id===pre));
+  const pick=evs.length?`<div class="rm-ev"><b>Welche Veranstaltung kommt?</b><div class="rm-evlist">${evs.map(e=>{const m=evMeta(e);return `<button class="rm-evb" data-pick="${esc(e.id)}" aria-pressed="${e.id===S.pickEv}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")}
+     <button class="rm-evb" data-pick="" aria-pressed="${!S.pickEv}"><span class="d">–</span><span><b>Ohne Termin aus der Liste</b><small>Namen dann oben selbst eintragen</small></span></button></div></div>`
+    :`<p class="rm-hint">Tipp: Unter „Veranstaltungen“ kannst du die Monats-PDF hochladen. Dann wählst du hier direkt die nächste Veranstaltung aus.</p>`;
   const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k]));let sum=0;keys.forEach(k=>sum+=total(S.res[k]));
   $("rmbox").innerHTML=`<h2 id="rm-title">Neue Veranstaltung starten?</h2>
-    <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Die Abrechnung wird dabei auch geleert. Das lässt sich nicht rückgängig machen. Der Tischplan bleibt.</p>
+    <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Die Abrechnung wird dabei auch geleert. Das lässt sich nicht rückgängig machen. Der Tischplan bleibt.</p>${pick}
     <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go">Ja, alles entfernen</button></div>`;
   $("resetmodal").hidden=false;setTimeout(()=>$("rm-cancel").focus(),30);
 }
@@ -2054,12 +2140,15 @@ $("zonemodal").addEventListener("click",e=>{const t=e.target;if(t===$("zonemodal
 async function doReset(){
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
   {const st=S.abr.start,tg=S.abr.target;S.abr=newAbr();S.abr.start=st;S.abr.target=tg;if(mode==="db")saveDoc("config/abr",S.abr)}
+  const ev=(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
   closeReset();renderAll();
   if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
-  toast("Alle Reservierungen entfernt");
+  toast(ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");
 }
-$("newevent").onclick=openReset;
-$("resetmodal").addEventListener("click",e=>{const t=e.target;if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}if(t.closest("#rm-go"))doReset()});
+$("newevent").onclick=()=>openReset();
+$("resetmodal").addEventListener("click",e=>{const t=e.target;if(t===$("resetmodal")||t.closest("#rm-cancel")){closeReset();return}
+  const pb=t.closest("[data-pick]");if(pb){S.pickEv=pb.dataset.pick;document.querySelectorAll("#rmbox [data-pick]").forEach(b=>b.setAttribute("aria-pressed",b===pb));return}
+  if(t.closest("#rm-go"))doReset()});
 
 /* ---------- Suche ---------- */
 $("psearch").addEventListener("input",e=>{S.q=e.target.value;renderPicker()});
@@ -2090,6 +2179,7 @@ lsLoad();if(S.abrLoaded){S.abr=Object.assign(newAbr(),S.abrLoaded);delete S.abrL
     },()=>{});
     db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
     db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=S.abr.sub;S.abr=Object.assign(newAbr(),clone(d));S.abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
+    db.doc("config/events").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.events=clone(d.items);S.evMonth=d.month||"";if(S.tab==="ev")renderEvents()}}},()=>{});
     db.doc("config/event").onSnapshot(snap=>{if(snap.exists){S.event=clone(snap.data());renderSummary()}},()=>{});
   }catch(e){}
 })();
