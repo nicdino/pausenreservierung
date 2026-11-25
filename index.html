@@ -82,6 +82,21 @@ header.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block
 .brand h1{font-family:var(--f-ui);font-weight:700;font-size:22px;margin:0;line-height:1.1}
 .brand small{display:block;font-family:var(--f-ui);font-weight:500;color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
 .event{flex:1 1 260px;display:flex;gap:8px;min-width:0}
+.event{position:relative}
+.evpick{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;text-align:left}
+.evpick:hover{border-color:var(--accent)}.evpick svg{width:18px;height:18px;flex:none;margin-left:auto;color:var(--muted)}
+.evk{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.evv{font-family:var(--f-ui);font-weight:700;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.evpick.none .evv{color:var(--muted);font-weight:600}
+.evpick.on .evk{color:var(--accent)}.evpick.on .evk::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:1px;animation:evpulse 1.6s ease-in-out infinite}
+@keyframes evpulse{50%{opacity:.3}}@media (prefers-reduced-motion:reduce){.evpick.on .evk::before{animation:none}}
+.evpick.static,.evpick:disabled{cursor:default;opacity:1}.evpick.static svg{display:none}
+.evmenu{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;max-height:60vh;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.evmenu button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:9px 10px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:inherit}
+.evmenu button:hover,.evmenu button:focus-visible{background:var(--sunk)}
+.evmenu button[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}.evmenu button[aria-selected="true"] small{color:inherit;opacity:.8}
+.evmenu .d{font-family:var(--f-ui);font-weight:700;min-width:70px}.evmenu small{display:block;color:var(--muted);font-size:13px}
+.evmenu .sep{height:1px;background:var(--line);margin:6px 4px}.evmenu .mt{padding:8px 10px;color:var(--muted);font-size:14px}
 .event input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:16px}
 .sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
@@ -242,7 +257,7 @@ body.p3full .plan3 .editbar{top:88px}
 .calwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
 @media (max-width:899px){.calwrap{grid-template-columns:1fr}}
 .calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.cal-wd{font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 0}
+.cal-wd{font-family:var(--f-ui);font-weight:700;font-size:16px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 0}
 .cal-c{min-height:96px;display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;padding:6px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;overflow:hidden}
 .cal-c.out{background:transparent;border-color:transparent}.cal-c.past{opacity:.55}
 .cal-c.today .cal-n{background:var(--ink);color:var(--surface)}.cal-c.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
@@ -622,7 +637,9 @@ table.list td .sz{color:var(--muted)}
   <header class="top">
     <button class="menubtn" id="menubtn" aria-label="Menü öffnen" aria-controls="side" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
     <h2 class="pagetitle" id="pagetitle">Pausenreservierung</h2>
-    <div class="event"><input id="evname" autocomplete="off" placeholder="Veranstaltung, z. B. Theater 04.10." aria-label="Veranstaltung"></div>
+    <div class="event" id="evbox"><button class="evpick" id="evpick" aria-haspopup="listbox" aria-expanded="false"><span class="evk" id="evk">Veranstaltung</span><span class="evv" id="evv">Keine Veranstaltung gewählt</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="evmenu" id="evmenu" hidden role="listbox" aria-label="Veranstaltung wählen"></div>
+      <input id="evname" autocomplete="off" placeholder="Name der Veranstaltung" aria-label="Eigener Name der Veranstaltung" hidden></div>
   </header>
 
   <section id="view-plan">
@@ -1329,7 +1346,7 @@ function renderSummary(){
   for(const k in S.res){const r=S.res[k];if(isEmpty(r))continue;c++;s+=total(r);a+=count(r)}
   $("s-count").textContent=c;$("s-items").textContent=a;$("s-sum").textContent=eur(s);
   {const b=$("tab-pack");let bd=b.querySelector(".badge");if(c){if(!bd){bd=document.createElement("span");bd.className="badge num";b.append(bd)}bd.textContent=c}else if(bd)bd.remove()}
-  const ev=$("evname");if(document.activeElement!==ev)ev.value=S.event.name||"";
+  const ev=$("evname");if(document.activeElement!==ev)ev.value=S.event.name||"";renderEvPick();
 }
 
 /* ---------- Aktueller Tisch ---------- */
@@ -2071,7 +2088,7 @@ $("order").addEventListener("input",e=>{
   clearTimeout(typeT);typeT=setTimeout(()=>{putKey(k,getKey(k));renderSummary();renderPlan()},400);
 });
 let evT=null;
-$("evname").addEventListener("input",e=>{S.event={name:e.target.value};clearTimeout(evT);evT=setTimeout(()=>saveDoc("config/event",S.event),500)});
+$("evname").addEventListener("input",e=>{S.event={name:e.target.value};$("evv").textContent=e.target.value||"Veranstaltung auswählen";clearTimeout(evT);evT=setTimeout(()=>saveDoc("config/event",S.event),500)});
 $("kasse").addEventListener("click",async e=>{
   const t=e.target;
   if(t.closest("#resetask")){openReset();return}
@@ -2135,6 +2152,28 @@ $("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target
     S.events=(S.events||[]).filter(x=>!months.has(x.date.slice(0,7))&&x.date>=lim).concat(L).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);saveEvents();renderEvents();
     $("evstatus").textContent=`${L.length} Termine eingelesen.`}
   catch(err){console.error(err);$("evstatus").textContent="Die PDF ließ sich nicht lesen. Ohne Internet klappt das Einlesen nicht."}});
+/* ---------- Auswahl der laufenden Veranstaltung oben ---------- */
+function renderEvPick(){const b=$("evpick");if(!b)return;const name=(S.event&&S.event.name)||"";const info=S.tab==="cal"||S.tab==="ev";
+  $("evbox").hidden=info&&!name;b.classList.toggle("on",!!name);b.classList.toggle("none",!name);b.classList.toggle("static",info);b.disabled=info;
+  $("evk").textContent=name?"Läuft gerade":"Veranstaltung";$("evv").textContent=name||"Veranstaltung auswählen";if(info)closeEvMenu()}
+function openEvMenu(){const ups=upcoming().filter(e=>!e.noCasa);const cur=S.event&&S.event.evId;
+  let h=ups.length?ups.map(e=>{const m=evMeta(e);return `<button role="option" data-evp="${esc(e.id)}" aria-selected="${e.id===cur}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")
+    :`<div class="mt">Noch keine kommenden Termine. Lade unter „Kalender“ die Monats-PDF hoch.</div>`;
+  h+=`<div class="sep"></div><button data-evp="__own"><span class="d">✎</span><span><b>Eigenen Namen eingeben</b><small>für Veranstaltungen, die nicht in der Liste stehen</small></span></button>`;
+  $("evmenu").innerHTML=h;$("evmenu").hidden=false;$("evpick").setAttribute("aria-expanded","true");const f=$("evmenu").querySelector('[aria-selected="true"]')||$("evmenu").querySelector("button");if(f)f.focus()}
+function closeEvMenu(){$("evmenu").hidden=true;$("evpick").setAttribute("aria-expanded","false")}
+$("evpick").onclick=e=>{e.stopPropagation();if($("evmenu").hidden)openEvMenu();else closeEvMenu()};
+$("evmenu").addEventListener("click",e=>{const b=e.target.closest("[data-evp]");if(!b)return;closeEvMenu();const id=b.dataset.evp;
+  if(id==="__own"){$("evpick").hidden=true;const i=$("evname");i.hidden=false;i.focus();i.select();return}
+  if(S.event&&S.event.evId===id)return;
+  const ev=(S.events||[]).find(x=>x.id===id);if(!ev)return;
+  if(Object.keys(S.res).some(k=>!isEmpty(S.res[k]))){openReset(id);return}
+  applyEvent(ev);renderAll();toast("Läuft gerade: "+S.event.name)});
+$("evname").addEventListener("blur",()=>{$("evname").hidden=true;$("evpick").hidden=false;renderEvPick()});
+$("evname").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key==="Escape")$("evname").blur()});
+document.addEventListener("click",e=>{if(!$("evmenu").hidden&&!e.target.closest("#evbox"))closeEvMenu()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("evmenu").hidden){closeEvMenu();$("evpick").focus()}});
+
 /* ---------- Kalender ---------- */
 const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 function calInit(){if(S.calM)return;const L=upcoming();const d=L[0]?L[0].date:isoToday();S.calM=d.slice(0,7);S.calD=d}
