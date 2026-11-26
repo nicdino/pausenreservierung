@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<title>Casa Hub</title>
+<title>CaSa Hub</title>
 <link rel="icon" id="favi">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +32,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
 .wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:12px 48px}
-/* Casa Hub: Seitenleiste links */
+/* CaSa Hub: Seitenleiste links */
 .hub{display:flex;min-height:100vh}
 .side{position:sticky;top:0;align-self:flex-start;height:100vh;width:252px;flex:none;display:flex;flex-direction:column;gap:14px;padding:16px 12px;background:var(--surface);border-right:1px solid var(--line);transition:width .22s ease;overflow-x:hidden;overflow-y:auto;z-index:50}
 .side .ic{width:22px;height:22px;flex:none}
@@ -685,7 +685,7 @@ table.list td .sz{color:var(--muted)}
 <body>
 
 <div id="authgate" hidden role="dialog" aria-modal="true" aria-labelledby="agtitle"><div class="agbox">
-  <div class="aghead"><img id="aglogo" alt="CASA"><div><h2 id="agtitle">Casa Hub</h2><small>Catering Saalbau Witten</small></div></div>
+  <div class="aghead"><img id="aglogo" alt="CaSa"><div><h2 id="agtitle">CaSa Hub</h2><small>Catering Saalbau Witten</small></div></div>
   <div id="agload" class="agwait"><div class="agspin" aria-hidden="true"></div><p class="agsub" style="text-align:center">Verbinde…</p></div>
   <form id="agform" hidden novalidate>
     <p class="agsub" id="agsub">Melde dich mit deinem Team-Konto an.</p>
@@ -715,7 +715,7 @@ table.list td .sz{color:var(--muted)}
 <div class="hub" id="hub">
 <aside class="side" id="side" aria-label="Menü">
   <div class="side-head">
-    <div class="brand"><img class="logo" id="casalogo" alt="CASA" width="40" height="40"><div class="lbl"><h1>Casa Hub</h1><small>Catering Saalbau Witten</small></div></div>
+    <div class="brand"><img class="logo" id="casalogo" alt="CaSa" width="40" height="40"><div class="lbl"><h1>CaSa Hub</h1><small>Catering Saalbau Witten</small></div></div>
     <button class="sidetog" id="sidetog" aria-label="Menü einklappen" aria-expanded="true" title="Menü einklappen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
   <nav class="tabs" role="tablist" aria-orientation="vertical">
@@ -2525,9 +2525,9 @@ $("statbox").addEventListener("change",async e=>{
   if(e.target.id==="statview"){S.statView=e.target.value;renderStats.sig=null;renderStats();return}
   if(e.target.id==="histimp"){const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
     try{const d=JSON.parse(await f.text());const L=Array.isArray(d)?d:d.history;if(!Array.isArray(L))throw 0;const key=h=>h.name+"|"+h.date;const m=new Map((S.history||[]).map(h=>[key(h),h]));L.forEach(h=>{if(h&&h.date&&h.name)m.set(key(h),h)});
-      S.history=[...m.values()].sort((a,b)=>a.date<b.date?-1:1);saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats();toast(L.length+" Veranstaltungen geladen")}catch(err){toast("Die Datei ist kein Casa-Verlauf.")}}});
+      S.history=[...m.values()].sort((a,b)=>a.date<b.date?-1:1);saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats();toast(L.length+" Veranstaltungen geladen")}catch(err){toast("Die Datei ist kein CaSa-Verlauf.")}}});
 $("statbox").addEventListener("click",async e=>{if(!e.target.closest("#histexp"))return;const H=S.history||[];if(!H.length){toast("Noch kein Verlauf zum Sichern.");return}
-  const name=`Casa-Verlauf ${isoToday()}.json`;const blob=new Blob([JSON.stringify({history:H},null,1)],{type:"application/json"});
+  const name=`CaSa-Verlauf ${isoToday()}.json`;const blob=new Blob([JSON.stringify({history:H},null,1)],{type:"application/json"});
   let dl=null;if(window.claude&&window.claude.use){try{dl=await window.claude.use("downloads")}catch(err){dl=null}}
   if(dl){try{await dl.save({filename:name,data:blob});toast("Verlauf gesichert")}catch(err){toast("Sichern hat hier nicht geklappt.")}}
   else{const u=URL.createObjectURL(blob);const l=document.createElement("a");l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast("Verlauf gesichert")}});
