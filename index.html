@@ -770,8 +770,8 @@ table.list td .sz{color:var(--muted)}
           </div>
           <span class="spacer"></span>
           <button class="ghost fullbtn" id="fullbtn" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Vollbild</span></button>
-          <button class="btn-solid" id="nodraft">+ Neue Bestellung, Tisch später</button>
-          <button class="ghost" id="editbtn">Plan anpassen</button>
+          <button class="btn-solid" id="nodraft">+ Neue Bestellung</button>
+          <button class="ghost" id="editbtn">Editor</button>
         </div>
         <div class="assignbar" id="assignbar" hidden></div>
         <div class="plan3" id="plan3d" hidden><div class="p3hint" id="p3hint">Ziehen verschiebt, rechte Maustaste oder zwei Finger drehen, Mausrad zoomt</div></div>
@@ -2097,7 +2097,7 @@ function renderEditbar3D(){const eb=$("editbar");const t=S.editSel!=null?tblById
      <div class="ed-kind" role="radiogroup" aria-label="Tischart">${KINDS.map(k=>`<button role="radio" aria-checked="${kindOf(t)===k[0]}" data-kind="${k[0]}">${k[2]}<span>${k[1]}</span></button>`).join("")}</div>
      <button class="ghost danger" data-ea="deltbl">Tisch entfernen</button></div>`
    :`<p class="hint">Tisch antippen zum Bearbeiten. Zum Verschieben einfach ziehen.</p>`;
-  eb.innerHTML=`<div class="ed-head"><b>Plan anpassen</b><span>${S.floor==="oben"?"Galerie oben":"Foyer unten"}</span></div>${sel}
+  eb.innerHTML=`<div class="ed-head"><b>Editor</b><span>${S.floor==="oben"?"Galerie oben":"Foyer unten"}</span></div>${sel}
    <div class="ed-add"><b>Neuer Tisch</b><div class="ed-kind">${KINDS.map(k=>`<button data-add="${k[0]}">${k[2]}<span>+ ${k[1]}</span></button>`).join("")}</div></div>
    <div class="ed-foot"><button class="ghost" data-ea="reset">Standardplan</button><button class="btn-solid" data-ea="done">Fertig</button></div>`}
 $("editbar").addEventListener("click",e=>{if(!use3D()||!S.editing)return;
