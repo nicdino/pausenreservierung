@@ -657,6 +657,11 @@ table.list td .sz{color:var(--muted)}
 .abr-dl{margin-left:auto}
 @media (max-width:620px){#abrseg .lg{display:none}}
 /* ---------- Team-Login (Firebase) ---------- */
+.demobar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border-radius:12px;border:1px dashed var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+.demobar[hidden]{display:none}
+.demobar .dtxt{flex:1;min-width:200px;font-weight:600;line-height:1.35}
+.demobar button{font:inherit;font-weight:600;border-radius:8px;padding:7px 11px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.tmrow select{font:inherit;font-weight:600;border-radius:8px;padding:7px 9px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 #authgate{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));overflow:auto}
 .agbox{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 24px;display:grid;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
 .aghead{display:flex;align-items:center;gap:14px}
@@ -751,6 +756,7 @@ table.list td .sz{color:var(--muted)}
 </aside>
 <div class="scrim" id="scrim" hidden></div>
 <div class="wrap">
+  <div class="demobar" id="demobar" hidden role="status"><span class="demo-tag">Demo</span><span class="dtxt">Hier kannst du alles ausprobieren. Nichts davon landet in der echten Datenbank oder Abrechnung.</span><button type="button" id="demoreset">Beispieldaten neu laden</button></div>
   <header class="top">
     <button class="menubtn" id="menubtn" aria-label="Menü öffnen" aria-controls="side" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
     <h2 class="pagetitle" id="pagetitle">Pausenreservierung</h2>
@@ -933,8 +939,8 @@ function curKey(){return S.sel==null?null:isD()?"draft":tid(S.sel)}
 function getKey(k){return k==="draft"?S.draft:k?S.res[k]:null}
 function getCur(){return getKey(curKey())}
 function putKey(k,r){if(!k)return;if(k==="draft"){S.draft=(!r||isEmpty(r))?null:r;saveDraft()}else{S.res[k]=r;if(isEmpty(r))delete S.res[k];saveRes(k)}}
-function saveDraft(){try{if(S.draft)localStorage.setItem("pausenres_draft",JSON.stringify(S.draft));else localStorage.removeItem("pausenres_draft")}catch(e){}}
-function loadDraft(){try{const d=JSON.parse(localStorage.getItem("pausenres_draft")||"null");if(d&&d.items)S.draft=d}catch(e){}}
+function saveDraft(){try{if(S.draft)localStorage.setItem(LSD,JSON.stringify(S.draft));else localStorage.removeItem(LSD)}catch(e){}}
+function loadDraft(){try{const d=JSON.parse(localStorage.getItem(LSD)||"null");if(d&&d.items)S.draft=d}catch(e){}}
 /* Thekenplätze: keine Tische im Plan, sondern durchnummerierte Plätze je Bereich */
 const ZONES={o:{f:"oben",name:"Theke",card:"THEKE"},ul:{f:"unten",name:"Theke links",card:"THEKE LINKS"},ur:{f:"unten",name:"Theke rechts",card:"THEKE RECHTS"},sz:{f:"unten",name:"Sitztreppe",card:"SITZTREPPE"}};
 const ZORDER=["o","ul","ur","sz"];
@@ -982,8 +988,9 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 
 /* ---------- Speichern ---------- */
 function stdLayout(){const d=S.std;return normLayout(clone(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v?d:DEFAULT_LAYOUT))}
-function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history,std:S.std||null}))}catch(e){}}
-function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(d.std&&d.std.tables)S.std=d.std;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
+let LSK="pausenres_v2",LSD="pausenres_draft",DEMO=false;
+function lsSave(){try{localStorage.setItem(LSK,JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history,std:S.std||null}))}catch(e){}}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem(LSK)||(DEMO?null:localStorage.getItem("pausenres_v1"))||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(d.std&&d.std.tables)S.std=d.std;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
   {const r=S.res[id];if(r&&!isEmpty(r)&&!r.ts)r.ts=Date.now()}
   if(mode!=="db"){lsSave();return}
@@ -2402,7 +2409,7 @@ function tower3D(el,stack){mini3D(el,(T,g)=>{const cols={bier:0xe0a024,wein:0x8a
     const gg=new T.Group();gg.add(cup,liq);liq.position.y=-.06;gg.position.set(Math.cos(a)*rr,ring*.66+.31,Math.sin(a)*rr);g.add(gg);y=ring*.66+.9});
   const s=txtSprite(T,stack.length+" Getränke","#c0202d");s.position.set(0,y+.9,0);g.add(s);return {r:Math.max(9,y*1.5+6),y:Math.max(2,y*.6)}})}
 /* --- Beispieldaten zum Anschauen --- */
-function demoData(){let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;const pick=a=>a[Math.floor(rnd()*a.length)];
+function demoData(sd){let seed=sd||7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;const pick=a=>a[Math.floor(rnd()*a.length)];
   const fav=["pils","pils","pils","weiss","rot","sekt","aperol","cola","sprudel","kaffee","latte","weizen","brezel","schorle","weinschorle","espresso","radler","naturell","p_original","gluehwein"].filter(k=>P[k]);
   const res={};const t0=new Date();t0.setHours(18,30,0,0);let n=0;
   S.layout.tables.forEach(t=>{if(rnd()<.62){const it={};const m=1+Math.floor(rnd()*5);for(let i=0;i<m;i++){const k=pick(fav);it[k]=(it[k]||0)+1+(rnd()<.3?1:0)}
@@ -2698,17 +2705,41 @@ async function fbStart(){
     if(!u){if(mode==="db"){location.reload();return}agShow("login");return}
     agShow("load");
     teamUnsub=fs.doc("team/"+u.uid).onSnapshot(s=>{
-      if(s.exists){FB.role=(s.data()||{}).role||"member";fbEnter();
+      if(s.exists){const r=(s.data()||{}).role||"member";
+        if(FB.role&&FB.role!==r&&(FB.role==="demo"||r==="demo")){location.reload();return}
+        FB.role=r;if(r==="demo"){enterDemo();return}
+        fbEnter();
         if(FB.role==="admin"&&!reqUnsub){$("teambtn").hidden=false;$("teambtn").onclick=openTeam;
           reqUnsub=fs.collection("requests").onSnapshot(q=>{FB.requests=q.docs.map(d=>Object.assign({uid:d.id},d.data()));const n=FB.requests.length;$("teamcount").hidden=!n;$("teamcount").textContent=n;if(!$("teammodal").hidden)renderTeam()},()=>{})}
       }else{
-        if(mode==="db"){location.reload();return}
+        if(mode==="db"||DEMO){location.reload();return}
         $("agwho").textContent=u.email;agShow("wait");
-        fs.doc("requests/"+u.uid).set({email:u.email,name:u.displayName||"",ts:Date.now()}).catch(()=>{});
+        if(FB.reqSent!==u.uid){FB.reqSent=u.uid;fs.doc("requests/"+u.uid).set({email:u.email,name:u.displayName||"",ts:Date.now()}).catch(()=>{})}
       }
     },()=>{$("agwho").textContent=u.email;agShow("wait")});
   });
 }
+function demoEvents(){const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];const out=[];const base=new Date();base.setHours(12,0,0,0);
+  const L=[["Weihnachtsgala",2,"Großer Saal",650],["Comedy Night",5,"Theatersaal",380],["Musical: Die Schöne und das Biest",9,"Großer Saal",820],["Kammerkonzert",12,"Theatersaal",240],["Krimi-Lesung",16,"Theatersaal",210],["Silvester-Tanzball",21,"Großer Saal",700]];
+  L.forEach(([n,dd,room,pax],i)=>{const d=new Date(+base+dd*864e5);const iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    out.push({id:iso+"_demo"+i,date:iso,wd:WD[d.getDay()],name:n,room,pax,einlass:"18:30",beginn:"19:30",pause:"20:45",ende:"22:15",noCasa:false,kc:i===2,sekt:i===0})});return out}
+function demoSeed(){const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+  S.res={};S.history=[];S.events=demoEvents();S.std=null;S.layout=normLayout(clone(DEFAULT_LAYOUT));S.draft=null;S.abr=newAbr();
+  const past=[["Creative Kirche","Großer Saal",520],["1. Wittener Lachnacht","Theatersaal",360],["Sparkassen-Classics","Großer Saal",780],["Sebastian Fitzek liest","Großer Saal",640],["Tanztheater","Theatersaal",280],["Volksbühne: Der Besuch der alten Dame","Theatersaal",330],["Shaky Everett","Großer Saal",450],["Jazz im Foyer","Theatersaal",190],["Kabarett am Freitag","Theatersaal",300],["Neujahrskonzert","Großer Saal",810]];
+  past.forEach(([n,room,pax],i)=>{const d=new Date(Date.now()-(4+i*6)*864e5);const iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const dd=demoData(11+i*17);S.res=dd.res;const id=iso+"_past"+i;S.events.push({id,date:iso,wd:WD[d.getDay()],name:n,room,pax,einlass:"18:30",beginn:"19:30",pause:"20:45",ende:"22:15",noCasa:false,kc:false,sekt:false});
+    S.event={name:n,evId:id,date:iso,room,pax};saveHistory()});
+  S.events.sort((a,b)=>a.date<b.date?-1:1);
+  const now=demoData(7);S.res=now.res;const e0=S.events.find(e=>e.date>=isoToday())||S.events[0];S.event={name:e0.name,evId:e0.id,date:e0.date,room:e0.room,pax:e0.pax,pause:e0.pause};
+  S.evMonth=isoToday().slice(0,7);lsSave();saveDraft()}
+function enterDemo(){
+  DEMO=true;LSK="pausenres_demo_v1";LSD="pausenres_demo_draft";mode="local";db=null;
+  S.res={};S.history=[];S.events=[];S.std=null;S.draft=null;S.layout=normLayout(clone(DEFAULT_LAYOUT));S.event={name:""};S.abr=newAbr();
+  let has=false;try{has=!!localStorage.getItem(LSK)}catch(e){}
+  if(has){lsLoad();if(S.abrLoaded){S.abr=Object.assign(newAbr(),S.abrLoaded);delete S.abrLoaded}loadDraft()}else demoSeed();
+  $("demobar").hidden=false;$("teambtn").hidden=true;agShow("none");setSync(false,"Demo, zählt nicht");
+  $("demoreset").onclick=()=>{try{localStorage.removeItem(LSK);localStorage.removeItem(LSD)}catch(e){}demoSeed();S.sel=null;renderAll();toast("Beispieldaten sind wieder da.")};
+  $("evname").value=S.event.name||"";renderAll()}
 async function fbEnter(){
   if(mode==="db"){agShow("none");return}
   db=fbAdapter(FB.fs);mode="db";agShow("none");
@@ -2723,12 +2754,12 @@ async function renderTeam(){
   const fs=FB.fs,box=$("tmbody");let team=[];
   try{const q=await fs.collection("team").get();team=q.docs.map(d=>Object.assign({uid:d.id},d.data()))}catch(e){}
   const req=FB.requests||[];const dt=t=>t?new Date(t).toLocaleDateString("de-DE"):"";
-  box.innerHTML=(req.length?`<p class="tmh">Wartet auf Freischaltung</p><div class="tmlist">${req.map(r=>`<div class="tmrow"><div class="who"><b>${esc(r.email||"")}</b><small>${esc(r.name||"")}${r.name?" · ":""}seit ${dt(r.ts)}</small></div><button class="ok" data-ok="${esc(r.uid)}">Freischalten</button><button data-no="${esc(r.uid)}">Ablehnen</button></div>`).join("")}</div>`:`<p class="agok">Gerade wartet niemand auf Freischaltung.</p>`)
-   +`<p class="tmh">Freigeschaltet</p><div class="tmlist">${team.map(m=>`<div class="tmrow"><div class="who"><b>${esc(m.email||m.uid)}</b><small>${esc(m.name||"")}${m.name?" · ":""}${m.role==="admin"?"Admin":"Team"}</small></div>${m.uid===FB.user.uid?`<small class="agok">Das bist du</small>`:`${m.role==="admin"?`<button data-role="member" data-u="${esc(m.uid)}">Admin entziehen</button>`:`<button data-role="admin" data-u="${esc(m.uid)}">Zum Admin machen</button>`}<button data-del="${esc(m.uid)}">Entfernen</button>`}</div>`).join("")}</div>`;
+  box.innerHTML=(req.length?`<p class="tmh">Wartet auf Freischaltung</p><div class="tmlist">${req.map(r=>`<div class="tmrow"><div class="who"><b>${esc(r.email||"")}</b><small>${esc(r.name||"")}${r.name?" · ":""}seit ${dt(r.ts)}</small></div><button class="ok" data-ok="${esc(r.uid)}">Freischalten</button><button data-ok="${esc(r.uid)}" data-as="demo">Als Demo</button><button data-no="${esc(r.uid)}">Ablehnen</button></div>`).join("")}</div>`:`<p class="agok">Gerade wartet niemand auf Freischaltung.</p>`)
+   +`<p class="tmh">Freigeschaltet</p><div class="tmlist">${team.map(m=>`<div class="tmrow"><div class="who"><b>${esc(m.email||m.uid)}</b><small>${esc(m.name||"")}${m.name?" · ":""}${({admin:"Admin",demo:"Demo, sieht nur Beispieldaten"})[m.role]||"Team"}</small></div>${m.uid===FB.user.uid?`<small class="agok">Das bist du</small>`:`<select data-role-of="${esc(m.uid)}" aria-label="Rolle von ${esc(m.email||"")}"><option value="member"${m.role!=="admin"&&m.role!=="demo"?" selected":""}>Team</option><option value="admin"${m.role==="admin"?" selected":""}>Admin</option><option value="demo"${m.role==="demo"?" selected":""}>Demo</option></select><button data-del="${esc(m.uid)}">Entfernen</button>`}</div>`).join("")}</div>`;
   box.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const r=req.find(x=>x.uid===b.dataset.ok);if(!r)return;b.disabled=true;
-    try{const bt=fs.batch();bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit();toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
+    try{const bt=fs.batch();const role=b.dataset.as==="demo"?"demo":"member";bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role,ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit();toast((r.email||"Konto")+(role==="demo"?" hat jetzt einen Demo-Zugang.":" ist freigeschaltet."))}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{try{await fs.doc("requests/"+b.dataset.no).delete()}catch(e){}renderTeam()});
-  box.querySelectorAll("[data-role]").forEach(b=>b.onclick=async()=>{try{await fs.doc("team/"+b.dataset.u).update({role:b.dataset.role})}catch(e){toast("Ändern hat nicht geklappt.")}renderTeam()});
+  box.querySelectorAll("[data-role-of]").forEach(sel=>sel.onchange=async()=>{try{await fs.doc("team/"+sel.dataset.roleOf).update({role:sel.value});toast("Rolle geändert.")}catch(e){toast("Ändern hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-del]").forEach(b=>{let armed=false;b.onclick=async()=>{if(!armed){armed=true;b.textContent="Wirklich entfernen?";setTimeout(()=>{armed=false;b.textContent="Entfernen"},3000);return}
     try{await fs.doc("team/"+b.dataset.del).delete();toast("Zugang entfernt.")}catch(e){toast("Entfernen hat nicht geklappt.")}renderTeam()}});
 }
