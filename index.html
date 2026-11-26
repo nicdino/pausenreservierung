@@ -665,6 +665,10 @@ table.list td .sz{color:var(--muted)}
 .aglocal{background:none;border:0;border-top:1px solid var(--line);padding:12px 0 0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;text-align:center}
 .agwait{display:grid;gap:12px}
 .agwait .pill{background:var(--sunk);border-radius:10px;padding:10px 12px;font-weight:600;word-break:break-all}
+.agdone{justify-self:center;width:58px;height:58px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.agh{margin:0;text-align:center;font-family:var(--f-ui);font-size:22px}
+#agwait .agsub{text-align:center}
+#agwait .pill{text-align:center}
 .agspin{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:agsp 1s linear infinite;justify-self:center}
 @keyframes agsp{to{transform:rotate(360deg)}}
 #teambtn .badge{margin-left:auto;background:var(--accent);color:var(--on-accent);border-radius:99px;font-size:12px;padding:1px 7px}
@@ -693,9 +697,11 @@ table.list td .sz{color:var(--muted)}
     <p class="agerr" id="agerr" role="alert"></p>
   </form>
   <div id="agwait" class="agwait" hidden>
-    <p class="agsub">Dein Konto ist angelegt, aber noch nicht freigeschaltet. Sobald ein Admin dich im Casa Hub unter Team freigibt, geht es hier automatisch weiter.</p>
+    <div class="agdone" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <h3 class="agh">Wartet auf Freigabe</h3>
+    <p class="agsub">Dein Konto ist angelegt. Nico muss es jetzt noch genehmigen, vorher siehst du hier keine Daten.</p>
     <div class="pill" id="agwho"></div>
-    <div class="agspin" aria-hidden="true"></div>
+    <p class="agsub">Du kannst die Seite jetzt schließen. Sobald du freigegeben bist, öffnest du sie einfach wieder und bist direkt drin.</p>
     <button class="aglink" type="button" id="agout">Abmelden</button>
   </div>
   <button class="aglocal" type="button" id="aglocal">Ohne Konto nur auf diesem Gerät arbeiten</button>
