@@ -342,6 +342,10 @@ body.stdedit .plan3 .ed-foot [data-ea="done"]::after{content:" & speichern"}
 .ed-kind button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .ed-add{display:flex;flex-direction:column;gap:6px}.ed-add>b{font-family:var(--f-ui);font-size:15px}
 .ed-foot{display:flex;justify-content:space-between;gap:8px}
+.ed-std{width:100%}
+.ed-std:hover{border-color:var(--accent);color:var(--accent)}
+.ed-note{margin:0;font-size:12px;line-height:1.4;color:var(--muted)}
+body.stdedit .ed-std,body.stdedit .ed-note{display:none}
 @media (max-width:680px){.plan3 .editbar{top:auto;bottom:10px;left:10px;width:calc(100% - 104px);max-height:58%}}
 .p3ctl button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink);font-family:var(--f-ui);font-weight:700;font-size:18px;padding:0;backdrop-filter:blur(6px)}
 .p3ctl button:hover{border-color:var(--accent);color:var(--accent)}
@@ -714,11 +718,6 @@ table.list td .sz{color:var(--muted)}
   </div>
   <button class="aglocal" type="button" id="aglocal">Ohne Konto nur auf diesem Gerät arbeiten</button>
 </div></div>
-<div class="modal" id="approvemodal" hidden role="dialog" aria-modal="true" aria-labelledby="aptitle"><div class="modal-box" style="max-width:440px">
-  <h2 id="aptitle">Freischalten?</h2>
-  <p id="aptext"></p>
-  <div class="rm-btns"><button class="btn-solid" id="apyes">Ja, freischalten</button><button class="ghost" id="apno">Abbrechen</button></div>
-</div></div>
 <div class="modal" id="teammodal" hidden role="dialog" aria-modal="true" aria-labelledby="tmtitle"><div class="modal-box" style="max-width:560px">
   <h2 id="tmtitle">Team</h2>
   <p>Wer hier freigeschaltet ist, sieht und bearbeitet alle Bestellungen, Abrechnungen und Statistiken live.</p>
@@ -982,8 +981,9 @@ function itemsText(r,filter){return ORDER.filter(k=>r.items&&r.items[k]>0&&(!fil
 function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
 
 /* ---------- Speichern ---------- */
-function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history}))}catch(e){}}
-function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
+function stdLayout(){const d=S.std;return normLayout(clone(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v?d:DEFAULT_LAYOUT))}
+function lsSave(){try{localStorage.setItem("pausenres_v2",JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history,std:S.std||null}))}catch(e){}}
+function lsLoad(){try{const d=JSON.parse(localStorage.getItem("pausenres_v2")||localStorage.getItem("pausenres_v1")||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(d.std&&d.std.tables)S.std=d.std;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
 function saveRes(id){
   {const r=S.res[id];if(r&&!isEmpty(r)&&!r.ts)r.ts=Date.now()}
   if(mode!=="db"){lsSave();return}
@@ -2104,7 +2104,9 @@ function renderEditbar3D(){const eb=$("editbar");const t=S.editSel!=null?tblById
    :`<p class="hint">Tisch antippen zum Bearbeiten. Zum Verschieben einfach ziehen.</p>`;
   eb.innerHTML=`<div class="ed-head"><b>Editor</b><span>${S.floor==="oben"?"Galerie oben":"Foyer unten"}</span></div>${sel}
    <div class="ed-add"><b>Neuer Tisch</b><div class="ed-kind">${KINDS.map(k=>`<button data-add="${k[0]}">${k[2]}<span>+ ${k[1]}</span></button>`).join("")}</div></div>
-   <div class="ed-foot"><button class="ghost" data-ea="reset">Standardplan</button><button class="btn-solid" data-ea="done">Fertig</button></div>`}
+   <div class="ed-foot"><button class="ghost" data-ea="reset">Standardplan laden</button><button class="btn-solid" data-ea="done">Fertig</button></div>
+   <button class="ghost ed-std" data-ea="setstd">${S.stdArm?"Wirklich als Standard speichern?":"Als neuen Standardplan festlegen"}</button>
+   <p class="ed-note">„Fertig“ gilt nur für diese Veranstaltung. Als Standardplan startet jede neue Veranstaltung mit diesem Plan.</p>`}
 $("editbar").addEventListener("click",e=>{if(!use3D()||!S.editing)return;
   const k=e.target.closest("[data-kind]"),ad=e.target.closest("[data-add]"),b=e.target.closest("[data-ea]");const t=S.editSel!=null?tblById(S.editSel):null;
   if(k&&t){delete t.c;delete t.s;if(k.dataset.kind==="sitz")t.c=1;if(k.dataset.kind==="eckig")t.s="sq";renderPlan();e.stopImmediatePropagation();return}
@@ -2142,8 +2144,10 @@ $("editbar").addEventListener("click",e=>{
   if(a==="addlm"){const d=LM_TYPES.find(x=>x[0]===$("newlm").value);const L=lmList();L.push({t:d[0],x:50-d[3]/2,y:50-d[4]/2,w:d[3],h:d[4],l:d[2]});S.lmSel=L.length-1;S.editSel=null;renderPlan();return}
   if(a==="copy"){const txt=JSON.stringify(S.layout);const ok=()=>toast("Plan kopiert. Einfach im Chat einfügen.");
     try{navigator.clipboard.writeText(txt).then(ok,()=>showCopy(txt))}catch(err){showCopy(txt)}return}
-  if(a==="reset"){S.layout=normLayout(clone(DEFAULT_LAYOUT));S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
+  if(a==="reset"){S.layout=stdLayout();S.editSel=null;S.lmSel=null;renderAll();toast("Standardplan geladen. Mit „Fertig“ speichern.");return}
   if(a==="done"&&STD_EDITOR){S.editSel=null;saveDoc("config/layout",S.layout);renderPlan();toast("Standardplan gespeichert. Sag Claude Bescheid, dann wird er übernommen.");return}
+  if(a==="setstd"){if(!S.stdArm){S.stdArm=true;renderPlan();clearTimeout(S.stdT);S.stdT=setTimeout(()=>{S.stdArm=false;if(S.editing)renderPlan()},4000);return}
+    S.stdArm=false;S.std=clone(S.layout);S.editing=false;S.editSel=null;S.lmSel=null;saveDoc("config/stdlayout",S.std);saveDoc("config/layout",S.layout);renderAll();toast("Neuer Standardplan gespeichert. Jede neue Veranstaltung startet jetzt damit.");return}
   if(a==="done"){S.editing=false;S.editSel=null;S.lmSel=null;saveDoc("config/layout",S.layout);renderAll();toast("Plan gespeichert");return}
 });
 function dupHint(t){const o=S.layout.tables.filter(x=>x!==t&&x.n===t.n);return o.length?`Die ${t.n} gibt es jetzt doppelt${o.some(x=>x.f!==t.f)?" (auch "+(o.find(x=>x.f!==t.f).f)+")":""}. Das ist okay.`:""}
@@ -2577,6 +2581,7 @@ $("zonemodal").addEventListener("click",e=>{const t=e.target;if(t===$("zonemodal
 async function doReset(){
   saveHistory();
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
+  S.layout=stdLayout();S.editing=false;S.editSel=null;S.lmSel=null;if(mode==="db")saveDoc("config/layout",S.layout);
   {const st=S.abr.start,tg=S.abr.target;S.abr=newAbr();S.abr.start=st;S.abr.target=tg;if(mode==="db")saveDoc("config/abr",S.abr)}
   const ev=(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
   closeReset();renderAll();
@@ -2654,32 +2659,6 @@ function agMode(reg){agReg=reg;$("agnamel").hidden=!reg;$("agsubmit").textConten
   $("agpw").autocomplete=reg?"new-password":"current-password";$("agerr").textContent=""}
 function localOnly(on){try{on?localStorage.setItem("casahub_local","1"):localStorage.removeItem("casahub_local")}catch(e){}}
 function isLocalOnly(){try{return localStorage.getItem("casahub_local")==="1"}catch(e){return false}}
-/* Mail an den Admin, wenn sich jemand registriert (FormSubmit, kostenlos) */
-const NOTIFY_MAIL="nicolino.simone1@gmail.com";
-function notifyAdmin(uid,name,mail){try{
-  const link=location.origin+location.pathname+"?freischalten="+encodeURIComponent(uid);
-  fetch("https://formsubmit.co/ajax/"+NOTIFY_MAIL,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-    body:JSON.stringify({_subject:"CaSa Hub: "+(name||mail)+" möchte freigeschaltet werden",_template:"box",_captcha:"false",
-      Name:name||"(kein Name)","E-Mail":mail,Freischalten:link,
-      Hinweis:"Link antippen, im CaSa Hub als Admin anmelden und bestätigen."})}).catch(()=>{});
-}catch(e){}}
-/* Freischalten per Link aus der Mail: ?freischalten=<uid> */
-const APPROVE_UID=(()=>{try{return new URLSearchParams(location.search).get("freischalten")||""}catch(e){return ""}})();
-function clearApproveLink(){try{const u=new URL(location.href);u.searchParams.delete("freischalten");history.replaceState(null,"",u.pathname+u.search+u.hash)}catch(e){}}
-let approveDone=false;
-async function approveReq(r){const fs=FB.fs;const bt=fs.batch();
-  bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit()}
-async function checkApproveLink(){if(!APPROVE_UID||approveDone)return;approveDone=true;const fs=FB.fs;
-  try{
-    const t=await fs.doc("team/"+APPROVE_UID).get();if(t.exists){toast(((t.data()||{}).email||"Das Konto")+" ist schon freigeschaltet.");clearApproveLink();return}
-    const q=await fs.doc("requests/"+APPROVE_UID).get();if(!q.exists){toast("Diese Anfrage gibt es nicht mehr.");clearApproveLink();return}
-    const r=Object.assign({uid:APPROVE_UID},q.data());
-    $("aptext").textContent=(r.name?r.name+" ("+r.email+")":r.email)+" möchte in den CaSa Hub. Danach sieht und bearbeitet die Person alle Bestellungen, Abrechnungen und Statistiken.";
-    const m=$("approvemodal");m.hidden=false;
-    const close=()=>{m.hidden=true;clearApproveLink()};
-    $("apno").onclick=close;
-    $("apyes").onclick=async()=>{$("apyes").disabled=true;try{await approveReq(r);toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}$("apyes").disabled=false;close()};
-  }catch(e){toast("Freischalten hat nicht geklappt.");clearApproveLink()}}
 async function fbStart(){
   $("aglogo").src=CASA_LOGO;
   const lb=$("loginbtn");lb.hidden=false;
@@ -2703,8 +2682,7 @@ async function fbStart(){
     try{await auth.sendPasswordResetEmail(m);$("agerr").textContent="";toast("Link zum Zurücksetzen ist unterwegs. Schau auch im Spam nach.")}catch(e){$("agerr").textContent=agMsg(e)}};
   $("agform").onsubmit=async ev=>{ev.preventDefault();const m=$("agmail").value.trim(),pw=$("agpw").value;$("agerr").textContent="";$("agsubmit").disabled=true;
     try{
-      if(agReg){const c=await auth.createUserWithEmailAndPassword(m,pw);const n=$("agname").value.trim();if(n)try{await c.user.updateProfile({displayName:n})}catch(e){}
-        notifyAdmin(c.user.uid,n,m)}
+      if(agReg){const c=await auth.createUserWithEmailAndPassword(m,pw);const n=$("agname").value.trim();if(n)try{await c.user.updateProfile({displayName:n})}catch(e){}}
       else await auth.signInWithEmailAndPassword(m,pw);
       $("agpw").value="";
     }catch(e){$("agerr").textContent=agMsg(e)}finally{$("agsubmit").disabled=false}};
@@ -2721,7 +2699,6 @@ async function fbStart(){
     agShow("load");
     teamUnsub=fs.doc("team/"+u.uid).onSnapshot(s=>{
       if(s.exists){FB.role=(s.data()||{}).role||"member";fbEnter();
-        if(FB.role==="admin")checkApproveLink();else if(APPROVE_UID){toast("Freischalten können nur Admins.");clearApproveLink()}
         if(FB.role==="admin"&&!reqUnsub){$("teambtn").hidden=false;$("teambtn").onclick=openTeam;
           reqUnsub=fs.collection("requests").onSnapshot(q=>{FB.requests=q.docs.map(d=>Object.assign({uid:d.id},d.data()));const n=FB.requests.length;$("teamcount").hidden=!n;$("teamcount").textContent=n;if(!$("teammodal").hidden)renderTeam()},()=>{})}
       }else{
@@ -2749,7 +2726,7 @@ async function renderTeam(){
   box.innerHTML=(req.length?`<p class="tmh">Wartet auf Freischaltung</p><div class="tmlist">${req.map(r=>`<div class="tmrow"><div class="who"><b>${esc(r.email||"")}</b><small>${esc(r.name||"")}${r.name?" · ":""}seit ${dt(r.ts)}</small></div><button class="ok" data-ok="${esc(r.uid)}">Freischalten</button><button data-no="${esc(r.uid)}">Ablehnen</button></div>`).join("")}</div>`:`<p class="agok">Gerade wartet niemand auf Freischaltung.</p>`)
    +`<p class="tmh">Freigeschaltet</p><div class="tmlist">${team.map(m=>`<div class="tmrow"><div class="who"><b>${esc(m.email||m.uid)}</b><small>${esc(m.name||"")}${m.name?" · ":""}${m.role==="admin"?"Admin":"Team"}</small></div>${m.uid===FB.user.uid?`<small class="agok">Das bist du</small>`:`${m.role==="admin"?`<button data-role="member" data-u="${esc(m.uid)}">Admin entziehen</button>`:`<button data-role="admin" data-u="${esc(m.uid)}">Zum Admin machen</button>`}<button data-del="${esc(m.uid)}">Entfernen</button>`}</div>`).join("")}</div>`;
   box.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const r=req.find(x=>x.uid===b.dataset.ok);if(!r)return;b.disabled=true;
-    try{await approveReq(r);toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
+    try{const bt=fs.batch();bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit();toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{try{await fs.doc("requests/"+b.dataset.no).delete()}catch(e){}renderTeam()});
   box.querySelectorAll("[data-role]").forEach(b=>b.onclick=async()=>{try{await fs.doc("team/"+b.dataset.u).update({role:b.dataset.role})}catch(e){toast("Ändern hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-del]").forEach(b=>{let armed=false;b.onclick=async()=>{if(!armed){armed=true;b.textContent="Wirklich entfernen?";setTimeout(()=>{armed=false;b.textContent="Entfernen"},3000);return}
@@ -2766,6 +2743,7 @@ function attachDb(){
     if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=normLayout(clone(d))}
     renderAll();
   },()=>{});
+  db.doc("config/stdlayout").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables))S.std=clone(d)}},()=>{});
   db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
   db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=S.abr.sub;S.abr=Object.assign(newAbr(),clone(d));S.abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
   db.doc("config/history").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.history=clone(d.items);if(S.tab==="stat")renderStats()}}},()=>{});
