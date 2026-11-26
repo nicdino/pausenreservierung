@@ -714,6 +714,11 @@ table.list td .sz{color:var(--muted)}
   </div>
   <button class="aglocal" type="button" id="aglocal">Ohne Konto nur auf diesem Gerät arbeiten</button>
 </div></div>
+<div class="modal" id="approvemodal" hidden role="dialog" aria-modal="true" aria-labelledby="aptitle"><div class="modal-box" style="max-width:440px">
+  <h2 id="aptitle">Freischalten?</h2>
+  <p id="aptext"></p>
+  <div class="rm-btns"><button class="btn-solid" id="apyes">Ja, freischalten</button><button class="ghost" id="apno">Abbrechen</button></div>
+</div></div>
 <div class="modal" id="teammodal" hidden role="dialog" aria-modal="true" aria-labelledby="tmtitle"><div class="modal-box" style="max-width:560px">
   <h2 id="tmtitle">Team</h2>
   <p>Wer hier freigeschaltet ist, sieht und bearbeitet alle Bestellungen, Abrechnungen und Statistiken live.</p>
@@ -2649,6 +2654,32 @@ function agMode(reg){agReg=reg;$("agnamel").hidden=!reg;$("agsubmit").textConten
   $("agpw").autocomplete=reg?"new-password":"current-password";$("agerr").textContent=""}
 function localOnly(on){try{on?localStorage.setItem("casahub_local","1"):localStorage.removeItem("casahub_local")}catch(e){}}
 function isLocalOnly(){try{return localStorage.getItem("casahub_local")==="1"}catch(e){return false}}
+/* Mail an den Admin, wenn sich jemand registriert (FormSubmit, kostenlos) */
+const NOTIFY_MAIL="nicolino.simone@gmail.com";
+function notifyAdmin(uid,name,mail){try{
+  const link=location.origin+location.pathname+"?freischalten="+encodeURIComponent(uid);
+  fetch("https://formsubmit.co/ajax/"+NOTIFY_MAIL,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+    body:JSON.stringify({_subject:"CaSa Hub: "+(name||mail)+" möchte freigeschaltet werden",_template:"box",_captcha:"false",
+      Name:name||"(kein Name)","E-Mail":mail,Freischalten:link,
+      Hinweis:"Link antippen, im CaSa Hub als Admin anmelden und bestätigen."})}).catch(()=>{});
+}catch(e){}}
+/* Freischalten per Link aus der Mail: ?freischalten=<uid> */
+const APPROVE_UID=(()=>{try{return new URLSearchParams(location.search).get("freischalten")||""}catch(e){return ""}})();
+function clearApproveLink(){try{const u=new URL(location.href);u.searchParams.delete("freischalten");history.replaceState(null,"",u.pathname+u.search+u.hash)}catch(e){}}
+let approveDone=false;
+async function approveReq(r){const fs=FB.fs;const bt=fs.batch();
+  bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit()}
+async function checkApproveLink(){if(!APPROVE_UID||approveDone)return;approveDone=true;const fs=FB.fs;
+  try{
+    const t=await fs.doc("team/"+APPROVE_UID).get();if(t.exists){toast(((t.data()||{}).email||"Das Konto")+" ist schon freigeschaltet.");clearApproveLink();return}
+    const q=await fs.doc("requests/"+APPROVE_UID).get();if(!q.exists){toast("Diese Anfrage gibt es nicht mehr.");clearApproveLink();return}
+    const r=Object.assign({uid:APPROVE_UID},q.data());
+    $("aptext").textContent=(r.name?r.name+" ("+r.email+")":r.email)+" möchte in den CaSa Hub. Danach sieht und bearbeitet die Person alle Bestellungen, Abrechnungen und Statistiken.";
+    const m=$("approvemodal");m.hidden=false;
+    const close=()=>{m.hidden=true;clearApproveLink()};
+    $("apno").onclick=close;
+    $("apyes").onclick=async()=>{$("apyes").disabled=true;try{await approveReq(r);toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}$("apyes").disabled=false;close()};
+  }catch(e){toast("Freischalten hat nicht geklappt.");clearApproveLink()}}
 async function fbStart(){
   $("aglogo").src=CASA_LOGO;
   const lb=$("loginbtn");lb.hidden=false;
@@ -2672,7 +2703,8 @@ async function fbStart(){
     try{await auth.sendPasswordResetEmail(m);$("agerr").textContent="";toast("Link zum Zurücksetzen ist unterwegs. Schau auch im Spam nach.")}catch(e){$("agerr").textContent=agMsg(e)}};
   $("agform").onsubmit=async ev=>{ev.preventDefault();const m=$("agmail").value.trim(),pw=$("agpw").value;$("agerr").textContent="";$("agsubmit").disabled=true;
     try{
-      if(agReg){const c=await auth.createUserWithEmailAndPassword(m,pw);const n=$("agname").value.trim();if(n)try{await c.user.updateProfile({displayName:n})}catch(e){}}
+      if(agReg){const c=await auth.createUserWithEmailAndPassword(m,pw);const n=$("agname").value.trim();if(n)try{await c.user.updateProfile({displayName:n})}catch(e){}
+        notifyAdmin(c.user.uid,n,m)}
       else await auth.signInWithEmailAndPassword(m,pw);
       $("agpw").value="";
     }catch(e){$("agerr").textContent=agMsg(e)}finally{$("agsubmit").disabled=false}};
@@ -2689,6 +2721,7 @@ async function fbStart(){
     agShow("load");
     teamUnsub=fs.doc("team/"+u.uid).onSnapshot(s=>{
       if(s.exists){FB.role=(s.data()||{}).role||"member";fbEnter();
+        if(FB.role==="admin")checkApproveLink();else if(APPROVE_UID){toast("Freischalten können nur Admins.");clearApproveLink()}
         if(FB.role==="admin"&&!reqUnsub){$("teambtn").hidden=false;$("teambtn").onclick=openTeam;
           reqUnsub=fs.collection("requests").onSnapshot(q=>{FB.requests=q.docs.map(d=>Object.assign({uid:d.id},d.data()));const n=FB.requests.length;$("teamcount").hidden=!n;$("teamcount").textContent=n;if(!$("teammodal").hidden)renderTeam()},()=>{})}
       }else{
@@ -2716,7 +2749,7 @@ async function renderTeam(){
   box.innerHTML=(req.length?`<p class="tmh">Wartet auf Freischaltung</p><div class="tmlist">${req.map(r=>`<div class="tmrow"><div class="who"><b>${esc(r.email||"")}</b><small>${esc(r.name||"")}${r.name?" · ":""}seit ${dt(r.ts)}</small></div><button class="ok" data-ok="${esc(r.uid)}">Freischalten</button><button data-no="${esc(r.uid)}">Ablehnen</button></div>`).join("")}</div>`:`<p class="agok">Gerade wartet niemand auf Freischaltung.</p>`)
    +`<p class="tmh">Freigeschaltet</p><div class="tmlist">${team.map(m=>`<div class="tmrow"><div class="who"><b>${esc(m.email||m.uid)}</b><small>${esc(m.name||"")}${m.name?" · ":""}${m.role==="admin"?"Admin":"Team"}</small></div>${m.uid===FB.user.uid?`<small class="agok">Das bist du</small>`:`${m.role==="admin"?`<button data-role="member" data-u="${esc(m.uid)}">Admin entziehen</button>`:`<button data-role="admin" data-u="${esc(m.uid)}">Zum Admin machen</button>`}<button data-del="${esc(m.uid)}">Entfernen</button>`}</div>`).join("")}</div>`;
   box.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const r=req.find(x=>x.uid===b.dataset.ok);if(!r)return;b.disabled=true;
-    try{const bt=fs.batch();bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit();toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
+    try{await approveReq(r);toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{try{await fs.doc("requests/"+b.dataset.no).delete()}catch(e){}renderTeam()});
   box.querySelectorAll("[data-role]").forEach(b=>b.onclick=async()=>{try{await fs.doc("team/"+b.dataset.u).update({role:b.dataset.role})}catch(e){toast("Ändern hat nicht geklappt.")}renderTeam()});
   box.querySelectorAll("[data-del]").forEach(b=>{let armed=false;b.onclick=async()=>{if(!armed){armed=true;b.textContent="Wirklich entfernen?";setTimeout(()=>{armed=false;b.textContent="Entfernen"},3000);return}
