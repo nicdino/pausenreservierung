@@ -644,10 +644,68 @@ table.list td .sz{color:var(--muted)}
 .linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0;font-size:inherit;font-weight:600}
 .abr-dl{margin-left:auto}
 @media (max-width:620px){#abrseg .lg{display:none}}
+/* ---------- Team-Login (Firebase) ---------- */
+#authgate{position:fixed;inset:0;z-index:200;background:var(--bg);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.agbox{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 24px;display:grid;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
+.aghead{display:flex;align-items:center;gap:14px}
+.aghead img{width:52px;height:52px;border-radius:12px}
+.aghead h2{margin:0;font-family:var(--f-ui);font-size:26px}
+.aghead small{color:var(--muted);font-size:14px}
+.agsub{margin:0;color:var(--muted);line-height:1.45}
+#agform{display:grid;gap:10px}
+#agform label{display:grid;gap:4px;font-weight:600;font-size:14px}
+#agform input{font:inherit;font-size:17px;padding:12px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+#agform input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.agmain{background:var(--accent);color:var(--on-accent);border:0;border-radius:10px;padding:13px;font:inherit;font-weight:700;font-size:17px;cursor:pointer}
+.agmain[disabled]{opacity:.6;cursor:wait}
+.agrow{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.aglink{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;padding:4px 0;cursor:pointer}
+.agerr{margin:0;color:var(--accent);font-weight:600;min-height:1.2em}
+.agok{margin:0;color:var(--muted)}
+.aglocal{background:none;border:0;border-top:1px solid var(--line);padding:12px 0 0;color:var(--muted);font:inherit;font-size:14px;cursor:pointer;text-align:center}
+.agwait{display:grid;gap:12px}
+.agwait .pill{background:var(--sunk);border-radius:10px;padding:10px 12px;font-weight:600;word-break:break-all}
+.agspin{width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:agsp 1s linear infinite;justify-self:center}
+@keyframes agsp{to{transform:rotate(360deg)}}
+#teambtn .badge{margin-left:auto;background:var(--accent);color:var(--on-accent);border-radius:99px;font-size:12px;padding:1px 7px}
+.tmlist{display:grid;gap:8px;max-height:50vh;overflow:auto}
+.tmrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tmrow .who{flex:1;min-width:160px;display:grid}
+.tmrow .who b{word-break:break-all}
+.tmrow .who small{color:var(--muted)}
+.tmrow button{font:inherit;font-weight:600;border-radius:8px;padding:7px 11px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.tmrow button.ok{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tmh{margin:6px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 </style>
 </head>
 <body>
 
+<div id="authgate" hidden role="dialog" aria-modal="true" aria-labelledby="agtitle"><div class="agbox">
+  <div class="aghead"><img id="aglogo" alt="CASA"><div><h2 id="agtitle">Casa Hub</h2><small>Catering Saalbau Witten</small></div></div>
+  <div id="agload" class="agwait"><div class="agspin" aria-hidden="true"></div><p class="agsub" style="text-align:center">Verbinde…</p></div>
+  <form id="agform" hidden novalidate>
+    <p class="agsub" id="agsub">Melde dich mit deinem Team-Konto an.</p>
+    <label id="agnamel" hidden>Name<input id="agname" autocomplete="name" placeholder="z. B. Nico"></label>
+    <label>E-Mail<input id="agmail" type="email" autocomplete="username" inputmode="email" required></label>
+    <label>Passwort<input id="agpw" type="password" autocomplete="current-password" minlength="6" required></label>
+    <button class="agmain" id="agsubmit" type="submit">Anmelden</button>
+    <div class="agrow"><button class="aglink" type="button" id="agswitch">Neues Konto erstellen</button><button class="aglink" type="button" id="agforgot">Passwort vergessen?</button></div>
+    <p class="agerr" id="agerr" role="alert"></p>
+  </form>
+  <div id="agwait" class="agwait" hidden>
+    <p class="agsub">Dein Konto ist angelegt, aber noch nicht freigeschaltet. Sobald ein Admin dich im Casa Hub unter Team freigibt, geht es hier automatisch weiter.</p>
+    <div class="pill" id="agwho"></div>
+    <div class="agspin" aria-hidden="true"></div>
+    <button class="aglink" type="button" id="agout">Abmelden</button>
+  </div>
+  <button class="aglocal" type="button" id="aglocal">Ohne Konto nur auf diesem Gerät arbeiten</button>
+</div></div>
+<div class="modal" id="teammodal" hidden role="dialog" aria-modal="true" aria-labelledby="tmtitle"><div class="modal-box" style="max-width:560px">
+  <h2 id="tmtitle">Team</h2>
+  <p>Wer hier freigeschaltet ist, sieht und bearbeitet alle Bestellungen, Abrechnungen und Statistiken live.</p>
+  <div id="tmbody"></div>
+  <div class="rm-btns"><button class="btn-solid" id="tmclose">Schließen</button></div>
+</div></div>
 <div class="hub" id="hub">
 <aside class="side" id="side" aria-label="Menü">
   <div class="side-head">
@@ -668,6 +726,8 @@ table.list td .sz{color:var(--muted)}
     <button class="sideact" id="pdfbtn2" title="PDF speichern"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">PDF speichern</span></button>
     <button class="sideact themebtn" id="themebtn" aria-label="Hell oder dunkel umschalten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg><span class="lbl" id="themetxt">Dunkel</span></button>
     <button class="sideact danger" id="newevent" title="Neue Veranstaltung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span class="lbl">Neue Veranstaltung</span></button>
+    <button class="sideact" id="teambtn" hidden title="Team"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 14.2c2.9.1 5 2.5 5 5.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl">Team</span><span class="badge lbl" id="teamcount" hidden></span></button>
+    <button class="sideact" id="loginbtn" hidden title="Konto"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l4-4-4-4M14 12H4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" id="logintxt">Abmelden</span></button>
     <div class="sync"><span class="dot" id="syncdot"></span><span class="lbl" id="synctxt">Lädt…</span></div>
   </div>
 </aside>
@@ -2519,29 +2579,160 @@ function isDark(){const t=document.documentElement.getAttribute("data-theme");if
 function setThemeLabel(){$("themetxt").textContent=isDark()?"Hell":"Dunkel"}
 (function(){let t=null;try{t=localStorage.getItem("pausenres_theme")}catch(e){}if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);setThemeLabel()})();
 $("themebtn").onclick=()=>{const t=isDark()?"light":"dark";document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("pausenres_theme",t)}catch(e){}setThemeLabel()};
+
+/* ---------- Team-Sync (Firebase, nur GitHub-Version) ---------- */
+const FB_CONFIG={apiKey:"AIzaSyBW1SN71VTkV_2wFIAMWMAT8rWpkAW-vnA",authDomain:"casa-hub-37c76.firebaseapp.com",projectId:"casa-hub-37c76",storageBucket:"casa-hub-37c76.firebasestorage.app",messagingSenderId:"492725742682",appId:"1:492725742682:web:46f06869b5c669c378bc63"};
+const FB_VER="10.12.2";
+let FB=null; /* {auth,fs,user,role} */
+/* Daten werden als JSON-Text gespeichert, große Dokumente (Verlauf) in Teilen */
+function fbAdapter(fs){
+  const PART=300000;
+  const dec=v=>{try{return v&&typeof v.j==="string"?JSON.parse(v.j):v}catch(e){return null}};
+  async function decodeSnap(s){
+    if(!s.exists)return{exists:false,id:s.id,data:()=>undefined};
+    const v=s.data()||{};let obj;
+    if(v.parts){let j="";for(let i=0;i<v.parts;i++){const p=await fs.doc(s.ref.path+"__p"+i).get();j+=((p.data()||{}).j)||""}try{obj=JSON.parse(j)}catch(e){obj=null}}
+    else obj=dec(v);
+    return{exists:obj!=null,id:s.id,data:()=>obj};
+  }
+  return{
+    doc(path){const ref=fs.doc(path);return{
+      async set(d){const j=JSON.stringify(d);
+        if(j.length<=PART){await ref.set({j,t:Date.now()});return}
+        const n=Math.ceil(j.length/PART);
+        for(let i=0;i<n;i++)await fs.doc(path+"__p"+i).set({j:j.slice(i*PART,(i+1)*PART)});
+        await ref.set({parts:n,t:Date.now()})},
+      async delete(){await ref.delete()},
+      async get(opt){return decodeSnap(await ref.get(opt))},
+      onSnapshot(cb,err){let seq=0;return ref.onSnapshot(s=>{const my=++seq;decodeSnap(s).then(x=>{if(my===seq)cb(x)})},err)}
+    }},
+    collection(path){const ref=fs.collection(path);return{
+      onSnapshot(cb,err){return ref.onSnapshot(qs=>cb({docs:qs.docs.map(d=>{const o=dec(d.data());return{id:d.id,exists:o!=null,data:()=>o}})}),err)}
+    }}
+  };
+}
+const agMsg=e=>{const c=(e&&e.code)||"";return({
+  "auth/invalid-email":"Die E-Mail-Adresse sieht nicht richtig aus.",
+  "auth/missing-password":"Bitte ein Passwort eingeben.",
+  "auth/invalid-credential":"E-Mail oder Passwort stimmt nicht.",
+  "auth/wrong-password":"E-Mail oder Passwort stimmt nicht.",
+  "auth/user-not-found":"E-Mail oder Passwort stimmt nicht.",
+  "auth/email-already-in-use":"Für diese E-Mail gibt es schon ein Konto. Melde dich einfach an.",
+  "auth/weak-password":"Das Passwort braucht mindestens 6 Zeichen.",
+  "auth/too-many-requests":"Zu viele Versuche. Bitte kurz warten und dann nochmal.",
+  "auth/network-request-failed":"Keine Verbindung zum Internet."
+})[c]||"Das hat nicht geklappt. Bitte nochmal versuchen."};
+function agShow(which){
+  const g=$("authgate");g.hidden=which==="none";if(which==="none")return;
+  $("agload").hidden=which!=="load";$("agform").hidden=which!=="login";$("agwait").hidden=which!=="wait";
+  $("aglocal").hidden=which==="wait";
+  if(which==="login")setTimeout(()=>{try{($("agmail").value?$("agpw"):$("agmail")).focus()}catch(e){}},50);
+}
+let agReg=false;
+function agMode(reg){agReg=reg;$("agnamel").hidden=!reg;$("agsubmit").textContent=reg?"Konto erstellen":"Anmelden";
+  $("agswitch").textContent=reg?"Ich habe schon ein Konto":"Neues Konto erstellen";$("agforgot").hidden=reg;
+  $("agsub").textContent=reg?"Leg dir ein Konto an. Ein Admin schaltet dich danach frei.":"Melde dich mit deinem Team-Konto an.";
+  $("agpw").autocomplete=reg?"new-password":"current-password";$("agerr").textContent=""}
+function localOnly(on){try{on?localStorage.setItem("casahub_local","1"):localStorage.removeItem("casahub_local")}catch(e){}}
+function isLocalOnly(){try{return localStorage.getItem("casahub_local")==="1"}catch(e){return false}}
+async function fbStart(){
+  $("aglogo").src=CASA_LOGO;
+  const lb=$("loginbtn");lb.hidden=false;
+  if(isLocalOnly()){$("logintxt").textContent="Team-Anmeldung";lb.title="Mit Team-Konto anmelden";lb.onclick=()=>{localOnly(false);location.reload()};return}
+  $("logintxt").textContent="Abmelden";lb.title="Abmelden";
+  agShow("load");
+  try{
+    const b="https://www.gstatic.com/firebasejs/"+FB_VER+"/";
+    await loadScript(b+"firebase-app-compat.js");
+    await Promise.all([loadScript(b+"firebase-auth-compat.js"),loadScript(b+"firebase-firestore-compat.js")]);
+  }catch(e){agShow("none");setSync(false,"Offline, nur auf diesem Gerät");toast("Keine Verbindung. Du arbeitest erstmal nur auf diesem Gerät.");return}
+  const app=firebase.initializeApp(FB_CONFIG);
+  const fs=firebase.firestore();
+  try{await fs.enablePersistence({synchronizeTabs:true})}catch(e){}
+  const auth=firebase.auth();
+  FB={auth,fs,user:null,role:null};
+  /* Formular */
+  agMode(false);
+  $("agswitch").onclick=()=>agMode(!agReg);
+  $("agforgot").onclick=async()=>{const m=$("agmail").value.trim();if(!m){$("agerr").textContent="Trag oben deine E-Mail ein, dann schicken wir dir einen Link.";return}
+    try{await auth.sendPasswordResetEmail(m);$("agerr").textContent="";toast("Link zum Zurücksetzen ist unterwegs. Schau auch im Spam nach.")}catch(e){$("agerr").textContent=agMsg(e)}};
+  $("agform").onsubmit=async ev=>{ev.preventDefault();const m=$("agmail").value.trim(),pw=$("agpw").value;$("agerr").textContent="";$("agsubmit").disabled=true;
+    try{
+      if(agReg){const c=await auth.createUserWithEmailAndPassword(m,pw);const n=$("agname").value.trim();if(n)try{await c.user.updateProfile({displayName:n})}catch(e){}}
+      else await auth.signInWithEmailAndPassword(m,pw);
+      $("agpw").value="";
+    }catch(e){$("agerr").textContent=agMsg(e)}finally{$("agsubmit").disabled=false}};
+  $("agout").onclick=()=>auth.signOut();
+  $("aglocal").onclick=()=>{localOnly(true);location.reload()};
+  lb.onclick=async()=>{await auth.signOut();location.reload()};
+  window.addEventListener("online",()=>{if(mode==="db")setSync(true,"Live mit dem Team")});
+  window.addEventListener("offline",()=>{if(mode==="db")setSync(false,"Offline, wird nachgeholt")});
+  let teamUnsub=null,reqUnsub=null;
+  auth.onAuthStateChanged(u=>{
+    if(teamUnsub){teamUnsub();teamUnsub=null}
+    FB.user=u;
+    if(!u){if(mode==="db"){location.reload();return}agShow("login");return}
+    agShow("load");
+    teamUnsub=fs.doc("team/"+u.uid).onSnapshot(s=>{
+      if(s.exists){FB.role=(s.data()||{}).role||"member";fbEnter();
+        if(FB.role==="admin"&&!reqUnsub){$("teambtn").hidden=false;$("teambtn").onclick=openTeam;
+          reqUnsub=fs.collection("requests").onSnapshot(q=>{FB.requests=q.docs.map(d=>Object.assign({uid:d.id},d.data()));const n=FB.requests.length;$("teamcount").hidden=!n;$("teamcount").textContent=n;if(!$("teammodal").hidden)renderTeam()},()=>{})}
+      }else{
+        if(mode==="db"){location.reload();return}
+        $("agwho").textContent=u.email;agShow("wait");
+        fs.doc("requests/"+u.uid).set({email:u.email,name:u.displayName||"",ts:Date.now()}).catch(()=>{});
+      }
+    },()=>{$("agwho").textContent=u.email;agShow("wait")});
+  });
+}
+async function fbEnter(){
+  if(mode==="db"){agShow("none");return}
+  db=fbAdapter(FB.fs);mode="db";agShow("none");
+  setSync(navigator.onLine!==false,navigator.onLine===false?"Offline, wird nachgeholt":"Live mit dem Team");
+  attachDb();
+  /* Beim ersten Mal: Verlauf, Veranstaltungen und Produkte von diesem Gerät hochladen, wenn online noch nichts da ist */
+  const up=[["config/history",()=>S.history&&S.history.length?{items:S.history}:null],["config/events",()=>S.events&&S.events.length?{items:S.events,month:S.evMonth||""}:null],["config/products",()=>S.custom&&S.custom.length?{items:S.custom}:null]];
+  for(const [path,get] of up){const d=get();if(!d)continue;try{const s=await db.doc(path).get({source:"server"});if(!s.exists)await db.doc(path).set(clone(d))}catch(e){}}
+}
+function openTeam(){renderTeam();$("teammodal").hidden=false;$("tmclose").onclick=()=>$("teammodal").hidden=true;$("teammodal").onclick=e=>{if(e.target.id==="teammodal")$("teammodal").hidden=true}}
+async function renderTeam(){
+  const fs=FB.fs,box=$("tmbody");let team=[];
+  try{const q=await fs.collection("team").get();team=q.docs.map(d=>Object.assign({uid:d.id},d.data()))}catch(e){}
+  const req=FB.requests||[];const dt=t=>t?new Date(t).toLocaleDateString("de-DE"):"";
+  box.innerHTML=(req.length?`<p class="tmh">Wartet auf Freischaltung</p><div class="tmlist">${req.map(r=>`<div class="tmrow"><div class="who"><b>${esc(r.email||"")}</b><small>${esc(r.name||"")}${r.name?" · ":""}seit ${dt(r.ts)}</small></div><button class="ok" data-ok="${esc(r.uid)}">Freischalten</button><button data-no="${esc(r.uid)}">Ablehnen</button></div>`).join("")}</div>`:`<p class="agok">Gerade wartet niemand auf Freischaltung.</p>`)
+   +`<p class="tmh">Freigeschaltet</p><div class="tmlist">${team.map(m=>`<div class="tmrow"><div class="who"><b>${esc(m.email||m.uid)}</b><small>${esc(m.name||"")}${m.name?" · ":""}${m.role==="admin"?"Admin":"Team"}</small></div>${m.uid===FB.user.uid?`<small class="agok">Das bist du</small>`:`${m.role==="admin"?`<button data-role="member" data-u="${esc(m.uid)}">Admin entziehen</button>`:`<button data-role="admin" data-u="${esc(m.uid)}">Zum Admin machen</button>`}<button data-del="${esc(m.uid)}">Entfernen</button>`}</div>`).join("")}</div>`;
+  box.querySelectorAll("[data-ok]").forEach(b=>b.onclick=async()=>{const r=req.find(x=>x.uid===b.dataset.ok);if(!r)return;b.disabled=true;
+    try{const bt=fs.batch();bt.set(fs.doc("team/"+r.uid),{email:r.email||"",name:r.name||"",role:"member",ts:Date.now(),by:FB.user.email||""});bt.delete(fs.doc("requests/"+r.uid));await bt.commit();toast((r.email||"Konto")+" ist freigeschaltet.")}catch(e){toast("Freischalten hat nicht geklappt.")}renderTeam()});
+  box.querySelectorAll("[data-no]").forEach(b=>b.onclick=async()=>{try{await fs.doc("requests/"+b.dataset.no).delete()}catch(e){}renderTeam()});
+  box.querySelectorAll("[data-role]").forEach(b=>b.onclick=async()=>{try{await fs.doc("team/"+b.dataset.u).update({role:b.dataset.role})}catch(e){toast("Ändern hat nicht geklappt.")}renderTeam()});
+  box.querySelectorAll("[data-del]").forEach(b=>{let armed=false;b.onclick=async()=>{if(!armed){armed=true;b.textContent="Wirklich entfernen?";setTimeout(()=>{armed=false;b.textContent="Entfernen"},3000);return}
+    try{await fs.doc("team/"+b.dataset.del).delete();toast("Zugang entfernt.")}catch(e){toast("Entfernen hat nicht geklappt.")}renderTeam()}});
+}
+function attachDb(){
+    db.collection("res").onSnapshot(snap=>{
+    const next={};snap.docs.forEach(doc=>{if(doc.exists)next[doc.id]=clone(doc.data())});
+    dirty.forEach(id=>{if(S.res[id])next[id]=S.res[id];else delete next[id]});
+    S.res=next;renderAll();
+  },()=>setSync(false,"Verbindung weg, bitte neu laden"));
+  db.doc("config/layout").onSnapshot(snap=>{
+    if(S.editing)return;
+    if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=normLayout(clone(d))}
+    renderAll();
+  },()=>{});
+  db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
+  db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=S.abr.sub;S.abr=Object.assign(newAbr(),clone(d));S.abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
+  db.doc("config/history").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.history=clone(d.items);if(S.tab==="stat")renderStats()}}},()=>{});
+  db.doc("config/events").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.events=clone(d.items);S.evMonth=d.month||"";if(S.tab==="ev")renderEvents()}}},()=>{});
+  db.doc("config/event").onSnapshot(snap=>{if(snap.exists){S.event=clone(snap.data());renderSummary()}},()=>{});
+}
 /* ---------- Start ---------- */
 function setSync(on,txt){$("syncdot").classList.toggle("on",on);$("synctxt").textContent=txt}
 lsLoad();if(S.abrLoaded){S.abr=Object.assign(newAbr(),S.abrLoaded);delete S.abrLoaded}loadDraft();setSync(false,"Gespeichert auf diesem Gerät");renderAll();
 (async()=>{
   try{
-    if(!window.claude||!window.claude.use)return;
+    if(!window.claude||!window.claude.use){if(!STD_EDITOR)fbStart();return}
     const d=await window.claude.use("db");if(!d)return;
-    db=d;mode="db";setSync(true,"Online gespeichert");
-    db.collection("res").onSnapshot(snap=>{
-      const next={};snap.docs.forEach(doc=>{if(doc.exists)next[doc.id]=clone(doc.data())});
-      dirty.forEach(id=>{if(S.res[id])next[id]=S.res[id];else delete next[id]});
-      S.res=next;renderAll();
-    },()=>setSync(false,"Verbindung weg, bitte neu laden"));
-    db.doc("config/layout").onSnapshot(snap=>{
-      if(S.editing)return;
-      if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=normLayout(clone(d))}
-      renderAll();
-    },()=>{});
-    db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
-    db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=S.abr.sub;S.abr=Object.assign(newAbr(),clone(d));S.abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
-    db.doc("config/history").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.history=clone(d.items);if(S.tab==="stat")renderStats()}}},()=>{});
-    db.doc("config/events").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.events=clone(d.items);S.evMonth=d.month||"";if(S.tab==="ev")renderEvents()}}},()=>{});
-    db.doc("config/event").onSnapshot(snap=>{if(snap.exists){S.event=clone(snap.data());renderSummary()}},()=>{});
+    db=d;mode="db";setSync(true,"Online gespeichert");attachDb();
   }catch(e){}
 })();
 })();
