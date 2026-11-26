@@ -236,7 +236,7 @@ body.p3full .plan3 .editbar{top:88px}
 .evup{cursor:pointer;display:inline-flex;align-items:center}
 #evlist{display:flex;flex-direction:column;gap:8px}
 .ev-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
-.ev-row.past{opacity:.5}.ev-row.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.ev-row.nocasa .ev-m>b{text-decoration:line-through;text-decoration-thickness:1px}
+.ev-row.past>.ev-d,.ev-row.past>.ev-m{opacity:.55}.ev-nodata{font-size:13px;color:var(--muted);white-space:nowrap}.ev-row.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.ev-row.nocasa .ev-m>b{text-decoration:line-through;text-decoration-thickness:1px}
 .ev-d{display:flex;flex-direction:column;align-items:center;font-family:var(--f-ui);line-height:1.1}.ev-d b{font-size:21px}.ev-d span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .ev-m{display:flex;flex-direction:column;gap:2px;min-width:0}.ev-m>b{font-family:var(--f-ui);font-size:17px}.ev-m>span{color:var(--muted);font-size:14px}
 .ev-tags{display:flex;gap:6px;flex-wrap:wrap}.ev-tags i{font-style:normal;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--ink)}
@@ -599,6 +599,47 @@ table.list td .sz{color:var(--muted)}
 .abr-jump{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
 .abr-jump button{padding:6px 12px;font-size:15px}
 .abr-sec{scroll-margin-top:8px}
+/* Kassenbericht als Kassen-Ansicht: Kategorien links, Produkte als Kacheln */
+.abr-tools{position:sticky;top:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 0;margin-top:6px;background:var(--bg)}
+.abr-q{flex:1 1 260px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.abr-q:focus-within{border-color:var(--accent)}
+.abr-q svg{width:20px;height:20px;color:var(--muted);flex:none}
+.abr-q input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;padding:11px 0;outline:none}
+.abr-only{display:flex;align-items:center;gap:8px;font-weight:600;white-space:nowrap;cursor:pointer}
+.abr-only input{width:20px;height:20px;accent-color:var(--accent)}
+.abr-tools .abr-undo{min-height:0}
+.abr-pos{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px;align-items:start;margin-top:4px}
+.abr-rail{position:sticky;top:70px;display:flex;flex-direction:column;gap:4px}
+.abr-rail button{display:flex;justify-content:space-between;align-items:baseline;gap:8px;text-align:left;padding:10px 12px;border-radius:9px;border:1px solid transparent;background:transparent;color:var(--ink);font-family:var(--f-ui);font-weight:600;font-size:16px;cursor:pointer}
+.abr-rail button span{flex:1;min-width:0}
+.abr-rail button small{font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+.abr-rail button:hover{border-color:var(--line);background:var(--surface)}
+.abr-rail button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.abr-rail button[aria-pressed="true"] small{color:inherit;opacity:.85}
+.abr-panel{min-width:0}
+.abr-none{color:var(--muted);padding:20px 0}
+.abr-pos .abr-sec{margin:0 0 18px}
+.abr-pos .abr-sec h3{position:static;border:0;padding:0;margin:0 0 8px;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block;background:none}
+.abr-pos .atable{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.abr-pos .adiv{grid-column:1/-1;margin:4px 0 0}
+.abr-pos .arow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name tot" "src src" "ctl ctl";row-gap:6px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.abr-pos .arow:nth-child(odd){background:var(--surface)}
+.abr-pos .arow.has{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.abr-pos .arow .asrc{grid-area:src;margin:0}
+.abr-pos .arow .an b{font-size:16px;line-height:1.2}
+.abr-pos .arow .atot b{font-size:28px}
+.abr-pos .ain{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px}
+.abr-pos .ain input{width:100%}
+.abr-pos .ain button{min-width:0;width:44px}
+.abr-pos [hidden]{display:none!important}
+@media (max-width:760px){.abr-pos{grid-template-columns:minmax(0,1fr);gap:10px}
+  .abr-rail{flex-direction:row;overflow-x:auto;top:62px;z-index:5;background:var(--bg);padding:4px 0 8px;margin:0 -4px;scrollbar-width:none}
+  .abr-rail::-webkit-scrollbar{display:none}
+  .abr-rail button{flex:none;flex-direction:column;align-items:flex-start;gap:0;border-color:var(--line);background:var(--surface);padding:7px 12px;font-size:15px}
+  .abr-pos .atable{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .abr-pos .arow .atot b{font-size:24px}
+  .abr-rail{position:static}.abr-tools{gap:8px}.abr-tools .abr-undo{width:100%}
+  .abr-pos .arow{padding:8px}.abr-pos .ain{grid-template-columns:36px minmax(0,1fr) 36px;gap:4px}.abr-pos .ain button{width:36px;height:40px;font-size:22px}.abr-pos .ain input{font-size:16px;padding:9px 2px}}
 .abr-cols{margin-top:18px}
 @media (min-width:1000px){.abr-cols{column-count:2;column-gap:36px}.abr-cols .abr-sec{break-inside:avoid;display:inline-block;width:100%;margin:0 0 22px}.abr-cols .abr-sec h3{position:static}}
 .adiv{margin:10px 0 4px;padding:6px 8px;border-radius:6px;background:var(--hot-soft);color:var(--hot);font-family:var(--f-ui);font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
@@ -657,6 +698,25 @@ table.list td .sz{color:var(--muted)}
 .linkbtn{border:0;background:none;color:var(--accent);text-decoration:underline;padding:0;font-size:inherit;font-weight:600}
 .abr-dl{margin-left:auto}
 @media (max-width:620px){#abrseg .lg{display:none}}
+/* „alkoholfrei“ überall knallrot, damit im Stress nichts verwechselt wird */
+.af{display:inline-block;background:#d71920;color:#fff!important;border-radius:5px;padding:0 6px;margin:0 1px;font-weight:800;letter-spacing:.02em;line-height:1.35;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+/* Verlauf bearbeiten */
+.hed-box{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:0 0 14px}
+.hed-box summary{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;cursor:pointer;font-family:var(--f-ui);font-size:17px}
+.hed-box summary span{color:var(--muted);font-weight:600}
+.hed-box[open] summary{margin-bottom:6px}
+.hed-list{display:grid;gap:6px;margin:8px 0}
+.hed-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:9px;background:var(--sunk)}
+.hed-l{display:flex;gap:12px;align-items:baseline;min-width:0}.hed-l span{min-width:0;line-height:1.35}.hed-l small{color:var(--muted)}
+.hed-t{font-family:var(--f-ui);font-size:18px;min-width:2.2em;white-space:nowrap}
+.hed-btns{display:flex;gap:6px}.hed-btns button{padding:6px 10px;font-size:14px}
+.hed-items{grid-column:1/-1;display:grid;gap:4px;padding-top:6px;border-top:1px solid var(--line)}
+.hed-it{display:grid;grid-template-columns:minmax(0,1fr) 38px 36px 38px;gap:6px;align-items:center}
+.hed-it button{height:36px;padding:0;font-size:20px}.hed-it b{text-align:center;font-size:18px}.hed-it small{color:var(--muted)}
+.hed-foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px}
+@media (max-width:620px){.hed-row{grid-template-columns:minmax(0,1fr) auto}.hed-btns{grid-column:1/-1;justify-content:flex-end}}
+.evmenu .past{opacity:.85}
+.rm-test{display:flex;gap:8px;align-items:center;margin:4px 0 10px;font-weight:600;cursor:pointer}.rm-test input{width:20px;height:20px;accent-color:var(--accent)}
 /* ---------- Team-Login (Firebase) ---------- */
 .demobar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;padding:10px 14px;border-radius:12px;border:1px dashed var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
 .demobar[hidden]{display:none}
@@ -1875,16 +1935,19 @@ function renderAbr(){
       <label class="kpi kin"><span>Karte Gerät 2</span><input class="num" id="abr-card2" inputmode="decimal" value="${esc(eurIn(a.card2))}" placeholder="0,00"></label>
       <label class="kpi kin"><span>Rechnung</span><input class="num" id="abr-inv" inputmode="decimal" value="${esc(eurIn(a.invoice))}" placeholder="0,00"></label>
       <div class="kpi"><span>Bar</span><b class="num" id="abr-bar">${eur(t.bar)}</b><small class="num" id="abr-cardsum">Karte zusammen ${eur(t.card)}</small></div></div>
-    <p class="hint abr-tip">Zahl eintippen, sie wird automatisch dazugerechnet. <b>Enter</b> springt in die nächste Zeile. <b>+</b> und <b>−</b> oder die Pfeiltasten zählen eins hoch oder runter. Flaschen aus der Pausenreservierung sind schon drin.</p>
-    <nav class="abr-jump">${t.secs.map((s,si)=>`<button class="ghost" data-jump="${si}">${esc(s.title)}</button>`).join("")}</nav>
-    <div class="abr-undo" id="abr-undo">${undoHtml()}</div>`;
-    h+=`<div class="abr-cols">`;
-    t.secs.forEach((s,si)=>{h+=`<div class="block abr-sec" id="abr-sec-${si}"><h3><span>${esc(s.title)}</span><span class="num" data-ssum="${si}">${eur(s.sum)}</span></h3><div class="atable">${s.rows.map((r,ri)=>`${isBottleRow(r)&&!(ri&&isBottleRow(s.rows[ri-1]))?`<div class="adiv">Ganze Flaschen</div>`:""}<div class="arow${r.tot?" has":""}${isBottleRow(r)?" bottle":""}" data-k="${esc(r.key)}">
-      <div class="an"><b>${esc(r.name)}</b><small class="num">${eur(r.price)}</small><small class="asrc" data-src>${srcTxt(r)}</small></div>
-      <div class="atot"><b class="num" data-tot>${r.tot}</b></div>
+    <div class="abr-tools"><label class="abr-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><input type="search" id="abr-q" placeholder="Produkt suchen, z. B. Pils" value="${esc(S.abrQ||"")}" aria-label="Produkt suchen" autocomplete="off"></label>
+      <label class="abr-only"><input type="checkbox" id="abr-only"${S.abrOnly?" checked":""}> Nur gezählte</label>
+      <div class="abr-undo" id="abr-undo">${undoHtml()}</div></div>
+    <div class="abr-pos"><nav class="abr-rail" aria-label="Kategorien">
+      <button type="button" data-cat="all" aria-pressed="${S.abrCat==="all"}"><span>Alle</span><small class="num" id="abr-allsum">${eur(t.sum)}</small></button>
+      ${t.secs.map((s,si)=>`<button type="button" data-cat="${si}" aria-pressed="${S.abrCat===si}"><span>${esc(s.title)}</span><small class="num" data-ssum="${si}">${s.sum?eur(s.sum):""}</small></button>`).join("")}</nav>
+    <div class="abr-panel"><p class="abr-none" id="abr-none" hidden>Nichts gefunden.</p>`;
+    t.secs.forEach((s,si)=>{h+=`<section class="abr-sec" id="abr-sec-${si}" data-sec="${si}"><h3>${esc(s.title)}</h3><div class="atable">${s.rows.map((r,ri)=>`${isBottleRow(r)&&!(ri&&isBottleRow(s.rows[ri-1]))?`<div class="adiv">Ganze Flaschen</div>`:""}<div class="arow${r.tot?" has":""}${isBottleRow(r)?" bottle":""}" data-k="${esc(r.key)}" data-name="${esc(r.name.toLowerCase())}">
+      <div class="an"><b>${esc(r.name)}</b><small class="num">${eur(r.price)}</small></div>
+      <div class="atot"><b class="num" data-tot>${r.tot}</b></div><small class="asrc" data-src>${srcTxt(r)}</small>
       <div class="ain"><button class="ghost" data-asub aria-label="${esc(r.name)} abziehen">−</button><input class="num" inputmode="numeric" data-ain placeholder="Anz." aria-label="Anzahl ${esc(r.name)}"><button class="btn-solid" data-aadd aria-label="${esc(r.name)} dazu">+</button></div>
-      </div>`).join("")}</div></div>`});
-    h+=`</div>`;
+      </div>`).join("")}</div></section>`});
+    h+=`</div></div><p class="hint abr-tip">Zahl eintippen und <b>Enter</b>, dann geht es zum nächsten Produkt. Pfeiltasten zählen eins hoch oder runter. Flaschen aus der Pausenreservierung sind schon drin.</p>`;
   }else if(sub==="kb1"){
     const total=kbSum(a.kb1.n);const soll=pnum(a.start)+t.bar;const diff=Math.round((total-soll)*100)/100;
     h+=`<div class="abr-meta"><label><span>Datum</span><input value="${esc(deDate(a.date))}" disabled></label><label><span>Uhrzeit</span><span class="trow"><input type="time" id="kb1-time" value="${esc(a.kb1.time)}" step="1800"><button class="ghost" data-now="kb1">Jetzt</button></span></label>
@@ -1912,7 +1975,18 @@ function renderAbr(){
         ${cashGrid("kb2",keep,true,{have,lock})}</div>`;
     }
   }
-  $("abr").innerHTML=h;
+  $("abr").innerHTML=h;if(sub==="bericht")abrFilter();
+}
+if(S.abrCat==null)S.abrCat=0;
+/* Kategorie, Suche und „Nur gezählte“ blenden nur aus, alle Zeilen bleiben im DOM */
+function abrFilter(){
+  const q=(S.abrQ||"").trim().toLowerCase();const only=!!S.abrOnly;const cat=q?"all":S.abrCat;let any=false;
+  document.querySelectorAll("#abr .abr-sec").forEach(sec=>{const si=+sec.dataset.sec;let vis=0;
+    sec.querySelectorAll(".arow").forEach(r=>{const ok=(!q||r.dataset.name.includes(q))&&(!only||r.classList.contains("has"));r.hidden=!ok;if(ok)vis++});
+    sec.querySelectorAll(".adiv").forEach(d=>{let n=d.nextElementSibling,v=false;while(n&&n.classList.contains("arow")){if(!n.hidden){v=true;break}n=n.nextElementSibling}d.hidden=!v});
+    const show=(cat==="all"||cat===si)&&vis>0;sec.hidden=!show;if(show)any=true});
+  document.querySelectorAll("#abr [data-cat]").forEach(b=>b.setAttribute("aria-pressed",String(!q&&String(S.abrCat)===b.dataset.cat)));
+  const no=$("abr-none");if(no){no.hidden=any;no.textContent=q?`Kein Produkt mit „${S.abrQ.trim()}“.`:only?"Hier ist noch nichts gezählt.":"Nichts gefunden."}
 }
 function isBottleRow(r){const p=P[r.key];return !!(p&&p.cat==="fl")}
 function srcTxt(r){
@@ -1924,7 +1998,8 @@ function undoHtml(){const l=S.abr.log;if(!l.length)return "";const e=l[l.length-
   return `<span>Zuletzt: ${esc(r?r.name:e.k)} ${e.n>0?"+":"−"}${Math.abs(e.n)}</span><button class="ghost" id="abr-undo-btn">Rückgängig</button>`}
 function refreshAbrNumbers(){
   const t=abrTotals();
-  t.secs.forEach((s,si)=>{const el=document.querySelector(`[data-ssum="${si}"]`);if(el)el.textContent=eur(s.sum);
+  if($("abr-allsum"))$("abr-allsum").textContent=eur(t.sum);
+  t.secs.forEach((s,si)=>{const el=document.querySelector(`[data-ssum="${si}"]`);if(el)el.textContent=s.sum?eur(s.sum):"";
     s.rows.forEach(r=>{const row=document.querySelector(`.arow[data-k="${CSS.escape(r.key)}"]`);if(!row)return;row.querySelector("[data-tot]").textContent=r.tot;row.querySelector("[data-src]").textContent=srcTxt(r);row.classList.toggle("has",r.tot>0)})});
   if($("abr-sum"))$("abr-sum").textContent=eur(t.sum);if($("abr-bar"))$("abr-bar").textContent=eur(t.bar);
   if($("abr-undo"))$("abr-undo").innerHTML=undoHtml();
@@ -1941,7 +2016,7 @@ $("abr").addEventListener("click",e=>{const t=e.target;
   if(t.closest("#abr-undo-btn")){const e2=S.abr.log.pop();if(e2){S.abr.cnt[e2.k]=(S.abr.cnt[e2.k]||0)-e2.n;if(!S.abr.cnt[e2.k])delete S.abr.cnt[e2.k];saveAbr();refreshAbrNumbers();toast("Rückgängig gemacht")}return}
   const cash=t.closest(".cash");
   if(cash&&(t.closest("[data-cinc]")||t.closest("[data-cdec]"))){const inp=cash.querySelector("[data-cin]");const v=Math.max(0,(parseInt(inp.value,10)||0)+(t.closest("[data-cinc]")?1:-1));inp.value=v||"";setCash(inp.dataset.cin,cash.dataset.d,v);return}
-  const jb=t.closest("[data-jump]");if(jb){const el=$("abr-sec-"+jb.dataset.jump);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});return}
+  const cb=t.closest("[data-cat]");if(cb){S.abrCat=cb.dataset.cat==="all"?"all":+cb.dataset.cat;S.abrQ="";if($("abr-q"))$("abr-q").value="";abrFilter();const pn=document.querySelector("#abr .abr-pos");if(pn&&pn.getBoundingClientRect().top<0)pn.scrollIntoView({block:"start"});return}
   const nb=t.closest("[data-now]");if(nb){S.abr[nb.dataset.now].time=roundHalf();saveAbr();renderAbr();return}
   if(t.closest("#kb2-reset")){S.abr.kb2.lock={};saveAbr();renderAbr();return}
   const ub=t.closest("[data-unlock]");if(ub){delete S.abr.kb2.lock[ub.dataset.unlock];saveAbr();renderAbr();return}
@@ -1949,8 +2024,12 @@ $("abr").addEventListener("click",e=>{const t=e.target;
 });
 function commitAin(inp){clearTimeout(inp._t);inp._t=null;const v=parseInt(inp.value,10);inp.value="";if(isFinite(v)&&v){const row=inp.closest(".arow");if(row)addCount(row.dataset.k,v)}}
 $("abr").addEventListener("keydown",e=>{const t=e.target;
+  if(t.id==="abr-q"&&e.key==="Enter"){e.preventDefault();const f=Array.from(document.querySelectorAll("#abr [data-ain]")).find(x=>x.getClientRects().length);if(f)f.focus();return}
   if(t.matches("[data-ain]")){
-    if(e.key==="Enter"){e.preventDefault();commitAin(t);const all=Array.from(document.querySelectorAll("#abr [data-ain]"));const nx=all[all.indexOf(t)+1];if(nx){nx.focus();nx.closest(".arow").scrollIntoView({block:"nearest",behavior:"smooth"})}return}
+    if(e.key==="Enter"){e.preventDefault();commitAin(t);const vis=()=>Array.from(document.querySelectorAll("#abr [data-ain]")).filter(x=>x.getClientRects().length);
+      let all=vis();let nx=all[all.indexOf(t)+1];
+      if(!nx&&typeof S.abrCat==="number"&&!(S.abrQ||"").trim()){const n=document.querySelectorAll("#abr .abr-sec").length;if(S.abrCat<n-1){S.abrCat++;abrFilter();all=vis();nx=all[0]}}
+      if(nx){nx.focus();nx.closest(".arow").scrollIntoView({block:"nearest",behavior:"smooth"})}return}
     if(e.key==="ArrowUp"||e.key==="ArrowDown"){e.preventDefault();if(t.value)commitAin(t);addCount(t.closest(".arow").dataset.k,e.key==="ArrowUp"?1:-1);return}}
   if(t.matches("[data-cin]")&&(e.key==="ArrowUp"||e.key==="ArrowDown")){e.preventDefault();const v=Math.max(0,(parseInt(t.value,10)||0)+(e.key==="ArrowUp"?1:-1));t.value=v||"";setCash(t.dataset.cin,t.closest(".cash").dataset.d,v)}
 });
@@ -1969,6 +2048,8 @@ function setCash(which,dv,v){
 function updKb1(){if(!$("kb1-sum"))return;const t=abrTotals();const total=kbSum(S.abr.kb1.n);const soll=pnum(S.abr.start)+t.bar;const diff=Math.round((total-soll)*100)/100;
   $("kb1-sum").textContent=eur(total);$("kb1-soll").textContent=eur(soll);$("kb1-diff").textContent=total?(diff>0?"+":"")+eur(diff):"–";$("kb1-dk").className="kpi "+(total?(diff>-0.005?"ok":"bad"):"")}
 $("abr").addEventListener("input",e=>{const t=e.target;
+  if(t.id==="abr-q"){S.abrQ=t.value;abrFilter();return}
+  if(t.id==="abr-only"){S.abrOnly=t.checked;abrFilter();return}
   if(t.id==="abr-date"){S.abr.date=t.value;saveAbr();return}
   if(t.id==="abr-card1"||t.id==="abr-card2"||t.id==="abr-inv"){const f={"abr-card1":"card1","abr-card2":"card2","abr-inv":"invoice"}[t.id];S.abr[f]=t.value;if(f!=="invoice"&&S.abr.card){S.abr.card1=String(pnum(S.abr.card1)+pnum(S.abr.card)).replace(".",",");S.abr.card=""}saveAbr();const tt=abrTotals();$("abr-bar").textContent=eur(tt.bar);$("abr-cardsum").textContent="Karte zusammen "+eur(tt.card);return}
   if(t.id==="abr-start"){S.abr.start=t.value;saveAbr();updKb1();return}
@@ -1979,7 +2060,7 @@ $("abr").addEventListener("input",e=>{const t=e.target;
   if(t.matches("[data-cin]")){const v=Math.max(0,parseInt(t.value,10)||0);setCash(t.dataset.cin,t.closest(".cash").dataset.d,v)}
   if(t.matches("[data-ain]")){clearTimeout(t._t);t.value=t.value.replace(/[^\d-]/g,"");if(t.value&&t.value!=="-")t._t=setTimeout(()=>commitAin(t),900)}
 });
-$("abr").addEventListener("change",e=>{if(e.target.id==="abr-target")renderAbr()});
+$("abr").addEventListener("change",e=>{if(e.target.id==="abr-target")renderAbr();if(e.target.id==="abr-only"){S.abrOnly=e.target.checked;abrFilter()}});
 
 /* --- Excel erzeugen --- */
 const XNS="http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -2320,7 +2401,8 @@ function renderEvents(){const box=$("evlist");const L=S.events||[];const t=isoTo
     return `<div class="ev-row${past?" past":""}${cur?" cur":""}${e.noCasa?" nocasa":""}"><div class="ev-d"><b>${e.date.slice(8,10)}.${e.date.slice(5,7)}.</b><span>${esc(e.wd)}</span></div>
       <div class="ev-m"><b>${esc(e.name)}</b><span>${esc(m.where)}</span><span>${esc(m.times||"Zeiten noch offen")}</span>
       <span class="ev-tags">${e.noCasa?'<i class="t-no">ohne CaSa</i>':""}${e.kc?'<i>Künstlercatering</i>':""}${e.sekt?'<i>Sektempfang</i>':""}${cur?'<i class="t-cur">läuft gerade</i>':""}</span></div>
-      <button class="${cur?"ghost":"btn-solid"}" data-evstart="${esc(e.id)}"${cur||e.noCasa?" disabled":""}>${cur?"Aktiv":"Starten"}</button></div>`}).join("")}
+      ${past&&!cur?(()=>{const hi=histIdxFor(e);return hi>=0?`<button class="ghost" data-evview="${hi}">Ansehen</button>`:`<span class="ev-nodata">Keine Daten</span>`})():`<button class="${cur?"ghost":"btn-solid"}" data-evstart="${esc(e.id)}"${cur||e.noCasa?" disabled":""}>${cur?"Aktiv":"Starten"}</button>`}</div>`}).join("")}
+$("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evview]");if(b)openPast(+b.dataset.evview)});
 $("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
   $("evstatus").textContent="Lese die PDF…";
   try{const lines=await pdfLines(await f.arrayBuffer());const L=parseEvents(lines);
@@ -2339,10 +2421,15 @@ function openEvMenu(){const ups=upcoming().filter(e=>!e.noCasa);const cur=S.even
   let h=ups.length?ups.map(e=>{const m=evMeta(e);return `<button role="option" data-evp="${esc(e.id)}" aria-selected="${e.id===cur}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")
     :`<div class="mt">Noch keine kommenden Termine. Lade unter „Kalender“ die Monats-PDF hoch.</div>`;
   h+=`<div class="sep"></div><button data-evp="__own"><span class="d">✎</span><span><b>Eigenen Namen eingeben</b><small>für Veranstaltungen, die nicht in der Liste stehen</small></span></button>`;
+  const H=S.history||[];
+  if(H.length){h+=`<button data-evp="__past" aria-expanded="${!!S.evPast}"><span class="d">${S.evPast?"▴":"▾"}</span><span><b>${S.evPast?"Frühere Veranstaltungen ausblenden":"Frühere Veranstaltungen anzeigen"}</b><small>${H.length} im Verlauf, zum Ansehen und Bearbeiten</small></span></button>`;
+    if(S.evPast)h+=H.map((x,i)=>[x,i]).reverse().slice(0,40).map(([x,i])=>`<button class="past" data-hist="${i}"><span class="d">${esc(deDate(x.date).slice(0,6))}</span><span><b>${esc(x.name)}</b><small>${x.res||0} Reservierung${x.res===1?"":"en"}, ${eur(x.rev||0)}</small></span></button>`).join("")}
   $("evmenu").innerHTML=h;$("evmenu").hidden=false;$("evpick").setAttribute("aria-expanded","true");const f=$("evmenu").querySelector('[aria-selected="true"]')||$("evmenu").querySelector("button");if(f)f.focus()}
 function closeEvMenu(){$("evmenu").hidden=true;$("evpick").setAttribute("aria-expanded","false")}
 $("evpick").onclick=e=>{e.stopPropagation();if($("evmenu").hidden)openEvMenu();else closeEvMenu()};
-$("evmenu").addEventListener("click",e=>{const b=e.target.closest("[data-evp]");if(!b)return;closeEvMenu();const id=b.dataset.evp;
+$("evmenu").addEventListener("click",e=>{const hb=e.target.closest("[data-hist]");if(hb){closeEvMenu();openPast(+hb.dataset.hist);return}
+  const b=e.target.closest("[data-evp]");if(!b)return;if(b.dataset.evp==="__past"){e.stopPropagation();S.evPast=!S.evPast;openEvMenu();const pb=$("evmenu").querySelector('[data-evp="__past"]');if(pb)pb.focus();return}
+  closeEvMenu();const id=b.dataset.evp;
   if(id==="__own"){$("evpick").hidden=true;const i=$("evname");i.hidden=false;i.focus();i.select();return}
   if(S.event&&S.event.evId===id)return;
   const ev=(S.events||[]).find(x=>x.id===id);if(!ev)return;
@@ -2433,7 +2520,36 @@ function renderStats(){const sig=JSON.stringify([S.statView,S.res,S.history&&S.h
   const keep={res:S.res,event:S.event,history:S.history};
   if(v==="demo"){const d=demoData();S.res=d.res;S.event=d.event;S.history=d.history}
   else{const h=H[+v];S.res=clone(h.data||{});S.event={name:h.name,pax:h.pax,date:h.date}}
-  try{renderStatsInner(v!=="demo"&&!H[+v].data)}finally{S.res=keep.res;S.event=keep.event;S.history=keep.history}}
+  try{renderStatsInner(v!=="demo"&&!H[+v].data)}finally{S.res=keep.res;S.event=keep.event;S.history=keep.history}
+  if(v!=="demo"){const bar=$("statbox").querySelector(".st-bar");const html=histEditor(+v);if(bar)bar.insertAdjacentHTML("afterend",html);else $("statbox").insertAdjacentHTML("afterbegin",html)}}
+/* Frühere Veranstaltungen: Reservierungen im Verlauf ansehen, bearbeiten, löschen */
+function histIdxFor(e){const H=S.history||[];let i=-1;H.forEach((h,j)=>{if(h.date===e.date&&(h.name===e.name||h.name===evLabel(e)))i=j});
+  if(i<0){const same=H.map((h,j)=>[h,j]).filter(([h])=>h.date===e.date);if(same.length===1)i=same[0][1]}return i}
+function openPast(i){if(!(S.history||[])[i])return;S.tab="stat";S.statView=String(i);S.hedOpen=false;renderStats.sig=null;renderAll();sideOpen(false);window.scrollTo({top:0})}
+function recalcHist(h){const keep=S.res;S.res=h.data||{};const st=statSnapshot();S.res=keep;
+  h.rev=Math.round(st.rev*100)/100;h.items=st.items;h.res=st.keys.length;h.cats=st.cats;h.prod=st.prod;h.top=Object.entries(st.prod).sort((a,b)=>b[1]-a[1]).slice(0,3);h.saved=Date.now()}
+function saveHistNow(){saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats()}
+function histEditor(i){const h=S.history[i];const d=h.data;
+  if(!d)return `<div class="hed-box"><p class="sub">Für „${esc(h.name)}“ sind nur die Eckdaten gespeichert, einzelne Reservierungen gibt es hier nicht.</p><div class="hed-foot"><button class="ghost danger" data-hdrop="${i}">${S.hedArm==="drop"?"Wirklich aus dem Verlauf löschen?":"Veranstaltung aus dem Verlauf löschen"}</button></div></div>`;
+  const ks=Object.keys(d).filter(k=>!isEmpty(d[k])).sort(byNum);
+  const rows=ks.map(k=>{const r=d[k];const its=ORDER.filter(p=>r.items&&r.items[p]>0);const ed=S.hedRow===k;
+    return `<div class="hed-row${ed?" open":""}"><div class="hed-l"><b class="hed-t">${esc(lbl(k))}</b><span>${esc(its.map(p=>r.items[p]+"× "+P[p].name).join(", ")||"nichts bestellt")}${r.name?` <small>${esc(r.name)}</small>`:""}</span></div><b class="num hed-sum">${eur(total(r))}</b>
+      <div class="hed-btns"><button class="ghost" data-hedit="${esc(k)}">${ed?"Fertig":"Bearbeiten"}</button><button class="ghost danger" data-hdel="${esc(k)}">${S.hedArm==="del:"+k?"Wirklich?":"Löschen"}</button></div>
+      ${ed?`<div class="hed-items">${its.map(p=>`<div class="hed-it"><span>${esc(P[p].name)}${P[p].size?` <small>${esc(P[p].size)}</small>`:""}</span><button class="ghost" data-hq="${esc(k)}|${p}|-1" aria-label="${esc(P[p].name)} weniger">−</button><b class="num">${r.items[p]}</b><button class="ghost" data-hq="${esc(k)}|${p}|1" aria-label="${esc(P[p].name)} mehr">+</button></div>`).join("")}</div>`:""}</div>`}).join("");
+  return `<details class="hed-box"${S.hedOpen?" open":""} id="hedbox"><summary><b>Reservierungen dieser Veranstaltung bearbeiten</b><span>${ks.length} Reservierung${ks.length===1?"":"en"}, ${eur(h.rev||0)}</span></summary>
+    <p class="sub">Änderungen hier betreffen nur den Verlauf und die Statistiken, nicht die laufende Veranstaltung.</p>
+    ${ks.length?`<div class="hed-list">${rows}</div>`:`<p class="sub">Keine Reservierungen mehr drin.</p>`}
+    <div class="hed-foot">${ks.length?`<button class="ghost danger" data-hall="${i}">${S.hedArm==="all"?"Wirklich alle löschen?":"Alle Reservierungen löschen"}</button>`:""}<button class="ghost danger" data-hdrop="${i}">${S.hedArm==="drop"?"Wirklich aus dem Verlauf löschen?":"Veranstaltung aus dem Verlauf löschen"}</button></div></details>`}
+function hedArm(v){S.hedArm=v;clearTimeout(S.hedT);S.hedT=setTimeout(()=>{S.hedArm=null;if(S.tab==="stat"){renderStats.sig=null;renderStats()}},4000);renderStats.sig=null;renderStats()}
+$("statbox").addEventListener("toggle",e=>{if(e.target.id==="hedbox")S.hedOpen=e.target.open},true);
+$("statbox").addEventListener("click",e=>{const t=e.target;const i=+S.statView;const h=(S.history||[])[i];if(!h||!/^\d+$/.test(String(S.statView)))return;
+  const b=t.closest("[data-hedit],[data-hdel],[data-hq],[data-hall],[data-hdrop]");if(!b)return;e.preventDefault();
+  if(b.dataset.hedit!=null){S.hedRow=S.hedRow===b.dataset.hedit?null:b.dataset.hedit;renderStats.sig=null;renderStats();return}
+  if(b.dataset.hq){const [k,p,n]=b.dataset.hq.split("|");const r=h.data[k];if(!r)return;r.items[p]=Math.max(0,(r.items[p]||0)+(+n));if(!r.items[p])delete r.items[p];if(isEmpty(r))delete h.data[k];recalcHist(h);saveHistNow();return}
+  if(b.dataset.hdel!=null){const k=b.dataset.hdel;if(S.hedArm!=="del:"+k){hedArm("del:"+k);return}S.hedArm=null;delete h.data[k];recalcHist(h);saveHistNow();toast("Reservierung gelöscht");return}
+  if(b.dataset.hall!=null){if(S.hedArm!=="all"){hedArm("all");return}S.hedArm=null;h.data={};recalcHist(h);saveHistNow();toast("Alle Reservierungen dieser Veranstaltung gelöscht");return}
+  if(b.dataset.hdrop!=null){if(S.hedArm!=="drop"){hedArm("drop");return}S.hedArm=null;const nm=h.name;S.history.splice(i,1);S.statView="cur";saveHistNow();toast("„"+nm+"“ aus dem Verlauf gelöscht");return}
+});
 function renderAllStats(){const H=S.history;const box=$("statbox");const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
   const rev=H.reduce((a,h)=>a+h.rev,0),items=H.reduce((a,h)=>a+h.items,0),res=H.reduce((a,h)=>a+h.res,0);const best=H.slice().sort((a,b)=>b.rev-a.rev)[0];
   const cats={},prod={};H.forEach(h=>{for(const c in h.cats||{})cats[c]=(cats[c]||0)+h.cats[c];const pr=h.prod||Object.fromEntries(h.top||[]);for(const p in pr)prod[p]=(prod[p]||0)+pr[p]});
@@ -2571,7 +2687,7 @@ function openReset(pre){if(typeof pre!=="string")pre="";
     :`<p class="rm-hint">Tipp: Unter „Veranstaltungen“ kannst du die Monats-PDF hochladen. Dann wählst du hier direkt die nächste Veranstaltung aus.</p>`;
   const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k]));let sum=0;keys.forEach(k=>sum+=total(S.res[k]));
   $("rmbox").innerHTML=`<h2 id="rm-title">Neue Veranstaltung starten?</h2>
-    <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Die Abrechnung wird dabei auch geleert. Das lässt sich nicht rückgängig machen. Der Tischplan bleibt.</p>${pick}
+    <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Die Abrechnung wird dabei auch geleert und der Tischplan springt auf den Standardplan zurück. Die Reservierungen landen in den Statistiken.</p>${keys.length?`<label class="rm-test"><input type="checkbox" id="rm-test"> Waren nur Testdaten, nicht in den Statistiken speichern</label>`:""}${pick}
     <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go">Ja, alles entfernen</button></div>`;
   $("resetmodal").hidden=false;setTimeout(()=>$("rm-cancel").focus(),30);
 }
@@ -2591,7 +2707,7 @@ $("zonemodal").addEventListener("click",e=>{const t=e.target;if(t===$("zonemodal
   S.grouping=false;S.sel=b.dataset.spot;S.confirmClear=false;renderAll();renderOrder(true);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});});
 async function doReset(){
-  saveHistory();
+  const noHist=!!($("rm-test")&&$("rm-test").checked);if(!noHist)saveHistory();
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
   S.layout=stdLayout();S.editing=false;S.editSel=null;S.lmSel=null;if(mode==="db")saveDoc("config/layout",S.layout);
   {const st=S.abr.start,tg=S.abr.target;S.abr=newAbr();S.abr.start=st;S.abr.target=tg;if(mode==="db")saveDoc("config/abr",S.abr)}
@@ -2616,6 +2732,12 @@ function setThemeLabel(){$("themetxt").textContent=isDark()?"Hell":"Dunkel"}
 (function(){let t=null;try{t=localStorage.getItem("pausenres_theme")}catch(e){}if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);setThemeLabel()})();
 $("themebtn").onclick=()=>{const t=isDark()?"light":"dark";document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("pausenres_theme",t)}catch(e){}setThemeLabel()};
 
+/* ---------- „alkoholfrei“ hervorheben ---------- */
+function markAF(root){if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>/alkoholfrei/i.test(n.nodeValue)&&n.parentElement&&!n.parentElement.closest(".af,script,style,textarea,option,select,svg,title")?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT});
+  const L=[];while(w.nextNode())L.push(w.currentNode);
+  L.forEach(n=>{const parts=n.nodeValue.split(/(alkoholfrei)/i);const f=document.createDocumentFragment();parts.forEach((t,i)=>{if(i%2){const sp=document.createElement("span");sp.className="af";sp.textContent=t;f.appendChild(sp)}else if(t)f.appendChild(document.createTextNode(t))});n.replaceWith(f)})}
+{let afq=false;const run=()=>{afq=false;markAF(document.body)};
+  new MutationObserver(()=>{if(!afq){afq=true;requestAnimationFrame(run)}}).observe(document.body,{childList:true,subtree:true,characterData:true});run()}
 /* ---------- Team-Sync (Firebase, nur GitHub-Version) ---------- */
 const FB_CONFIG={apiKey:"AIzaSyBW1SN71VTkV_2wFIAMWMAT8rWpkAW-vnA",authDomain:"casa-hub-37c76.firebaseapp.com",projectId:"casa-hub-37c76",storageBucket:"casa-hub-37c76.firebasestorage.app",messagingSenderId:"492725742682",appId:"1:492725742682:web:46f06869b5c669c378bc63"};
 const FB_VER="10.12.2";
