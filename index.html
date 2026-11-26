@@ -2655,7 +2655,7 @@ function agMode(reg){agReg=reg;$("agnamel").hidden=!reg;$("agsubmit").textConten
 function localOnly(on){try{on?localStorage.setItem("casahub_local","1"):localStorage.removeItem("casahub_local")}catch(e){}}
 function isLocalOnly(){try{return localStorage.getItem("casahub_local")==="1"}catch(e){return false}}
 /* Mail an den Admin, wenn sich jemand registriert (FormSubmit, kostenlos) */
-const NOTIFY_MAIL="nicolino.simone@gmail.com";
+const NOTIFY_MAIL="nicolino.simone1@gmail.com";
 function notifyAdmin(uid,name,mail){try{
   const link=location.origin+location.pathname+"?freischalten="+encodeURIComponent(uid);
   fetch("https://formsubmit.co/ajax/"+NOTIFY_MAIL,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
