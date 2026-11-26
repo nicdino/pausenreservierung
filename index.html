@@ -519,7 +519,8 @@ table.list td .sz{color:var(--muted)}
 @media print{
   @page{size:A4;margin:10mm}
   body{background:#fff;color:#000;font-size:11pt}
-  .wrap,.toast,.modal,.side,.scrim{display:none!important}
+  .hub,.wrap,.toast,.modal,.side,.scrim,#authgate,#evmenu{display:none!important}
+  html,body{min-height:0!important;height:auto!important;padding:0!important}
   #printout{display:block}
   #printout h1{font-family:var(--f-ui);font-size:20pt;margin:0}
   #printout .meta{color:#555;margin:2px 0 10px}
