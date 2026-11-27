@@ -1959,6 +1959,8 @@ function kb2Proposal(){
   return {keep,reached:best/10,exact:best===T};
 }
 function kb2Counts(){return kb2Proposal().keep}
+/* Was nach Kassenbestand 2 wirklich in der Kasse bleibt, ist der Anfangsbestand der nächsten Veranstaltung */
+function kb2Total(){if(!(kbSum(S.abr.kb1.n)>0))return null;const t=kbSum(kb2Counts());return t>0?Math.round(t*100)/100:null}
 
 let abrT=null;
 function saveAbr(){if(ARCH()){archBlock();return}if(mode!=="db"){lsSave();return}clearTimeout(abrT);abrT=setTimeout(async()=>{await saveDoc("config/abr",S.abr);abrT=null},500)}
@@ -2005,7 +2007,7 @@ function renderAbr(){
   }else if(sub==="kb1"){
     const total=kbSum(a.kb1.n);const soll=pnum(a.start)+t.bar;const diff=Math.round((total-soll)*100)/100;
     h+=`<div class="abr-meta"><label><span>Datum</span><input value="${esc(deDate(a.date))}" disabled></label><label><span>Uhrzeit</span><span class="trow"><input type="time" id="kb1-time" value="${esc(a.kb1.time)}" step="1800"><button class="ghost" data-now="kb1">Jetzt</button></span></label>
-      <label><span>Anfangsbestand vorher</span><input class="num" id="abr-start" inputmode="decimal" value="${esc(eurIn(a.start))}"></label></div>
+      <label><span>Anfangsbestand vorher</span><input class="num" id="abr-start" inputmode="decimal" value="${esc(eurIn(a.start))}">${a.startFrom?`<small class="sub">übernommen aus Kassenbestand 2 von „${esc(a.startFrom)}“</small>`:""}</label></div>
       <p class="hint abr-tip">Jeden Schein und jede Münze zählen und die Anzahl eintragen.</p>
       ${cashGrid("kb1",a.kb1.n,true)}
       <div class="kpis abr-kpis"><div class="kpi"><span>Gezählt</span><b class="num" id="kb1-sum">${eur(total)}</b></div>
@@ -2106,7 +2108,7 @@ $("abr").addEventListener("input",e=>{const t=e.target;
   if(t.id==="abr-only"){S.abrOnly=t.checked;abrFilter();return}
   if(t.id==="abr-date"){S.abr.date=t.value;saveAbr();return}
   if(t.id==="abr-card1"||t.id==="abr-card2"||t.id==="abr-inv"){const f={"abr-card1":"card1","abr-card2":"card2","abr-inv":"invoice"}[t.id];S.abr[f]=t.value;if(f!=="invoice"&&S.abr.card){S.abr.card1=String(pnum(S.abr.card1)+pnum(S.abr.card)).replace(".",",");S.abr.card=""}saveAbr();const tt=abrTotals();$("abr-bar").textContent=eur(tt.bar);$("abr-cardsum").textContent="Karte zusammen "+eur(tt.card);return}
-  if(t.id==="abr-start"){S.abr.start=t.value;saveAbr();updKb1();return}
+  if(t.id==="abr-start"){S.abr.start=t.value;S.abr.startFrom="";saveAbr();updKb1();return}
   if(t.id==="kb2-date"){S.abr.kb2.date=t.value;saveAbr();return}
   if(t.id==="kb2-event"){S.abr.kb2.event=t.value;saveAbr();return}
   if(t.id==="abr-target"){S.abr.target=t.value;saveAbr();return}
@@ -2919,11 +2921,11 @@ $("zonemodal").addEventListener("click",e=>{const t=e.target;if(t===$("zonemodal
   const b=t.closest("[data-spot]");if(!b)return;$("zonemodal").hidden=true;
   S.grouping=false;S.sel=b.dataset.spot;S.confirmClear=false;renderAll();renderOrder(true);
   if(window.matchMedia("(max-width:979px)").matches)$("order").scrollIntoView({behavior:"smooth",block:"start"});});
-async function doReset(){
+async function doReset(){const prevName=(S.event&&S.event.name)||"";
   const noHist=!!($("rm-test")&&$("rm-test").checked);if(!noHist)saveHistory();
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
   S.layout=stdLayout();S.editing=false;S.editSel=null;S.lmSel=null;if(mode==="db")saveDoc("config/layout",S.layout);
-  {const st=S.abr.start,tg=S.abr.target;S.abr=newAbr();S.abr.start=st;S.abr.target=tg;if(mode==="db")saveDoc("config/abr",S.abr)}
+  {const k2=kb2Total();const st=k2!=null?k2.toFixed(2).replace(".",","):S.abr.start,tg=S.abr.target;const from=k2!=null?(prevName||"letzter Veranstaltung"):"";S.abr=newAbr();S.abr.start=st;S.abr.target=tg;S.abr.startFrom=from;if(mode==="db")saveDoc("config/abr",S.abr)}
   const closed=S.closeOnly;S.closeOnly=false;const ev=closed?null:(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
   closeReset();renderAll();
   if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
