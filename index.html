@@ -707,6 +707,8 @@ table.list td .sz{color:var(--muted)}
 .pvt-b i{display:block;height:100%;background:var(--accent);border-radius:7px 0 0 7px}
 .st-sub2{margin-top:26px;padding-top:18px;border-top:2px solid var(--line)}
 /* Verlauf bearbeiten */
+.demobar.archbar{border-color:#3f7f93;background:color-mix(in srgb,#3f7f93 12%,var(--surface))}.demobar.archbar .demo-tag{background:#3f7f93;color:#fff}
+#evpick.arch #evk{color:#3f7f93}#evpick.arch #evk::before{background:#3f7f93}
 .hed-dl{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600}
 .evmenu .evclose b{color:var(--accent)}
 #abr-close{margin-left:8px}
@@ -826,6 +828,7 @@ table.list td .sz{color:var(--muted)}
 </aside>
 <div class="scrim" id="scrim" hidden></div>
 <div class="wrap">
+  <div class="demobar archbar" id="archbar" hidden role="status"><span class="demo-tag">Archiv</span><span class="dtxt" id="archtxt"></span><button type="button" id="archedit">Bearbeiten</button><button type="button" id="archback" class="btn-solid">Zurück zur aktuellen</button></div>
   <div class="demobar" id="demobar" hidden role="status"><span class="demo-tag">Demo</span><span class="dtxt">Hier kannst du alles ausprobieren. Nichts davon landet in der echten Datenbank oder Abrechnung.</span><button type="button" id="demoreset">Beispieldaten neu laden</button></div>
   <header class="top">
     <button class="menubtn" id="menubtn" aria-label="Menü öffnen" aria-controls="side" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
@@ -1009,7 +1012,7 @@ function curKey(){return S.sel==null?null:isD()?"draft":tid(S.sel)}
 function getKey(k){return k==="draft"?S.draft:k?S.res[k]:null}
 function getCur(){return getKey(curKey())}
 function putKey(k,r){if(!k)return;if(k==="draft"){S.draft=(!r||isEmpty(r))?null:r;saveDraft()}else{S.res[k]=r;if(isEmpty(r))delete S.res[k];saveRes(k)}}
-function saveDraft(){try{if(S.draft)localStorage.setItem(LSD,JSON.stringify(S.draft));else localStorage.removeItem(LSD)}catch(e){}}
+function saveDraft(){if(ARCH())return;try{if(S.draft)localStorage.setItem(LSD,JSON.stringify(S.draft));else localStorage.removeItem(LSD)}catch(e){}}
 function loadDraft(){try{const d=JSON.parse(localStorage.getItem(LSD)||"null");if(d&&d.items)S.draft=d}catch(e){}}
 /* Thekenplätze: keine Tische im Plan, sondern durchnummerierte Plätze je Bereich */
 const ZONES={o:{f:"oben",name:"Theke",card:"THEKE"},ul:{f:"unten",name:"Theke links",card:"THEKE LINKS"},ur:{f:"unten",name:"Theke rechts",card:"THEKE RECHTS"},sz:{f:"unten",name:"Sitztreppe",card:"SITZTREPPE"}};
@@ -1059,9 +1062,12 @@ function toast(msg){const t=$("toast");t.textContent=msg;t.hidden=false;clearTim
 /* ---------- Speichern ---------- */
 function stdLayout(){const d=S.std;return normLayout(clone(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v?d:DEFAULT_LAYOUT))}
 let LSK="pausenres_v2",LSD="pausenres_draft",DEMO=false;
-function lsSave(){try{localStorage.setItem(LSK,JSON.stringify({res:S.res,layout:S.layout,event:S.event,custom:S.custom,abr:S.abr,events:S.events,evMonth:S.evMonth,history:S.history,std:S.std||null}))}catch(e){}}
+/* Archivansicht: frühere Veranstaltung genau so zeigen, wie sie war. Live-Daten liegen solange in S.live */
+const ARCH=()=>S.viewHist!=null;const LV=()=>ARCH()?S.live:S;
+let archToastT=0;function archBlock(){if(Date.now()-archToastT>4000){archToastT=Date.now();toast("Archiv: Änderungen werden hier nicht gespeichert.")}}
+function lsSave(){const L=LV();try{localStorage.setItem(LSK,JSON.stringify({res:L.res,layout:L.layout,event:L.event,custom:S.custom,abr:L.abr,events:S.events,evMonth:S.evMonth,history:S.history,std:S.std||null}))}catch(e){}}
 function lsLoad(){try{const d=JSON.parse(localStorage.getItem(LSK)||(DEMO?null:localStorage.getItem("pausenres_v1"))||"null");if(d){S.res=d.res||{};if(d.layout&&d.layout.tables&&d.layout.v===DEFAULT_LAYOUT.v)S.layout=normLayout(d.layout);if(d.event)S.event=d.event;if(Array.isArray(d.events)){S.events=d.events;S.evMonth=d.evMonth||""}if(Array.isArray(d.history))S.history=d.history;if(d.std&&d.std.tables)S.std=d.std;if(Array.isArray(d.custom))S.custom=d.custom;if(d.abr)S.abrLoaded=d.abr}}catch(e){}buildProducts(S.custom)}
-function saveRes(id){
+function saveRes(id){if(ARCH()){archBlock();return}
   {const r=S.res[id];if(r&&!isEmpty(r)&&!r.ts)r.ts=Date.now()}
   if(mode!=="db"){lsSave();return}
   dirty.add(id);clearTimeout(timers[id]);
@@ -1074,7 +1080,7 @@ function saveRes(id){
     });
   },300);
 }
-async function saveDoc(path,data){
+async function saveDoc(path,data){if(ARCH()&&!/^config\/(history|events|products|stdlayout)$/.test(path)){archBlock();return}
   if(mode!=="db"){lsSave();return}
   try{await db.doc(path).set(clone(data))}catch(e){toast("Speichern hat nicht geklappt.")}
 }
@@ -1924,7 +1930,7 @@ function kb2Proposal(){
 function kb2Counts(){return kb2Proposal().keep}
 
 let abrT=null;
-function saveAbr(){if(mode!=="db"){lsSave();return}clearTimeout(abrT);abrT=setTimeout(async()=>{await saveDoc("config/abr",S.abr);abrT=null},500)}
+function saveAbr(){if(ARCH()){archBlock();return}if(mode!=="db"){lsSave();return}clearTimeout(abrT);abrT=setTimeout(async()=>{await saveDoc("config/abr",S.abr);abrT=null},500)}
 function ensureDate(){if(!S.abr.date){S.abr.date=isoToday()}}
 
 /* --- Darstellung --- */
@@ -2424,7 +2430,8 @@ function renderEvents(){const box=$("evlist");const L=S.events||[];const t=isoTo
       <div class="ev-m"><b>${esc(e.name)}</b><span>${esc(m.where)}</span><span>${esc(m.times||"Zeiten noch offen")}</span>
       <span class="ev-tags">${e.noCasa?'<i class="t-no">ohne CaSa</i>':""}${e.kc?'<i>Künstlercatering</i>':""}${e.sekt?'<i>Sektempfang</i>':""}${cur?'<i class="t-cur">läuft gerade</i>':""}</span></div>
       ${past&&!cur?(()=>{const hi=histIdxFor(e);return hi>=0?`<button class="ghost" data-evview="${hi}">Ansehen</button>`:`<span class="ev-nodata">Keine Daten</span>`})():`<button class="${cur?"ghost":"btn-solid"}" data-evstart="${esc(e.id)}"${cur||e.noCasa?" disabled":""}>${cur?"Aktiv":"Starten"}</button>`}</div>`}).join("")}
-$("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evview]");if(b)openPast(+b.dataset.evview)});
+$("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evview]");if(b)enterArchive(+b.dataset.evview,"plan")});
+$("archback").onclick=exitArchive;$("archedit").onclick=()=>{const i=S.viewHist;exitArchive();openPast(i)};
 $("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
   $("evstatus").textContent="Lese die PDF…";
   try{const lines=await pdfLines(await f.arrayBuffer());const L=parseEvents(lines);
@@ -2438,11 +2445,12 @@ $("evfile").addEventListener("change",async e=>{const f=e.target.files&&e.target
 /* ---------- Auswahl der laufenden Veranstaltung oben ---------- */
 function renderEvPick(){const b=$("evpick");if(!b)return;const name=(S.event&&S.event.name)||"";const info=S.tab==="cal"||S.tab==="ev";
   $("evbox").hidden=info&&!name;b.classList.toggle("on",!!name);b.classList.toggle("none",!name);b.classList.toggle("static",info);b.disabled=info;
-  $("evk").textContent=name?"Läuft gerade":"Veranstaltung";$("evv").textContent=name||"Veranstaltung auswählen";if(info)closeEvMenu()}
+  $("evk").textContent=ARCH()?"Archiv":name?"Läuft gerade":"Veranstaltung";$("evpick").classList.toggle("arch",ARCH());$("evv").textContent=name||"Veranstaltung auswählen";if(info)closeEvMenu()}
 function openEvMenu(){const ups=upcoming().filter(e=>!e.noCasa);const cur=S.event&&S.event.evId;
   let h=ups.length?ups.map(e=>{const m=evMeta(e);return `<button role="option" data-evp="${esc(e.id)}" aria-selected="${e.id===cur}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")
     :`<div class="mt">Noch keine kommenden Termine. Lade unter „Kalender“ die Monats-PDF hoch.</div>`;
-  if(S.event&&S.event.name)h=`<button data-evp="__close" class="evclose"><span class="d">✓</span><span><b>„${esc(S.event.name)}“ abschließen</b><small>Speichert alles im Verlauf, danach läuft keine Veranstaltung mehr</small></span></button><div class="sep"></div>`+h;
+  if(ARCH()){const L=S.live&&S.live.event&&S.live.event.name;h=`<button data-evp="__live" class="evclose"><span class="d">↩</span><span><b>Zurück zur aktuellen${L?": „"+esc(S.live.event.name)+"“":""}</b><small>Archiv verlassen</small></span></button><div class="sep"></div>`+h}
+  else if(S.event&&S.event.name)h=`<button data-evp="__close" class="evclose"><span class="d">✓</span><span><b>„${esc(S.event.name)}“ abschließen</b><small>Speichert alles im Verlauf, danach läuft keine Veranstaltung mehr</small></span></button><div class="sep"></div>`+h;
   h+=`<div class="sep"></div><button data-evp="__own"><span class="d">✎</span><span><b>Eigenen Namen eingeben</b><small>für Veranstaltungen, die nicht in der Liste stehen</small></span></button>`;
   const H=S.history||[];
   if(H.length){h+=`<button data-evp="__past" aria-expanded="${!!S.evPast}"><span class="d">${S.evPast?"▴":"▾"}</span><span><b>${S.evPast?"Frühere Veranstaltungen ausblenden":"Frühere Veranstaltungen anzeigen"}</b><small>${H.length} im Verlauf, zum Ansehen und Bearbeiten</small></span></button>`;
@@ -2450,9 +2458,10 @@ function openEvMenu(){const ups=upcoming().filter(e=>!e.noCasa);const cur=S.even
   $("evmenu").innerHTML=h;$("evmenu").hidden=false;$("evpick").setAttribute("aria-expanded","true");const f=$("evmenu").querySelector('[aria-selected="true"]')||$("evmenu").querySelector("button");if(f)f.focus()}
 function closeEvMenu(){$("evmenu").hidden=true;$("evpick").setAttribute("aria-expanded","false")}
 $("evpick").onclick=e=>{e.stopPropagation();if($("evmenu").hidden)openEvMenu();else closeEvMenu()};
-$("evmenu").addEventListener("click",e=>{const hb=e.target.closest("[data-hist]");if(hb){closeEvMenu();openPast(+hb.dataset.hist);return}
+$("evmenu").addEventListener("click",e=>{const hb=e.target.closest("[data-hist]");if(hb){closeEvMenu();enterArchive(+hb.dataset.hist);return}
+  if(e.target.closest("[data-evp=\"__live\"]")){closeEvMenu();exitArchive();return}
   const b=e.target.closest("[data-evp]");if(!b)return;if(b.dataset.evp==="__past"){e.stopPropagation();S.evPast=!S.evPast;openEvMenu();const pb=$("evmenu").querySelector('[data-evp="__past"]');if(pb)pb.focus();return}
-  closeEvMenu();const id=b.dataset.evp;if(id==="__close"){openReset("",true);return}
+  closeEvMenu();const id=b.dataset.evp;if(id==="__close"){openReset("",true);return}if(ARCH())exitArchive();
   if(id==="__own"){$("evpick").hidden=true;const i=$("evname");i.hidden=false;i.focus();i.select();return}
   if(S.event&&S.event.evId===id)return;
   const ev=(S.events||[]).find(x=>x.id===id);if(!ev)return;
@@ -2481,7 +2490,7 @@ function abrSnap(){const t=abrTotals();if(!(t.sum>0))return null;
 let STAT_ABR=null;
 function saveHistory(){const s=statSnapshot();if(!s.keys.length&&!abrSnap())return;const e=S.event||{};
   const ev=(S.events||[]).find(x=>x.id===e.evId)||{};const keep={};s.keys.forEach(k=>keep[k]=clone(S.res[k]));
-  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep,abr:abrSnap(),abrRaw:clone(S.abr)};
+  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep,abr:abrSnap(),abrRaw:clone(S.abr),layout:clone(S.layout),evId:(S.event&&S.event.evId)||""};
   S.history=(S.history||[]).filter(x=>!(x.name===h.name&&x.date===h.date)).concat(h).sort((a,b)=>a.date<b.date?-1:1).slice(-200);saveDoc("config/history",{items:S.history})}
 function svgDonut(data,size=190,inner=.62){const tot=data.reduce((a,d)=>a+d.v,0)||1;let a0=-Math.PI/2;const R=size/2,r=R*inner,c=R;
   const arcs=data.filter(d=>d.v>0).map(d=>{const a1=a0+d.v/tot*Math.PI*2;const big=a1-a0>Math.PI?1:0;const p=(a,rr)=>[c+rr*Math.cos(a),c+rr*Math.sin(a)];
@@ -2555,7 +2564,15 @@ function renderStats(){const sig=JSON.stringify([S.statView,S.res,S.abr&&S.abr.c
 /* Frühere Veranstaltungen: Reservierungen im Verlauf ansehen, bearbeiten, löschen */
 function histIdxFor(e){const H=S.history||[];let i=-1;H.forEach((h,j)=>{if(h.date===e.date&&(h.name===e.name||h.name===evLabel(e)))i=j});
   if(i<0){const same=H.map((h,j)=>[h,j]).filter(([h])=>h.date===e.date);if(same.length===1)i=same[0][1]}return i}
-function openPast(i){if(!(S.history||[])[i])return;S.tab="stat";S.statView=String(i);S.hedOpen=false;renderStats.sig=null;renderAll();sideOpen(false);window.scrollTo({top:0})}
+function enterArchive(i,tab){const h=(S.history||[])[i];if(!h)return;
+  if(!ARCH()){S.live={res:S.res,abr:S.abr,event:S.event,layout:S.layout};S.liveDraft=S.draft}
+  S.viewHist=i;S.res=clone(h.data||{});S.abr=Object.assign(newAbr(),clone(h.abrRaw||{}));S.event={name:h.name,date:h.date,room:h.room,pax:h.pax,evId:h.evId||""};
+  S.layout=h.layout&&h.layout.tables?normLayout(clone(h.layout)):S.live.layout;S.draft=null;S.sel=null;S.editing=false;S.statView="cur";renderStats.sig=null;
+  $("archtxt").textContent=`Archiv: „${h.name}“ vom ${deDate(h.date)}, so wie es abgeschlossen wurde. Änderungen werden hier nicht gespeichert.`;$("archbar").hidden=false;
+  if(tab)S.tab=tab;$("evname").value=h.name;renderAll();sideOpen(false);window.scrollTo({top:0})}
+function exitArchive(){if(!ARCH())return;const L=S.live;S.viewHist=null;S.res=L.res;S.abr=L.abr;S.event=L.event;S.layout=L.layout;S.draft=S.liveDraft||null;S.live=null;S.sel=null;S.statView="cur";renderStats.sig=null;
+  $("archbar").hidden=true;$("evname").value=(S.event&&S.event.name)||"";renderAll()}
+function openPast(i){if(ARCH())exitArchive();if(!(S.history||[])[i])return;S.tab="stat";S.statView=String(i);S.hedOpen=false;renderStats.sig=null;renderAll();sideOpen(false);window.scrollTo({top:0})}
 function recalcHist(h){const keep=S.res;S.res=h.data||{};const st=statSnapshot();S.res=keep;
   h.rev=Math.round(st.rev*100)/100;h.items=st.items;h.res=st.keys.length;h.cats=st.cats;h.prod=st.prod;h.top=Object.entries(st.prod).sort((a,b)=>b[1]-a[1]).slice(0,3);h.saved=Date.now()}
 function saveHistNow(){saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats()}
@@ -2731,7 +2748,7 @@ $("statbox").addEventListener("click",async e=>{if(!e.target.closest("#histexp")
 $("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
 
 /* ---------- Neue Veranstaltung ---------- */
-function openReset(pre,closeOnly){if(typeof pre!=="string")pre="";S.closeOnly=!!closeOnly;
+function openReset(pre,closeOnly){if(ARCH()){toast("Du bist gerade im Archiv. Erst zurück zur aktuellen Veranstaltung.");return}if(typeof pre!=="string")pre="";S.closeOnly=!!closeOnly;
   const ups=upcoming().filter(e=>!e.noCasa);S.pickEv=closeOnly?"":(pre||(ups[0]&&ups[0].id)||"");
   const evs=(S.events||[]).filter(e=>!e.noCasa&&(e.date>=isoToday()||e.id===pre));
   const pick=evs.length?`<div class="rm-ev"><b>Welche Veranstaltung kommt?</b><div class="rm-evlist">${evs.map(e=>{const m=evMeta(e);return `<button class="rm-evb" data-pick="${esc(e.id)}" aria-pressed="${e.id===S.pickEv}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")}
@@ -2954,20 +2971,20 @@ async function renderTeam(){
 function attachDb(){
     db.collection("res").onSnapshot(snap=>{
     const next={};snap.docs.forEach(doc=>{if(doc.exists)next[doc.id]=clone(doc.data())});
-    dirty.forEach(id=>{if(S.res[id])next[id]=S.res[id];else delete next[id]});
-    S.res=next;renderAll();
+    dirty.forEach(id=>{if(LV().res[id])next[id]=LV().res[id];else delete next[id]});
+    LV().res=next;renderAll();
   },()=>setSync(false,"Verbindung weg, bitte neu laden"));
   db.doc("config/layout").onSnapshot(snap=>{
     if(S.editing)return;
-    if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)S.layout=normLayout(clone(d))}
+    if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables)&&d.tables.length&&d.v===DEFAULT_LAYOUT.v)LV().layout=normLayout(clone(d))}
     renderAll();
   },()=>{});
   db.doc("config/stdlayout").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.tables))S.std=clone(d)}},()=>{});
   db.doc("config/products").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.custom=clone(d.items);buildProducts(S.custom);renderAll();if(S.addOpen)renderAddForm()}}},()=>{});
-  db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=S.abr.sub;S.abr=Object.assign(newAbr(),clone(d));S.abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
+  db.doc("config/abr").onSnapshot(snap=>{if(snap.exists&&!abrT){const d=snap.data();if(d&&typeof d==="object"){const sub=LV().abr.sub;LV().abr=Object.assign(newAbr(),clone(d));LV().abr.sub=sub;if(S.tab==="abr"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#abr")))renderAbr()}}},()=>{});
   db.doc("config/history").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.history=clone(d.items);if(S.tab==="stat")renderStats()}}},()=>{});
   db.doc("config/events").onSnapshot(snap=>{if(snap.exists){const d=snap.data();if(d&&Array.isArray(d.items)){S.events=clone(d.items);S.evMonth=d.month||"";if(S.tab==="ev")renderEvents()}}},()=>{});
-  db.doc("config/event").onSnapshot(snap=>{if(snap.exists){S.event=clone(snap.data());renderSummary()}},()=>{});
+  db.doc("config/event").onSnapshot(snap=>{if(snap.exists){LV().event=clone(snap.data());renderSummary()}},()=>{});
 }
 /* ---------- Start ---------- */
 function setSync(on,txt){$("syncdot").classList.toggle("on",on);$("synctxt").textContent=txt}
