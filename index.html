@@ -707,6 +707,9 @@ table.list td .sz{color:var(--muted)}
 .pvt-b i{display:block;height:100%;background:var(--accent);border-radius:7px 0 0 7px}
 .st-sub2{margin-top:26px;padding-top:18px;border-top:2px solid var(--line)}
 /* Verlauf bearbeiten */
+.hed-dl{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-weight:600}
+.evmenu .evclose b{color:var(--accent)}
+#abr-close{margin-left:8px}
 .hed-box{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:0 0 14px}
 .hed-box summary{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;cursor:pointer;font-family:var(--f-ui);font-size:17px}
 .hed-box summary span{color:var(--muted);font-weight:600}
@@ -893,7 +896,7 @@ table.list td .sz{color:var(--muted)}
           <button id="ab-kb1" data-sub="kb1" aria-pressed="false">Kasse<span class="lg">nbestand</span> 1</button>
           <button id="ab-kb2" data-sub="kb2" aria-pressed="false">Kasse<span class="lg">nbestand</span> 2</button>
         </div>
-        <button class="btn-solid abr-dl" id="abr-dl">Excel herunterladen</button>
+        <button class="btn-solid abr-dl" id="abr-dl">Excel herunterladen</button><button class="ghost" id="abr-close" type="button">Veranstaltung abschließen</button>
       </div>
       <div id="abr"></div>
     </div>
@@ -2155,8 +2158,8 @@ async function buildXlsx(){
   return {blob,over};
 }
 function xlsxName(){const ev=(S.event.name||"").replace(/[^\wäöüÄÖÜß.\- ]+/g,"").trim().replace(/\s+/g,"_").replace(/[._-]+$/,"");return `Kassenbericht_${deDate(S.abr.date)||deDate(isoToday())}${ev?"_"+ev:""}.xlsx`}
-async function downloadXlsx(){
-  const btn=$("abr-dl");btn.disabled=true;const old=btn.textContent;btn.textContent="Wird erstellt…";
+async function downloadXlsx(btnArg){
+  const btn=btnArg||$("abr-dl");btn.disabled=true;const old=btn.textContent;btn.textContent="Wird erstellt…";
   try{
     if(typeof JSZip==="undefined")throw new Error("nozip");
     const {blob,over}=await buildXlsx();const name=xlsxName();
@@ -2167,7 +2170,12 @@ async function downloadXlsx(){
   }catch(e){toast("Excel konnte nicht erstellt werden.")}
   finally{btn.disabled=false;btn.textContent=old}
 }
-$("abr-dl").onclick=downloadXlsx;
+$("abr-dl").onclick=()=>downloadXlsx();
+$("abr-close").onclick=()=>{if(!(S.event&&S.event.name)&&!Object.keys(S.res).length){toast("Gerade läuft keine Veranstaltung.");return}openReset("",true)};
+/* Kassenbericht einer früheren Veranstaltung als Excel */
+async function downloadHistXlsx(i,btn){const h=(S.history||[])[i];if(!h||!h.abrRaw)return;
+  const keep={res:S.res,abr:S.abr,event:S.event};S.res=h.data||{};S.abr=Object.assign(newAbr(),clone(h.abrRaw));S.event={name:h.name,date:h.date,room:h.room,pax:h.pax};
+  try{await downloadXlsx(btn)}finally{S.res=keep.res;S.abr=keep.abr;S.event=keep.event}}
 
 /* ---------- Events ---------- */
 document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;S.tab=b.dataset.tab;S.confirmReset=false;renderAll();sideOpen(false)});
@@ -2434,6 +2442,7 @@ function renderEvPick(){const b=$("evpick");if(!b)return;const name=(S.event&&S.
 function openEvMenu(){const ups=upcoming().filter(e=>!e.noCasa);const cur=S.event&&S.event.evId;
   let h=ups.length?ups.map(e=>{const m=evMeta(e);return `<button role="option" data-evp="${esc(e.id)}" aria-selected="${e.id===cur}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")
     :`<div class="mt">Noch keine kommenden Termine. Lade unter „Kalender“ die Monats-PDF hoch.</div>`;
+  if(S.event&&S.event.name)h=`<button data-evp="__close" class="evclose"><span class="d">✓</span><span><b>„${esc(S.event.name)}“ abschließen</b><small>Speichert alles im Verlauf, danach läuft keine Veranstaltung mehr</small></span></button><div class="sep"></div>`+h;
   h+=`<div class="sep"></div><button data-evp="__own"><span class="d">✎</span><span><b>Eigenen Namen eingeben</b><small>für Veranstaltungen, die nicht in der Liste stehen</small></span></button>`;
   const H=S.history||[];
   if(H.length){h+=`<button data-evp="__past" aria-expanded="${!!S.evPast}"><span class="d">${S.evPast?"▴":"▾"}</span><span><b>${S.evPast?"Frühere Veranstaltungen ausblenden":"Frühere Veranstaltungen anzeigen"}</b><small>${H.length} im Verlauf, zum Ansehen und Bearbeiten</small></span></button>`;
@@ -2443,7 +2452,7 @@ function closeEvMenu(){$("evmenu").hidden=true;$("evpick").setAttribute("aria-ex
 $("evpick").onclick=e=>{e.stopPropagation();if($("evmenu").hidden)openEvMenu();else closeEvMenu()};
 $("evmenu").addEventListener("click",e=>{const hb=e.target.closest("[data-hist]");if(hb){closeEvMenu();openPast(+hb.dataset.hist);return}
   const b=e.target.closest("[data-evp]");if(!b)return;if(b.dataset.evp==="__past"){e.stopPropagation();S.evPast=!S.evPast;openEvMenu();const pb=$("evmenu").querySelector('[data-evp="__past"]');if(pb)pb.focus();return}
-  closeEvMenu();const id=b.dataset.evp;
+  closeEvMenu();const id=b.dataset.evp;if(id==="__close"){openReset("",true);return}
   if(id==="__own"){$("evpick").hidden=true;const i=$("evname");i.hidden=false;i.focus();i.select();return}
   if(S.event&&S.event.evId===id)return;
   const ev=(S.events||[]).find(x=>x.id===id);if(!ev)return;
@@ -2472,7 +2481,7 @@ function abrSnap(){const t=abrTotals();if(!(t.sum>0))return null;
 let STAT_ABR=null;
 function saveHistory(){const s=statSnapshot();if(!s.keys.length&&!abrSnap())return;const e=S.event||{};
   const ev=(S.events||[]).find(x=>x.id===e.evId)||{};const keep={};s.keys.forEach(k=>keep[k]=clone(S.res[k]));
-  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep,abr:abrSnap()};
+  const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep,abr:abrSnap(),abrRaw:clone(S.abr)};
   S.history=(S.history||[]).filter(x=>!(x.name===h.name&&x.date===h.date)).concat(h).sort((a,b)=>a.date<b.date?-1:1).slice(-200);saveDoc("config/history",{items:S.history})}
 function svgDonut(data,size=190,inner=.62){const tot=data.reduce((a,d)=>a+d.v,0)||1;let a0=-Math.PI/2;const R=size/2,r=R*inner,c=R;
   const arcs=data.filter(d=>d.v>0).map(d=>{const a1=a0+d.v/tot*Math.PI*2;const big=a1-a0>Math.PI?1:0;const p=(a,rr)=>[c+rr*Math.cos(a),c+rr*Math.sin(a)];
@@ -2550,7 +2559,8 @@ function openPast(i){if(!(S.history||[])[i])return;S.tab="stat";S.statView=Strin
 function recalcHist(h){const keep=S.res;S.res=h.data||{};const st=statSnapshot();S.res=keep;
   h.rev=Math.round(st.rev*100)/100;h.items=st.items;h.res=st.keys.length;h.cats=st.cats;h.prod=st.prod;h.top=Object.entries(st.prod).sort((a,b)=>b[1]-a[1]).slice(0,3);h.saved=Date.now()}
 function saveHistNow(){saveDoc("config/history",{items:S.history});renderStats.sig=null;renderStats()}
-function histEditor(i){const h=S.history[i];const d=h.data;
+function histEditor(i){return (S.history[i].abrRaw?`<div class="hed-dl"><span>Kassenbericht von „${esc(S.history[i].name)}“</span><button class="btn-solid" data-hxl="${i}">Excel herunterladen</button></div>`:"")+histEditor0(i)}
+function histEditor0(i){const h=S.history[i];const d=h.data;
   if(!d)return `<div class="hed-box"><p class="sub">Für „${esc(h.name)}“ sind nur die Eckdaten gespeichert, einzelne Reservierungen gibt es hier nicht.</p><div class="hed-foot"><button class="ghost danger" data-hdrop="${i}">${S.hedArm==="drop"?"Wirklich aus dem Verlauf löschen?":"Veranstaltung aus dem Verlauf löschen"}</button></div></div>`;
   const ks=Object.keys(d).filter(k=>!isEmpty(d[k])).sort(byNum);
   const rows=ks.map(k=>{const r=d[k];const its=ORDER.filter(p=>r.items&&r.items[p]>0);const ed=S.hedRow===k;
@@ -2564,6 +2574,7 @@ function histEditor(i){const h=S.history[i];const d=h.data;
 function hedArm(v){S.hedArm=v;clearTimeout(S.hedT);S.hedT=setTimeout(()=>{S.hedArm=null;if(S.tab==="stat"){renderStats.sig=null;renderStats()}},4000);renderStats.sig=null;renderStats()}
 $("statbox").addEventListener("toggle",e=>{if(e.target.id==="hedbox")S.hedOpen=e.target.open},true);
 $("statbox").addEventListener("click",e=>{const t=e.target;const i=+S.statView;const h=(S.history||[])[i];if(!h||!/^\d+$/.test(String(S.statView)))return;
+  const xb=t.closest("[data-hxl]");if(xb){downloadHistXlsx(+xb.dataset.hxl,xb);return}
   const b=t.closest("[data-hedit],[data-hdel],[data-hq],[data-hall],[data-hdrop]");if(!b)return;e.preventDefault();
   if(b.dataset.hedit!=null){S.hedRow=S.hedRow===b.dataset.hedit?null:b.dataset.hedit;renderStats.sig=null;renderStats();return}
   if(b.dataset.hq){const [k,p,n]=b.dataset.hq.split("|");const r=h.data[k];if(!r)return;r.items[p]=Math.max(0,(r.items[p]||0)+(+n));if(!r.items[p])delete r.items[p];if(isEmpty(r))delete h.data[k];recalcHist(h);saveHistNow();return}
@@ -2720,13 +2731,20 @@ $("statbox").addEventListener("click",async e=>{if(!e.target.closest("#histexp")
 $("evlist").addEventListener("click",e=>{const b=e.target.closest("[data-evstart]");if(!b)return;openReset(b.dataset.evstart)});
 
 /* ---------- Neue Veranstaltung ---------- */
-function openReset(pre){if(typeof pre!=="string")pre="";
-  const ups=upcoming().filter(e=>!e.noCasa);S.pickEv=pre||(ups[0]&&ups[0].id)||"";
+function openReset(pre,closeOnly){if(typeof pre!=="string")pre="";S.closeOnly=!!closeOnly;
+  const ups=upcoming().filter(e=>!e.noCasa);S.pickEv=closeOnly?"":(pre||(ups[0]&&ups[0].id)||"");
   const evs=(S.events||[]).filter(e=>!e.noCasa&&(e.date>=isoToday()||e.id===pre));
   const pick=evs.length?`<div class="rm-ev"><b>Welche Veranstaltung kommt?</b><div class="rm-evlist">${evs.map(e=>{const m=evMeta(e);return `<button class="rm-evb" data-pick="${esc(e.id)}" aria-pressed="${e.id===S.pickEv}"><span class="d">${esc(evDe(e))}</span><span><b>${esc(e.name)}</b><small>${esc([m.where,e.pause&&e.pause!=="keine"?"Pause "+e.pause:""].filter(Boolean).join(", "))}</small></span></button>`}).join("")}
      <button class="rm-evb" data-pick="" aria-pressed="${!S.pickEv}"><span class="d">–</span><span><b>Ohne Termin aus der Liste</b><small>Namen dann oben selbst eintragen</small></span></button></div></div>`
     :`<p class="rm-hint">Tipp: Unter „Veranstaltungen“ kannst du die Monats-PDF hochladen. Dann wählst du hier direkt die nächste Veranstaltung aus.</p>`;
   const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k]));let sum=0;keys.forEach(k=>sum+=total(S.res[k]));
+  if(closeOnly){const nm=(S.event&&S.event.name)||"die Veranstaltung";
+    $("rmbox").innerHTML=`<h2 id="rm-title">Veranstaltung abschließen?</h2>
+    <p>„${esc(nm)}“ wird abgeschlossen. ${keys.length?`Die <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) und die Abrechnung`:"Die Abrechnung"} landen im Verlauf. Danach ist der Plan leer und oben läuft keine Veranstaltung mehr.</p>
+    <p class="rm-hint">Unter Statistiken kannst du sie jederzeit wieder ansehen, bearbeiten und den Kassenbericht als Excel herunterladen.</p>
+    ${keys.length?`<label class="rm-test"><input type="checkbox" id="rm-test"> Waren nur Testdaten, nicht in den Statistiken speichern</label>`:""}
+    <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go">Abschließen</button></div>`;
+    $("resetmodal").hidden=false;setTimeout(()=>$("rm-cancel").focus(),30);return}
   $("rmbox").innerHTML=`<h2 id="rm-title">Neue Veranstaltung starten?</h2>
     <p>${keys.length?`Willst du wirklich alle <b>${keys.length} Reservierung${keys.length===1?"":"en"}</b> (${eur(sum)}) entfernen?`:"Es sind gerade keine Reservierungen drin."} Die Abrechnung wird dabei auch geleert und der Tischplan springt auf den Standardplan zurück. Die Reservierungen landen in den Statistiken.</p>${keys.length?`<label class="rm-test"><input type="checkbox" id="rm-test"> Waren nur Testdaten, nicht in den Statistiken speichern</label>`:""}${pick}
     <div class="rm-btns"><span class="spacer"></span><button class="ghost" id="rm-cancel">Abbrechen</button><button class="btn-solid" id="rm-go">Ja, alles entfernen</button></div>`;
@@ -2752,10 +2770,10 @@ async function doReset(){
   const ids=Object.keys(S.res);S.res={};S.sel=null;S.draft=null;saveDraft();S.event={name:""};$("evname").value="";
   S.layout=stdLayout();S.editing=false;S.editSel=null;S.lmSel=null;if(mode==="db")saveDoc("config/layout",S.layout);
   {const st=S.abr.start,tg=S.abr.target;S.abr=newAbr();S.abr.start=st;S.abr.target=tg;if(mode==="db")saveDoc("config/abr",S.abr)}
-  const ev=(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
+  const closed=S.closeOnly;S.closeOnly=false;const ev=closed?null:(S.events||[]).find(x=>x.id===S.pickEv);if(ev)applyEvent(ev);
   closeReset();renderAll();
   if(mode==="db"){for(const id of ids){try{await db.doc("res/"+id).delete()}catch(err){}}saveDoc("config/event",S.event)}else lsSave();
-  toast(ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");if(S.tab==="cal")renderCal();if(S.tab==="ev")renderEvents();
+  toast(closed?(noHist?"Abgeschlossen, nicht gespeichert":"Abgeschlossen und im Verlauf gespeichert"):ev?"Neue Veranstaltung: "+S.event.name:"Alle Reservierungen entfernt");if(S.tab==="cal")renderCal();if(S.tab==="ev")renderEvents();
 }
 $("newevent").onclick=()=>openReset();
 if(STD_EDITOR){document.body.classList.add("stdedit");S.tab="plan";S.editing=true;S.sel=null;renderAll();$("pagetitle").textContent="Standardplan festlegen"}
