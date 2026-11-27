@@ -706,6 +706,37 @@ table.list td .sz{color:var(--muted)}
 .pvt-b{height:14px;border-radius:7px;background:var(--sunk);overflow:hidden;display:block}
 .pvt-b i{display:block;height:100%;background:var(--accent);border-radius:7px 0 0 7px}
 .st-sub2{margin-top:26px;padding-top:18px;border-top:2px solid var(--line)}
+/* Statistik: mehrere Veranstaltungen */
+.ms-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px}
+.ms-tools .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ms-tools .seg button{border:0;background:var(--surface);color:var(--ink);font:inherit;font-weight:600;padding:9px 14px;cursor:pointer}
+.ms-tools .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.ms-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.mchip{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:7px 12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.mchip small{color:var(--muted);font-weight:600}
+.mchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.mchip[aria-pressed="true"] small{color:inherit;opacity:.8}
+.hist .cols i{position:relative;overflow:hidden}.hist .cols i em{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.28)}
+.heat-wrap,.cmp-wrap,.ctbl-wrap{overflow-x:auto}
+.heat{border-collapse:separate;border-spacing:3px;font-size:14px}
+.heat th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;padding:4px}
+.heat tbody th{color:var(--ink);font-size:14px;min-width:140px}.heat tbody th small{display:block;color:var(--muted);font-weight:500}
+.heat td{text-align:center;padding:8px 6px;border-radius:6px;font-weight:700;background:color-mix(in srgb,var(--accent) calc(var(--h,0)*85%),var(--sunk));color:var(--ink);min-width:56px}
+.heat td.pgc{background:var(--sunk);white-space:nowrap}
+.cmp{border-collapse:collapse;width:100%;font-size:15px;margin-bottom:14px}
+.cmp th,.cmp td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.cmp thead th{font-size:15px}.cmp thead small{display:block;color:var(--muted);font-weight:500}
+.cmp tbody th{color:var(--muted);font-weight:600;white-space:nowrap}
+.cmp td.best{font-weight:800;color:var(--accent)}
+.cdot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.gbars{display:grid;gap:10px}
+.gb{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr);gap:10px;align-items:center}
+.gl{font-weight:600;font-size:14px}.gv{display:grid;gap:3px}
+.gr{display:grid;grid-template-columns:minmax(0,1fr) 70px;gap:6px;align-items:center}.gr i{display:block;height:10px;border-radius:5px;min-width:2px}.gr b{font-size:12px;text-align:right}
+.ctbl{border-collapse:collapse;width:100%;font-size:14px}
+.ctbl td,.ctbl th{padding:6px 8px;border-bottom:1px solid var(--line)}
+.ctbl tr.cg th{text-align:left;padding-top:14px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.ctbl .num{text-align:right;white-space:nowrap}.ctbl .sub2{color:var(--muted)}
+@media (max-width:620px){.gb{grid-template-columns:minmax(0,1fr)}}
 /* Verlauf bearbeiten */
 .demobar.archbar{border-color:#3f7f93;background:color-mix(in srgb,#3f7f93 12%,var(--surface))}.demobar.archbar .demo-tag{background:#3f7f93;color:#fff}
 #evpick.arch #evk{color:#3f7f93}#evpick.arch #evk::before{background:#3f7f93}
@@ -2486,8 +2517,105 @@ function statSnapshot(){const keys=Object.keys(S.res).filter(k=>!isEmpty(S.res[k
 function abrSnap(){const t=abrTotals();if(!(t.sum>0))return null;
   return {sum:Math.round(t.sum*100)/100,card:Math.round(t.card*100)/100,inv:Math.round(t.inv*100)/100,bar:Math.round(t.bar*100)/100,
     secs:t.secs.map(x=>({t:x.title,sum:Math.round(x.sum*100)/100,q:x.rows.reduce((a,r)=>a+Math.max(0,r.tot),0)})),
-    rows:t.secs.flatMap((x,si)=>x.rows.filter(r=>r.tot>0).map(r=>({n:r.name,q:r.tot,p:r.price,sec:si})))}}
+    rows:t.secs.flatMap((x,si)=>x.rows.filter(r=>r.tot>0).map(r=>({n:r.name,q:r.tot,p:r.price,sec:si,k:r.key})))}}
 let STAT_ABR=null;
+/* ---------- Einheitliche Veranstaltungsdaten: ganze Veranstaltung, wenn Kassenbericht da ist, sonst nur Pause ---------- */
+const ROWIDS={};KB_MAP.sections.forEach(sec=>sec.rows.forEach(r=>ROWIDS[r.key]=r.ids));
+function rowPid(r){if(r.pid&&P[r.pid])return r.pid;if(r.k&&r.k.startsWith("c:")&&P[r.k.slice(2)])return r.k.slice(2);const ids=(r.k&&ROWIDS[r.k])||[];const id=ids.find(x=>P[x]);if(id)return id;
+  const nm=(r.n||"").toLowerCase().replace(/\s*\.\.\.$/,"");for(const k in P){if(P[k].name.toLowerCase()===nm)return k}for(const k in P){if(nm&&P[k].name.toLowerCase().startsWith(nm))return k}return null}
+function mkEv(h,pause,prod,A){if(A&&A.sum&&A.sum+0.01<(+pause||0))A=null;/* Kassenbericht unvollständig: lieber nur Pause zeigen */
+  const rows=A&&A.rows&&A.rows.length?A.rows.map(r=>({n:r.n,q:r.q,p:r.p,pid:rowPid(r)})):Object.entries(prod||{}).filter(([p])=>P[p]).map(([p,q])=>({n:P[p].name,q,p:P[p].price,pid:p}));
+  const E={name:(h.name||"").replace(/\s\d{2}\.\d{2}\.$/,""),date:h.date||"",room:h.room||"",pax:+h.pax||0,wd:h.wd||"",pause:+pause||0,sum:A&&A.sum?A.sum:(+pause||0),all:!!(A&&A.sum),rows,card:(A&&A.card)||0,bar:(A&&A.bar)||0,res:h.res||0};
+  let drinks=0,snacks=0,af=0,L=0,beerL=0,wineL=0,coffee=0;const cat={},catQ={},glass={},litCat={};
+  rows.forEach(r=>{const pr=r.pid&&P[r.pid];const c=pr?pr.cat:"sonst";cat[c]=(cat[c]||0)+r.q*r.p;catQ[c]=(catQ[c]||0)+r.q;
+    if(c==="snack"){snacks+=r.q;return}drinks+=r.q;if(pr?isAF(pr):/alkoholfrei/i.test(r.n))af+=r.q;
+    const l=pr?litersOf(pr.size)*r.q:0;L+=l;litCat[c]=(litCat[c]||0)+l;if(c==="bier")beerL+=l;if(c==="wein"||c==="aper"||c==="fl")wineL+=l;
+    if(c==="heiss"&&!/glüh|aperol|schoko|tee/i.test(r.n))coffee+=r.q;if(pr&&pr.glass)glass[pr.glass]=(glass[pr.glass]||0)+r.q});
+  return Object.assign(E,{drinks,snacks,af,afp:pct(af,drinks),L,beerL,wineL,coffee,cat,catQ,glass,litCat})}
+function evData(src){if(src==="cur"){const s=statSnapshot();return mkEv({name:(S.event&&S.event.name)||"Aktuelle Veranstaltung",date:(S.event&&S.event.date)||isoToday(),room:S.event&&S.event.room,pax:S.event&&S.event.pax,res:s.keys.length},s.rev,s.prod,abrSnap())}
+  const h=(S.history||[])[+src];return h?mkEv(h,h.rev,h.prod||Object.fromEntries(h.top||[]),h.abr):null}
+function evsMerge(L){const by={};let sum=0,pause=0,pax=0,res=0;L.forEach(E=>{sum+=E.sum;pause+=E.pause;pax+=E.pax;res+=E.res;E.rows.forEach(r=>{const k=r.pid||r.n;if(!by[k])by[k]={n:r.n,q:0,p:r.p,pid:r.pid};by[k].q+=r.q})});
+  const M=mkEv({name:"Zusammen",pax,res},pause,null,{sum,rows:Object.values(by).map(r=>({n:r.n,q:r.q,p:r.p,pid:r.pid}))});M.sum=sum;M.pause=pause;M.all=L.some(E=>E.all);return M}
+function towerStack(E){const st=[];E.rows.slice().sort((a,b)=>b.q-a.q).forEach(r=>{const pr=r.pid&&P[r.pid];const c=pr?pr.cat:"wasser";if(c==="snack")return;for(let i=0;i<r.q;i++)st.push(c)});return st}
+const kpiH=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+function prodLabel(r){const pr=r.pid&&P[r.pid];return pr?pr.name+(pr.size&&!pr.name.includes(pr.size)?" "+pr.size:""):r.n}
+/* Verbrauch: was ging raus, in Stück und Litern, und welche Gläser wurden gebraucht */
+function consumptionCards(E){const SECN=["Alkoholfreie Getränke","Bier","Heißgetränke","Wein & Sekt","Snacks"];
+  const groups={};E.rows.forEach(r=>{const pr=r.pid&&P[r.pid];const si=pr?CAT2SEC[pr.cat]:null;const g=si!=null?KB_MAP.sections[si].title:"Sonstiges";(groups[g]=groups[g]||[]).push(r)});
+  const tbl=Object.entries(groups).map(([g,L])=>{L.sort((a,b)=>b.q-a.q);const q=L.reduce((a,r)=>a+r.q,0);return `<tr class="cg"><th colspan="3">${esc(g)}</th><th class="num">${q}</th></tr>${L.map(r=>{const pr=r.pid&&P[r.pid];const l=pr?litersOf(pr.size)*r.q:0;return `<tr><td>${esc(prodLabel(r))}</td><td class="num sub2">${pr&&pr.size?esc(pr.size):""}</td><td class="num sub2">${l?fmtN(l)+" l":""}</td><td class="num"><b>${r.q}</b></td></tr>`}).join("")}`}).join("");
+  const gl=GLASS_ORDER.filter(g=>E.glass[g]).map(g=>({l:GLASS[g][1],v:E.glass[g],t:E.glass[g]+"×"}));
+  const lit=Object.entries(E.litCat).filter(([c,l])=>l>0).sort((a,b)=>b[1]-a[1]).map(([c,l])=>({l:(CATS.find(x=>x.id===c)||{name:c}).name,v:l,t:fmtN(l)+" l"}));
+  return `<section class="st-card wide"><h4>Verbrauch zum Auffüllen</h4><p class="sub">${E.all?"Alles, was an dem Abend rausging, Pause und Theke zusammen.":"Nur die Pausenreservierung, für diese Veranstaltung gibt es keinen Kassenbericht."} Sortiert nach Menge.</p><div class="ctbl-wrap"><table class="ctbl"><tbody>${tbl}</tbody></table></div></section>
+   ${gl.length?`<section class="st-card"><h4>Gläser im Einsatz</h4><p class="sub">So viele Gläser gingen ungefähr raus, praktisch zum Gegenzählen.</p>${hbars(gl)}</section>`:""}
+   ${lit.length?`<section class="st-card"><h4>Liter nach Sorte</h4><p class="sub">Zusammen ${fmtN(E.L)} l Getränke</p>${hbars(lit)}</section>`:""}`}
+function wholeFacts(E){return `<section class="st-card fun"><h4>Fun Facts, ganze Veranstaltung</h4><ul class="facts">
+  <li><b>${E.drinks.toLocaleString("de-DE")}</b> Getränke${E.pax?`, das sind ${fmtN(E.drinks/E.pax)} pro Gast`:""}.</li>
+  ${E.L?`<li><b>${fmtN(E.L)} l</b> sind über die Theke gegangen${E.L>=150?`, das ist eine volle Badewanne`:E.L>=10?`, das sind ${Math.round(E.L/10)} Eimer`:""}.</li>`:""}
+  ${E.beerL?`<li><b>${fmtN(E.beerL)} l</b> Bier, das sind ${fmtN(E.beerL)} Maß.</li>`:""}
+  ${E.wineL?`<li><b>${fmtN(E.wineL)} l</b> Wein, Sekt und Aperitifs, ungefähr ${Math.round(E.wineL/.75)} Flaschen.</li>`:""}
+  ${E.coffee?`<li><b>${E.coffee}</b> Kaffee-Getränke, rund ${Math.round(E.coffee*80/1000*10)/10} g Koffein.</li>`:""}
+  ${E.snacks?`<li><b>${E.snacks}</b> Snacks und Brezeln.</li>`:""}
+  ${E.all&&E.sum?`<li>${pct(E.pause,E.sum)} % vom Umsatz kamen schon über die Pausenreservierung rein.</li>`:""}</ul></section>`}
+/* ---------- Mehrere Veranstaltungen: zusammengerechnet oder im Vergleich ---------- */
+function multiKeys(){const H=S.history||[];const all=H.map((h,i)=>String(i));if(!S.statSel)S.statSel=all.slice();S.statSel=S.statSel.filter(k=>k==="cur"||all.includes(k));return S.statSel}
+function renderMultiStats(){const box=$("statbox");const H=S.history||[];const sel=multiKeys();const mode=S.statMode||"sum";
+  const curHas=Object.keys(S.res).some(k=>!isEmpty(S.res[k]))||!!abrSnap();
+  const chips=(curHas&&!ARCH()?[{k:"cur",l:"Aktuell: "+((S.event&&S.event.name)||"laufende Veranstaltung"),d:""}]:[]).concat(H.map((h,i)=>({k:String(i),l:h.name.replace(/\s\d{2}\.\d{2}\.$/,""),d:deDate(h.date).slice(0,6)}))).reverse();
+  let h=statViewBar()+`<div class="ms-tools"><div class="seg" role="group" aria-label="Darstellung"><button data-smode="sum" aria-pressed="${mode==="sum"}">Zusammengerechnet</button><button data-smode="cmp" aria-pressed="${mode==="cmp"}">Vergleichen</button></div>
+    <span class="sub">${sel.length} von ${chips.length} ausgewählt</span><span class="spacer"></span><button class="ghost" data-ssel="all">Alle</button><button class="ghost" data-ssel="none">Keine</button></div>
+    <div class="ms-chips">${chips.map(c=>`<button class="mchip" data-skey="${c.k}" aria-pressed="${sel.includes(c.k)}">${c.d?`<small>${esc(c.d)}</small>`:""}${esc(c.l)}</button>`).join("")}</div>`;
+  const L=sel.map(evData).filter(Boolean).sort((a,b)=>a.date<b.date?-1:1);
+  if(!L.length){box.innerHTML=h+`<div class="ev-empty"><b>Wähl oben mindestens eine Veranstaltung aus.</b></div>`;return}
+  if(mode==="cmp"){if(L.length<2){box.innerHTML=h+`<div class="ev-empty"><b>Zum Vergleichen mindestens zwei Veranstaltungen auswählen.</b><p>Bis zu vier passen nebeneinander.</p></div>`;return}
+    box.innerHTML=h+compareHtml(L.slice(-4));return}
+  const M=evsMerge(L);const best=L.slice().sort((a,b)=>b.sum-a.sum)[0];const mx=Math.max(1,...L.map(x=>x.sum));
+  const top=M.rows.slice().sort((a,b)=>b.q-a.q).slice(0,12).map(r=>({l:prodLabel(r),v:r.q,t:r.q.toLocaleString("de-DE")+"×"}));
+  const catRows=CATS.map((c,i)=>({l:c.name,v:M.cat[c.id]||0,c:SCOL[i%SCOL.length],t:eur(M.cat[c.id]||0)})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);const csum=catRows.reduce((a,r)=>a+r.v,0);
+  const WD=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];const wdOf=E=>WD[(new Date(E.date+"T12:00").getDay()+6)%7];const wd={};L.forEach(E=>{(wd[wdOf(E)]=wd[wdOf(E)]||[]).push(E)});
+  const wdRows=WD.filter(d=>wd[d]).map(d=>{const a=wd[d].reduce((x,E)=>x+E.sum,0)/wd[d].length;return {l:d,v:a,t:eur(a)+` (${wd[d].length}×)`}});
+  const rooms={};L.forEach(E=>{if(!E.room)return;const r=roomName(E.room);(rooms[r]=rooms[r]||[]).push(E)});const roomRows=Object.entries(rooms).map(([r,X])=>{const a=X.reduce((x,E)=>x+E.sum,0)/X.length;return {l:r,v:a,t:eur(a)+` (${X.length}×)`}});
+  const pg=L.filter(E=>E.pax);const perGuest=pg.length?pg.reduce((a,E)=>a+E.sum/E.pax,0)/pg.length:0;
+  /* Vorlieben: Anteil der Kategorien je Veranstaltung als Heatmap */
+  const hcats=CATS.filter(c=>L.some(E=>E.cat[c.id]>0)&&c.id!=="fl");
+  const heat=`<div class="heat-wrap"><table class="heat"><thead><tr><th></th>${hcats.map(c=>`<th>${esc(c.name.replace(" & "," &\u00a0"))}</th>`).join("")}<th>Pro Gast</th></tr></thead><tbody>${L.map(E=>{const tot=hcats.reduce((a,c)=>a+(E.cat[c.id]||0),0)||1;return `<tr><th><b>${esc(E.name)}</b><small>${deDate(E.date)}</small></th>${hcats.map(c=>{const v=Math.round((E.cat[c.id]||0)/tot*100);return `<td style="--h:${Math.min(1,v/45).toFixed(2)}">${v?v+" %":""}</td>`}).join("")}<td class="pgc">${E.pax?eur(E.sum/E.pax):"–"}</td></tr>`}).join("")}</tbody></table></div>`;
+  const favs=L.map(E=>{const t=E.rows.filter(r=>{const pr=r.pid&&P[r.pid];return !pr||pr.cat!=="snack"}).sort((a,b)=>b.q-a.q)[0];return t?{l:E.name,v:t.q,t:prodLabel(t)+" "+t.q+"×"}:null}).filter(Boolean);
+  const afRows=L.map(E=>({l:E.name,v:E.afp,t:E.afp+" %"}));
+  h+=`<div class="st-title"><h3>${L.length===1?esc(L[0].name):L.length+" Veranstaltungen zusammen"}</h3><p class="sub">${deDate(L[0].date)}${L.length>1?" bis "+deDate(L[L.length-1].date):""}${L.some(E=>!E.all)?". Bei Veranstaltungen ohne Kassenbericht zählt nur die Pause.":""}</p></div>
+   <div class="kpis">${kpiH(eur(M.sum),"Umsatz gesamt",`davon ${eur(M.pause)} vorbestellt`)}${kpiH(eur(M.sum/L.length),"Ø pro Veranstaltung")}${kpiH(M.drinks.toLocaleString("de-DE"),"Getränke",`${fmtN(M.L)} l zusammen`)}${kpiH(fmtN(M.beerL)+" l","Bier",`${fmtN(M.wineL)} l Wein und Sekt`)}${perGuest?kpiH(eur(perGuest),"Ø Umsatz pro Gast"):""}${kpiH(M.afp+" %","alkoholfrei")}</div>
+   <div class="st-grid">
+    ${L.length>1?`<section class="st-card wide hist"><h4>Umsatz je Veranstaltung</h4><p class="sub">Dunkel der Teil aus der Pausenreservierung</p><div class="cols">${L.slice(-16).map(E=>`<div class="col${E===best?" best":""}"><b>${eur(E.sum).replace(",00","")}</b><i style="height:${(E.sum/mx*100).toFixed(1)}%"><em style="height:${pct(E.pause,E.sum)}%"></em></i><span>${esc(E.date.slice(8,10)+"."+E.date.slice(5,7)+".")}</span><small>${esc(E.name)}</small></div>`).join("")}</div></section>`:""}
+    ${window.THREE?`<section class="st-card"><h4>Der Getränketurm</h4><div class="s3d" id="s3d-tower"></div><p class="sub">${M.drinks.toLocaleString("de-DE")} Getränke aus ${L.length} Veranstaltung${L.length===1?"":"en"}${M.drinks>140?`, ein Glas steht für etwa ${Math.round(M.drinks/140)}`:""}.</p></section>`:""}
+    <section class="st-card"><h4>Dauerbrenner</h4>${hbars(top)}</section>
+    ${catRows.length?`<section class="st-card"><h4>Umsatz nach Kategorie</h4><div class="donutrow">${svgDonut(catRows)}<ul class="legend2">${catRows.map(r=>`<li><i style="background:${r.c}"></i>${esc(r.l)}<b>${pct(r.v,csum)} %</b></li>`).join("")}</ul></div></section>`:""}
+    ${L.length>1?`<section class="st-card wide"><h4>Vorlieben je Veranstaltung</h4><p class="sub">Anteil am Umsatz je Kategorie. Je kräftiger, desto mehr wurde davon getrunken.</p>${heat}</section>`:""}
+    ${L.length>1&&favs.length?`<section class="st-card"><h4>Lieblingsgetränk je Abend</h4>${hbars(favs)}</section>`:""}
+    ${L.length>1?`<section class="st-card"><h4>Alkoholfrei je Abend</h4>${hbars(afRows)}</section>`:""}
+    ${wdRows.length>1?`<section class="st-card"><h4>Bester Wochentag</h4><p class="sub">Ø Umsatz pro Veranstaltung</p>${hbars(wdRows)}</section>`:""}
+    ${roomRows.length>1?`<section class="st-card"><h4>Nach Saal</h4><p class="sub">Ø Umsatz pro Veranstaltung</p>${hbars(roomRows)}</section>`:""}
+    ${consumptionCards(M)}
+    ${wholeFacts(M)}
+   </div>`;
+  box.innerHTML=h;if(window.THREE&&$("s3d-tower"))tower3D($("s3d-tower"),towerStack(M),M.drinks)}
+function compareHtml(L){const n=L.length;const cols=`style="--n:${n}"`;
+  const row=(lab,f,fmt,hi)=>{const vals=L.map(f);const best=hi==null?null:(hi?Math.max(...vals):Math.min(...vals));return `<tr><th>${lab}</th>${vals.map(v=>`<td class="${hi!=null&&v===best&&vals.filter(x=>x===best).length===1?"best":""}">${fmt(v)}</td>`).join("")}</tr>`};
+  const topOf=E=>E.rows.filter(r=>{const pr=r.pid&&P[r.pid];return !pr||pr.cat!=="snack"}).sort((a,b)=>b.q-a.q)[0];
+  const cats=CATS.filter(c=>L.some(E=>E.cat[c.id]>0));const cmx=Math.max(1,...cats.flatMap(c=>L.map(E=>E.cat[c.id]||0)));
+  const prods={};L.forEach(E=>E.rows.forEach(r=>{const k=r.pid||r.n;prods[k]=prods[k]||{r,t:0};prods[k].t+=r.q}));
+  const tp=Object.entries(prods).sort((a,b)=>b[1].t-a[1].t).slice(0,10);const pmx=Math.max(1,...tp.flatMap(([k])=>L.map(E=>{const x=E.rows.find(r=>(r.pid||r.n)===k);return x?x.q:0})));
+  return `<div class="st-title"><h3>Vergleich</h3><p class="sub">${L.map(E=>esc(E.name)).join(" gegen ")}</p></div>
+  <div class="cmp-wrap"><table class="cmp" ${cols}><thead><tr><th></th>${L.map((E,i)=>`<th><i class="cdot" style="background:${SCOL[i]}"></i><b>${esc(E.name)}</b><small>${deDate(E.date)}${E.room?", "+esc(roomName(E.room)):""}</small></th>`).join("")}</tr></thead><tbody>
+   ${row("Umsatz gesamt",E=>E.sum,eur,true)}${row("davon Pause",E=>E.pause,eur,true)}${row("davon Theke",E=>Math.max(0,E.sum-E.pause),eur,true)}
+   ${row("Gäste",E=>E.pax,v=>v||"–",true)}${row("Umsatz pro Gast",E=>E.pax?E.sum/E.pax:0,v=>v?eur(v):"–",true)}${row("Reservierungen",E=>E.res,v=>v,true)}
+   ${row("Getränke",E=>E.drinks,v=>v.toLocaleString("de-DE"),true)}${row("Liter",E=>E.L,v=>fmtN(v)+" l",true)}${row("Bier",E=>E.beerL,v=>fmtN(v)+" l",true)}${row("Wein, Sekt, Aperitif",E=>E.wineL,v=>fmtN(v)+" l",true)}
+   ${row("Kaffee-Getränke",E=>E.coffee,v=>v,true)}${row("Snacks",E=>E.snacks,v=>v,true)}${row("alkoholfrei",E=>E.afp,v=>v+" %",null)}
+   <tr><th>Lieblingsgetränk</th>${L.map(E=>{const t=topOf(E);return `<td>${t?esc(prodLabel(t))+" <small>"+t.q+"×</small>":"–"}</td>`}).join("")}</tr>
+   <tr><th>Daten</th>${L.map(E=>`<td><small>${E.all?"ganze Veranstaltung":"nur Pause"}</small></td>`).join("")}</tr>
+  </tbody></table></div>
+  <div class="st-grid">
+   <section class="st-card wide"><h4>Umsatz nach Kategorie</h4><div class="gbars">${cats.map(c=>`<div class="gb"><span class="gl">${esc(c.name)}</span><span class="gv">${L.map((E,i)=>`<span class="gr"><i style="width:${((E.cat[c.id]||0)/cmx*100).toFixed(1)}%;background:${SCOL[i]}"></i><b>${E.cat[c.id]?eur(E.cat[c.id]):""}</b></span>`).join("")}</span></div>`).join("")}</div></section>
+   <section class="st-card wide"><h4>Top-Produkte im Vergleich</h4><div class="gbars">${tp.map(([k,o])=>`<div class="gb"><span class="gl">${esc(prodLabel(o.r))}</span><span class="gv">${L.map((E,i)=>{const x=E.rows.find(r=>(r.pid||r.n)===k);const q=x?x.q:0;return `<span class="gr"><i style="width:${(q/pmx*100).toFixed(1)}%;background:${SCOL[i]}"></i><b>${q||""}</b></span>`}).join("")}</span></div>`).join("")}</div></section>
+  </div>`}
+
 function saveHistory(){const s=statSnapshot();if(!s.keys.length&&!abrSnap())return;const e=S.event||{};
   const ev=(S.events||[]).find(x=>x.id===e.evId)||{};const keep={};s.keys.forEach(k=>keep[k]=clone(S.res[k]));
   const h={name:e.name||"Ohne Namen",date:e.date||isoToday(),saved:Date.now(),rev:Math.round(s.rev*100)/100,items:s.items,res:s.keys.length,pax:e.pax||0,room:ev.room||e.room||"",wd:ev.wd||"",cats:s.cats,prod:s.prod,top:Object.entries(s.prod).sort((a,b)=>b[1]-a[1]).slice(0,3),data:keep,abr:abrSnap(),abrRaw:clone(S.abr),layout:clone(S.layout),evId:(S.event&&S.event.evId)||""};
@@ -2531,13 +2659,14 @@ function skyline3D(el,rows){mini3D(el,(T,g)=>{const n=rows.length,mx=Math.max(1,
   rows.forEach((r,i)=>{const a=i/n*Math.PI*2,hgt=.4+r.v/mx*6;const m=new T.Mesh(new T.BoxGeometry(1,hgt,1),new T.MeshStandardMaterial({color:new T.Color(r.c),roughness:.5}));
     m.geometry.translate(0,hgt/2,0);m.position.set(Math.cos(a)*R,0,Math.sin(a)*R);m.castShadow=true;m.scale.y=.01;m.userData.grow=1;g.add(m);
     const s=txtSprite(T,r.short||r.l);s.position.set(Math.cos(a)*R,hgt+.8,Math.sin(a)*R);g.add(s)});return {r:R*2.6+6,y:3.2}})}
-function tower3D(el,stack){mini3D(el,(T,g)=>{const cols={bier:0xe0a024,wein:0x8a1c2a,aper:0xf26a1b,wasser:0x9fd3ea,soft:0x4a2a1a,durst:0xf39a1e,heiss:0xf2efe9,snack:0xd8402a,schnaps:0xd9b45a,fl:0x1f4a2a};
+function tower3D(el,stack,total){total=total||stack.length;if(stack.length>140){const c={};stack.forEach(x=>c[x]=(c[x]||0)+1);const out=[];Object.entries(c).sort((a,b)=>b[1]-a[1]).forEach(([k,n])=>{const m=Math.max(1,Math.round(n/stack.length*140));for(let i=0;i<m;i++)out.push(k)});stack=out.slice(0,140)}
+  mini3D(el,(T,g)=>{const cols={bier:0xe0a024,wein:0x8a1c2a,aper:0xf26a1b,wasser:0x9fd3ea,soft:0x4a2a1a,durst:0xf39a1e,heiss:0xf2efe9,snack:0xd8402a,schnaps:0xd9b45a,fl:0x1f4a2a};
   const glass=new T.MeshStandardMaterial({color:0xdfefff,transparent:true,opacity:.35,roughness:.1});let y=0;const per=7;
   const plate=new T.Mesh(new T.CylinderGeometry(2.4,2.6,.25,40),new T.MeshStandardMaterial({color:0x1d1a1a,roughness:.6}));plate.position.y=-.13;g.add(plate);
   stack.slice(0,140).forEach((cat,i)=>{const ring=Math.floor(i/per),k=i%per;const a=k/per*Math.PI*2+ring*.45;const rr=1.35;
     const cup=new T.Mesh(new T.CylinderGeometry(.34,.28,.62,14),glass);const liq=new T.Mesh(new T.CylinderGeometry(.3,.26,.46,14),new T.MeshStandardMaterial({color:cols[cat]||0xbbbbbb,roughness:.4}));
     const gg=new T.Group();gg.add(cup,liq);liq.position.y=-.06;gg.position.set(Math.cos(a)*rr,ring*.66+.31,Math.sin(a)*rr);g.add(gg);y=ring*.66+.9});
-  const s=txtSprite(T,stack.length+" Getränke","#c0202d");s.position.set(0,y+.9,0);g.add(s);return {r:Math.max(9,y*1.5+6),y:Math.max(2,y*.6)}})}
+  const s=txtSprite(T,total.toLocaleString("de-DE")+" Getränke","#c0202d");s.position.set(0,y+.9,0);g.add(s);return {r:Math.max(9,y*1.5+6),y:Math.max(2,y*.6)}})}
 /* --- Beispieldaten zum Anschauen --- */
 function demoData(sd){let seed=sd||7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;const pick=a=>a[Math.floor(rnd()*a.length)];
   const fav=["pils","pils","pils","weiss","rot","sekt","aperol","cola","sprudel","kaffee","latte","weizen","brezel","schorle","weinschorle","espresso","radler","naturell","p_original","gluehwein"].filter(k=>P[k]);
@@ -2549,11 +2678,11 @@ function demoData(sd){let seed=sd||7;const rnd=()=>(seed=(seed*9301+49297)%23328
   return {res,event:{name:"Beispiel: Theaterabend",pax:420,date:isoToday()},history:hist}}
 
 function statViewBar(){const H=S.history||[];const v=S.statView||"cur";
-  return `<div class="st-bar"><label class="st-sel"><span>Ansicht</span><select id="statview"><option value="cur"${v==="cur"?" selected":""}>Aktuelle Veranstaltung</option>${H.length?`<option value="all"${v==="all"?" selected":""}>Alle Veranstaltungen zusammen (${H.length})</option><optgroup label="Frühere Veranstaltungen">${H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<option value="${i}"${String(i)===String(v)?" selected":""}>${esc(h.date.slice(8,10)+"."+h.date.slice(5,7)+". "+h.name.replace(/\s\d{2}\.\d{2}\.$/,""))}</option>`).join("")}</optgroup>`:""}${SHOW_DEMO?`<option value="demo"${v==="demo"?" selected":""}>Beispieldaten</option>`:""}</select></label>
+  return `<div class="st-bar"><label class="st-sel"><span>Ansicht</span><select id="statview"><option value="cur"${v==="cur"?" selected":""}>Aktuelle Veranstaltung</option>${H.length?`<option value="multi"${v==="multi"||v==="all"?" selected":""}>Mehrere Veranstaltungen (zusammen oder Vergleich)</option><optgroup label="Frühere Veranstaltungen">${H.map((h,i)=>({h,i})).reverse().map(({h,i})=>`<option value="${i}"${String(i)===String(v)?" selected":""}>${esc(h.date.slice(8,10)+"."+h.date.slice(5,7)+". "+h.name.replace(/\s\d{2}\.\d{2}\.$/,""))}</option>`).join("")}</optgroup>`:""}${SHOW_DEMO?`<option value="demo"${v==="demo"?" selected":""}>Beispieldaten</option>`:""}</select></label>
     <span class="spacer"></span><button class="ghost" id="histexp">Verlauf sichern</button><label class="ghost evup"><input type="file" id="histimp" accept=".json,application/json" hidden>Verlauf laden</label></div>`}
-function renderStats(){const sig=JSON.stringify([S.statView,S.res,S.abr&&S.abr.cnt,S.history&&S.history.length,S.history&&S.history.map(h=>h.saved),S.event&&S.event.pax]);if(sig===renderStats.sig&&$("statbox").innerHTML)return;renderStats.sig=sig;stop3D();
+function renderStats(){const sig=JSON.stringify([S.statSel,S.statMode,S.statView,S.res,S.abr&&S.abr.cnt,S.history&&S.history.length,S.history&&S.history.map(h=>h.saved),S.event&&S.event.pax]);if(sig===renderStats.sig&&$("statbox").innerHTML)return;renderStats.sig=sig;stop3D();
   const v=S.statView||"cur";const H=S.history||[];
-  if(v==="all"&&H.length){renderAllStats();return}
+  if((v==="all"||v==="multi")&&H.length){S.statView="multi";renderMultiStats();return}
   if(v==="cur"||(v!=="demo"&&!H[+v])){S.statView="cur";STAT_ABR=abrSnap();renderStatsInner();return}
   STAT_ABR=v==="demo"?null:(H[+v].abr||null);
   const keep={res:S.res,event:S.event,history:S.history};
@@ -2589,6 +2718,10 @@ function histEditor0(i){const h=S.history[i];const d=h.data;
     ${ks.length?`<div class="hed-list">${rows}</div>`:`<p class="sub">Keine Reservierungen mehr drin.</p>`}
     <div class="hed-foot">${ks.length?`<button class="ghost danger" data-hall="${i}">${S.hedArm==="all"?"Wirklich alle löschen?":"Alle Reservierungen löschen"}</button>`:""}<button class="ghost danger" data-hdrop="${i}">${S.hedArm==="drop"?"Wirklich aus dem Verlauf löschen?":"Veranstaltung aus dem Verlauf löschen"}</button></div></details>`}
 function hedArm(v){S.hedArm=v;clearTimeout(S.hedT);S.hedT=setTimeout(()=>{S.hedArm=null;if(S.tab==="stat"){renderStats.sig=null;renderStats()}},4000);renderStats.sig=null;renderStats()}
+$("statbox").addEventListener("click",e=>{const t=e.target;
+  const m=t.closest("[data-smode]");if(m){S.statMode=m.dataset.smode;renderStats.sig=null;renderStats();return}
+  const c=t.closest("[data-skey]");if(c){const k=c.dataset.skey;const sel=multiKeys();S.statSel=sel.includes(k)?sel.filter(x=>x!==k):sel.concat(k);renderStats.sig=null;renderStats();return}
+  const a=t.closest("[data-ssel]");if(a){S.statSel=a.dataset.ssel==="all"?(S.history||[]).map((h,i)=>String(i)).concat(Object.keys(S.res).some(k=>!isEmpty(S.res[k]))&&!ARCH()?["cur"]:[]):[];renderStats.sig=null;renderStats();return}});
 $("statbox").addEventListener("toggle",e=>{if(e.target.id==="hedbox")S.hedOpen=e.target.open},true);
 $("statbox").addEventListener("click",e=>{const t=e.target;const i=+S.statView;const h=(S.history||[])[i];if(!h||!/^\d+$/.test(String(S.statView)))return;
   const xb=t.closest("[data-hxl]");if(xb){downloadHistXlsx(+xb.dataset.hxl,xb);return}
@@ -2651,6 +2784,7 @@ function renderStatsInner(noDetail){const box=$("statbox");const s=statSnapshot(
   const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
   const kb=abrTotals();const kbSum2=kb.sum;
   const T=STAT_ABR;let gh="";
+  const EV=T&&T.sum>0?mkEv({name:S.event&&S.event.name,date:S.event&&S.event.date,pax:S.event&&S.event.pax},s.rev,s.prod,T):null;
   if(T&&T.sum>0){const theke=Math.max(0,T.sum-s.rev);const q=T.rows.reduce((a,r)=>a+r.q,0);
     const pSec={};for(const c in s.cats){const si=CAT2SEC[c];if(si!=null)pSec[si]=(pSec[si]||0)+s.cats[c]}
     const secRows=T.secs.map((x,i)=>({l:x.t,v:x.sum,c:SCOL[i%SCOL.length],t:eur(x.sum)})).filter(r=>r.v>0).sort((a,b)=>b.v-a.v);
@@ -2668,6 +2802,9 @@ function renderStatsInner(noDetail){const box=$("statbox");const s=statSnapshot(
      <section class="st-card"><h4>Pause gegen Theke</h4><p class="sub">Je Kategorie: rot vorbestellt, grau an der Theke</p><div class="pvt">${T.secs.filter(x=>x.sum>0).map(x=>{const si=T.secs.indexOf(x);const pv=Math.min(x.sum,pSec[si]||0);return `<div class="pvt-r"><span>${esc(x.t)}</span><span class="pvt-b"><i style="width:${pct(pv,x.sum)}%"></i></span><b>${eur(x.sum)}</b></div>`}).join("")}</div></section>
      <section class="st-card"><h4>Die größten Umsatzbringer</h4>${hbars(topRev)}</section>
      ${dq?`<section class="st-card"><h4>Alkoholfrei-Quote gesamt</h4>${waffle(afpT)}<p class="big">${afpT} % <span>aller Getränke waren alkoholfrei</span></p></section>`:""}
+     ${window.THREE?`<section class="st-card"><h4>Der Getränketurm</h4><div class="s3d" id="s3d-towerall"></div><p class="sub">Alle ${EV.drinks.toLocaleString("de-DE")} Getränke des Abends als Gläser gestapelt, farbig nach Sorte.</p></section>`:""}
+     ${consumptionCards(EV)}
+     ${wholeFacts(EV)}
     </div>
     <div class="st-title st-sub2"><h3>Nur Pausenreservierung</h3><p class="sub">Alles ab hier betrifft nur die vorbestellten Getränke</p></div>`}
   let h=gh+`${gh?"":`<div class="st-title"><h3>${esc((S.event&&S.event.name)||"Aktuelle Pause")}</h3><p class="sub">${keys.length} Reservierungen${S.statView==="cur"||!S.statView?", Stand jetzt":""}</p></div>`}
@@ -2687,7 +2824,7 @@ function renderStatsInner(noDetail){const box=$("statbox");const s=statSnapshot(
      <p class="sub">Zusammen ${fmtT(wsum)} im Bestellfenster, das sind ${fmtN(W.reduce((a,x)=>a+x.n,0)/(wsum/60000||1))} Artikel pro Minute.</p>`:`<p class="sub">Gemessen wird, wie lange das Bestellfenster je Reservierung offen war. Ab jetzt läuft die Uhr mit.</p>`}</section>
    ${tl?`<section class="st-card wide"><h4>Wann wurde reserviert?</h4><p class="sub">Neue Reservierungen pro Viertelstunde</p>${tl}</section>`:""}
    ${window.THREE&&catRows.length?`<section class="st-card"><h4>Umsatz-Skyline in 3D</h4><div class="s3d" id="s3d-sky"></div><p class="sub">Jede Säule ist eine Kategorie. Zum Drehen ziehen.</p></section>
-   <section class="st-card"><h4>Der Getränketurm</h4><div class="s3d" id="s3d-tower"></div><p class="sub">Alle bestellten Getränke als Gläser gestapelt, farbig nach Sorte.</p></section>`:""}
+   ${EV?"":`<section class="st-card"><h4>Der Getränketurm</h4><div class="s3d" id="s3d-tower"></div><p class="sub">Alle bestellten Getränke als Gläser gestapelt, farbig nach Sorte.</p></section>`}`:""}
    <section class="st-card fun"><h4>Fun Facts</h4><ul class="facts">
      ${(()=>{const L=Object.values(liters).reduce((a,b)=>a+b,0);return L?`<li><b>${fmtN(L)} l</b> Getränke stehen bereit${L>=10?(Math.round(L/10)===1?`, das ist ungefähr ein voller Eimer`:`, das sind ungefähr ${Math.round(L/10)} volle Eimer`):`, das sind ${Math.round(L/0.33)} kleine Flaschen`}.</li>`:""})()}
      <li><b>${glasses}</b> Gläser werden eingedeckt. Gestapelt wären das ${fmtN(glasses*.13)} m.</li>
@@ -2707,7 +2844,7 @@ function renderStatsInner(noDetail){const box=$("statbox");const s=statSnapshot(
   box.innerHTML=bar+h;
   if(window.THREE&&catRows.length){const short={"Wein & Sekt":"Wein","Durstlöscher & Capri":"Durst","Ganze Flaschen":"Flaschen","Heißgetränke":"Heiß"};
     skyline3D($("s3d-sky"),catRows.map(r=>({...r,short:(short[r.l]||r.l)+" "+pct(r.v,s.rev)+"%"})));
-    const stack=[];ORDER.forEach(p=>{const q=s.prod[p]||0;if(P[p].cat==="snack"||P[p].cat==="fl")return;for(let i=0;i<q;i++)stack.push(P[p].cat)});tower3D($("s3d-tower"),stack)}}
+    const stack=[];ORDER.forEach(p=>{const q=s.prod[p]||0;if(P[p].cat==="snack"||P[p].cat==="fl")return;for(let i=0;i<q;i++)stack.push(P[p].cat)});if($("s3d-tower"))tower3D($("s3d-tower"),stack);if(EV&&$("s3d-towerall"))tower3D($("s3d-towerall"),towerStack(EV),EV.drinks)}}
 
 /* ---------- Kalender ---------- */
 const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
